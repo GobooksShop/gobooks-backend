@@ -1,18 +1,18 @@
-package org.team.bookshop.domain.order.entity;
+package org.team.bookshop.domain.user.entity;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-
 import java.time.LocalDateTime;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class User {
 
-    @Id @GeneratedValue(strategy =IDENTITY)
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -42,16 +42,13 @@ public class User {
     @Column
     private LocalDateTime deletedAt;
 
-
 //    private String profileImage;//프로필이미지
-
 
 //    private String provider; //인증공급자(구글 등)
 //    private String providerId; //인증공급자 식별아이디
 //    private String providerToken; //인증공급자 토큰
 //    private String providerRefreshToken;//인증공급자 리프레시토큰
 //    private String providerTokenExpire;//인증공급자 토큰만료일
-
 
 //    private boolean isDeleted; //삭제여부
 //    private boolean isVerified; //인증여부
@@ -63,7 +60,6 @@ public class User {
 //    private boolean isTwoFactorBlocked; //2단계인증차단여부
 //    private boolean isTwoFactorEmailVerified; //2단계이메일인증여부
 //    private boolean isTwoFactorPhoneVerified; //2단계휴대폰인증여부
-
 
     /**
      * OAuth??

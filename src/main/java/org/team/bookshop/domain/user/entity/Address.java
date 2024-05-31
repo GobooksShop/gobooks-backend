@@ -1,4 +1,4 @@
-package org.team.bookshop.domain.order.entity;
+package org.team.bookshop.domain.user.entity;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
