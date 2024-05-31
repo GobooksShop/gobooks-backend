@@ -1,7 +1,7 @@
 package org.team.bookshop.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         log.info("Request to create a new user");
         User savedUser = userService.saveUser(user);
@@ -36,16 +36,9 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         log.info("Request to get user by id: {}", id);
-        return userService.getUserById(id)
+        return Optional.ofNullable(userService.getUserById(id))
             .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping("/")
-    public ResponseEntity<List<User>> getAllUsers() {
-        log.info("Request to get all users");
-        List<User> users = userService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -65,5 +58,13 @@ public class UserController {
         log.info("Request to delete user with id: {}", id);
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @GetMapping("/")
+    public ResponseEntity<List<User>> getAllUsers() {
+        log.info("Request to get all users");
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }
