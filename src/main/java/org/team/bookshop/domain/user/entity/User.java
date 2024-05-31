@@ -4,10 +4,20 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class User {
 
@@ -15,18 +25,23 @@ public class User {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(min = 1, max = 10)
     @Column(nullable = false)
     private String name;
 
+    @Email
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String email;
 
+    @NotBlank
+    @Size(min = 8)
     @Column(nullable = false)
     private String password;
 
-    @Column
-    private String role;
 
+    @Size(min = 10, max = 15)
     @Column
     private String phone;
 
@@ -34,45 +49,14 @@ public class User {
     private String address;
 
     @Column
+    private String role;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column
+    @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column
-    private LocalDateTime deletedAt;
-
-//    private String profileImage;//프로필이미지
-
-//    private String provider; //인증공급자(구글 등)
-//    private String providerId; //인증공급자 식별아이디
-//    private String providerToken; //인증공급자 토큰
-//    private String providerRefreshToken;//인증공급자 리프레시토큰
-//    private String providerTokenExpire;//인증공급자 토큰만료일
-
-//    private boolean isDeleted; //삭제여부
-//    private boolean isVerified; //인증여부
-//    private boolean isBlocked; //차단여부
-//    private boolean isEmailVerified; //이메일인증여부
-//    private boolean isPhoneVerified; //휴대폰인증여부
-//    private boolean isTwoFactor; //2단계인증활성화여부
-//    private boolean isTwoFactorVerified; //2단계인증확인여부
-//    private boolean isTwoFactorBlocked; //2단계인증차단여부
-//    private boolean isTwoFactorEmailVerified; //2단계이메일인증여부
-//    private boolean isTwoFactorPhoneVerified; //2단계휴대폰인증여부
-
-    /**
-     * OAuth??
-     */
-//    private boolean isTwoFactorApp; //앱 기반 2단계인증활성화여부
-//    private boolean isTwoFactorAuth; //2단계인증활성화여부
-//    private boolean isTwoFactorAuthVerified; //2단계인증확인여부
-//    private boolean isTwoFactorAuthBlocked; //2단계인증차단여부
-//    private boolean isTwoFactorAuthEmailVerified; //2단계인증이메일인증여부
-//    private boolean isTwoFactorAuthPhoneVerified; //2단계인증휴대폰인증여부
-//    private boolean isTwoFactorAuthAppVerified; //앱 기반 2단계 인증확인여부
-//    private boolean isTwoFactorAuthAppBlocked; //앱 기반 2단계 차단여부
-//    private boolean isTwoFactorAuthAppEmailVerified; //앱 기반 2단계 이메일인증여부
-//    private boolean isTwoFactorAuthAppPhoneVerified; //앱 기반 2단계 전화인증여부
-//    private boolean isTwoFactorAuthAppAuth; //다른 앱 기반 인증방법 사용여부
 }
