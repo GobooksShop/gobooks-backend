@@ -15,6 +15,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = false)
     public User saveUser(User user) {
         // Additional business logic or validation can be added here
         return userRepository.save(user);
@@ -29,10 +30,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = false)
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = false)
     public User updateUser(Long id, User user) {
         return userRepository.findById(id).map(existingUser -> {
             existingUser.setName(user.getName());
