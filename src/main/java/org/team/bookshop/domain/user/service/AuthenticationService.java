@@ -1,7 +1,6 @@
 package org.team.bookshop.domain.user.service;
 
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ public class AuthenticationService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
-    @Getter
     public record TokenResponse(String accessToken, String refreshToken) {
 
     }
