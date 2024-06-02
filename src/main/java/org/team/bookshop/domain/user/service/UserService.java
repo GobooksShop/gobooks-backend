@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
+import org.team.bookshop.domain.user.entity.Role;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.UserRepository;
 
@@ -19,6 +20,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = false)
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email " + email));
+    }
+
+
+    @Transactional(readOnly = false)
     public User saveUser(UserJoinDto userJoinDto) throws Exception {
         if (userRepository.findByEmail(userJoinDto.getEmail()).isPresent()) {
             throw new Exception("Email already in use.");
@@ -28,6 +36,8 @@ public class UserService {
         user.setEmail(userJoinDto.getEmail());
         user.setName(userJoinDto.getName());
         user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
+        user.setRole(Role.USER);
+
         return userRepository.save(user);
     }
 

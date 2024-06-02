@@ -51,6 +51,5 @@ public class User extends BaseEntity {
     private String address;
 
     @Column
-    private String role;
-
+    private Role role;
 }
