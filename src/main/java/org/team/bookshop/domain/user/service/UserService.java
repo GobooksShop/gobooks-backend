@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +49,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(Long id) throws NotFoundException {
         return userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+            .orElseThrow(NotFoundException::new);
     }
 
     public List<User> getAllUsers() {
@@ -68,8 +69,6 @@ public class UserService {
             existingUser.setName(user.getName());
             existingUser.setEmail(user.getEmail());
             existingUser.setPassword(user.getPassword());
-            existingUser.setPhone(user.getPhone());
-            existingUser.setAddress(user.getAddress());
             existingUser.setRoles(user.getRoles());
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new RuntimeException("User not found with id " + id));

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.team.bookshop.domain.user.dto.TokenResponseDto;
 import org.team.bookshop.domain.user.dto.UserLoginDto;
-import org.team.bookshop.domain.user.dto.UserLoginResponseDto;
 import org.team.bookshop.domain.user.service.AuthenticationService;
 
 
@@ -22,12 +22,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponseDto> login(
+    public ResponseEntity<TokenResponseDto> login(
         @Valid @RequestBody UserLoginDto userLoginDto) {
         try {
             AuthenticationService.TokenResponse tokenResponse = authenticationService.login(
                 userLoginDto);
-            UserLoginResponseDto response = new UserLoginResponseDto(
+            TokenResponseDto response = new TokenResponseDto(
                 tokenResponse.accessToken(),
                 tokenResponse.refreshToken()
             );

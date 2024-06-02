@@ -14,7 +14,7 @@ import org.team.bookshop.domain.user.entity.Role;
 public class UserJoinDto {
 
     @NotEmpty
-    @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
+    @Pattern(regexp = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
         message = "이메일 형식을 맞춰야합니다")
     private String email;
 
