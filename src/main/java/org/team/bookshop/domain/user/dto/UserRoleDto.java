@@ -2,16 +2,13 @@ package org.team.bookshop.domain.user.dto;
 
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+@Getter
+public class UserRoleDto {
 
-    private String email;
-    private String name;
-    private Set<String> roles;
-
+    private Set<String> roleName;
 }

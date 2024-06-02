@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.user.dto.UserDto;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
+import org.team.bookshop.domain.user.dto.UserRoleDto;
+import org.team.bookshop.domain.user.dto.UserUpdateDto;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.service.UserConvertService;
 import org.team.bookshop.domain.user.service.UserService;
@@ -37,26 +38,33 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserJoinDto userJoinDto,
+    public ResponseEntity<Void> saveUser(@RequestBody @Valid UserJoinDto userJoinDto,
         BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
             throw new MethodArgumentNotValidException(null, bindingResult);
         }
-        User savedUser = userService.saveUser(userJoinDto);
-        UserDto savedUserDto = userConvertService.convertToDto(savedUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDto);
+        userService.saveUser(userJoinDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) throws NotFoundException {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(userConvertService.convertToDto(user));
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        UserDto userDto = userService.getUserById(id);
+        return ResponseEntity.ok(userDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        User updatedUser = userService.updateUser(id, userConvertService.convertToEntity(userDto));
-        return ResponseEntity.ok(userConvertService.convertToDto(updatedUser));
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
+        @RequestBody UserUpdateDto userUpdateDto) throws Exception {
+        UserDto userDto = userService.updateUser(id, userUpdateDto);
+        return ResponseEntity.ok(userDto);
+    }
+
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<String> updateUserRole(@RequestBody UserRoleDto userRoleDto,
+        @PathVariable String id) {
+        userService.updateUserRole(userRoleDto);
+        return new ResponseEntity<>("User role updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -64,7 +72,6 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
     @GetMapping("/")
     public ResponseEntity<List<UserDto>> getAllUsers() {

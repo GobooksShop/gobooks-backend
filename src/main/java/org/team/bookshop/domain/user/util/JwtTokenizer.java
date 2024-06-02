@@ -25,7 +25,9 @@ public class JwtTokenizer {
         long now = System.currentTimeMillis();
         return Jwts.builder()
             .setSubject(user.getEmail())
-            .claim("roles", user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
+            .claim("roles", user.getUserRoles().stream()
+                .map(userRole -> userRole.getRole().getRoleName().name())
+                .collect(Collectors.toList()))
             .setIssuedAt(new Date(now))
             .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())
@@ -41,4 +43,21 @@ public class JwtTokenizer {
             .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())
             .compact();
     }
+//d public Claims parseToken(String token) {
+//        return Jwts.parserBuilder()
+//            .setSigningKey(getSigningKey())
+//            .build()
+//            .parseClaimsJws(token)
+//            .getBody();
+//    }
+//d
+// d   public boolean validateToken(String token) {
+//        try {
+//            parseToken(token);
+//            return true;
+//        } catch (Exception e) {
+//            // Log the exception
+//            return false;
+//        }
+//    }
 }

@@ -8,10 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserJoinDto {
+@NoArgsConstructor
+@Getter
+public class UserUpdateDto {
 
     @NotEmpty
     @Pattern(regexp = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
@@ -28,5 +28,5 @@ public class UserJoinDto {
         message = "이름은 영문자, 한글, 공백포함 2글자부터 15글자까지 가능합니다.")
     private String name;
 
-    private Set<String> roles = new HashSet<>();
+    private Set<String> userRoles = new HashSet<>();
 }
