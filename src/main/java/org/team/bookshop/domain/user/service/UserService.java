@@ -3,8 +3,10 @@ package org.team.bookshop.domain.user.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.UserRepository;
 
@@ -14,10 +16,18 @@ import org.team.bookshop.domain.user.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = false)
-    public User saveUser(User user) {
-        // Additional business logic or validation can be added here
+    public User saveUser(UserJoinDto userJoinDto) throws Exception {
+        if (userRepository.findByEmail(userJoinDto.getEmail()).isPresent()) {
+            throw new Exception("Email already in use.");
+        }
+
+        User user = new User();
+        user.setEmail(userJoinDto.getEmail());
+        user.setName(userJoinDto.getName());
+        user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
         return userRepository.save(user);
     }
 

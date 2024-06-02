@@ -1,12 +1,14 @@
 package org.team.bookshop.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.service.UserService;
 
@@ -27,11 +30,16 @@ public class UserController {
 
     private final UserService userService;
 
+
     @PostMapping
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        log.info("Request to create a new user");
-        User savedUser = userService.saveUser(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UserJoinDto userJoinDto,
+        BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+
+        User savedUser = userService.saveUser(userJoinDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @GetMapping("/{id}")
@@ -68,4 +76,6 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+
 }
