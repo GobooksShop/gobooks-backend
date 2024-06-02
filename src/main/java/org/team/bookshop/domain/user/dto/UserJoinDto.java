@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.team.bookshop.domain.user.entity.Role;
 
 @Getter
 @NoArgsConstructor
@@ -26,4 +27,5 @@ public class UserJoinDto {
         message = "이름은 영문자, 한글, 공백포함 2글자부터 15글자까지 가능합니다.")
     private String name;
 
+    private Role role;
 }

@@ -44,7 +44,9 @@ public class UserController {
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
+        String accessToken = jwtTokennizer.createToken(user.getEmail(), user.getRole().name());
+        String refreshToken = jwtTokennizer.createRefreshToken(user.getEmail(),
+            user.getRole().name());
 
     }
 
