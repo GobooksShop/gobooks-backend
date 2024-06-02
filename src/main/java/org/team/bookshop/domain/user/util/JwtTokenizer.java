@@ -1,10 +1,12 @@
 package org.team.bookshop.domain.user.util;
 
-import java.util.Collections;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.team.bookshop.domain.user.dto.UserLoginDto;
+import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.global.config.JwtConfig;
 
 @Component
@@ -19,21 +21,21 @@ public class JwtTokenizer {
         this.jwtConfig = jwtConfig;
     }
 
-    public String generateAccessToken(UserLoginDto userLoginDto) {
+    public String generateAccessToken(User user) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
-            .setSubject(userLoginDto.getEmail())
-            .claim("roles", Collections.singletonList(userLoginDto.getRole.name()))
+            .setSubject(user.getEmail())
+            .claim("roles", user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
             .setIssuedAt(new Date(now))
             .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())
             .compact();
     }
 
-    public String generateRefreshToken(UserLoginDto userLoginDto) {
+    public String generateRefreshToken(User user) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
-            .setSubject(userLoginDto.getEmail())
+            .setSubject(user.getEmail())
             .setIssuedAt(new Date(now))
             .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())

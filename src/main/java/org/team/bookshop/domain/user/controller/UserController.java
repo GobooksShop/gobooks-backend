@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
-import org.team.bookshop.domain.user.dto.UserLoginDto;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.service.UserService;
 
@@ -33,22 +32,6 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserLoginDto loginDto,
-        BindingResult bindingResult) throws Exception {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        User user = userService.findByEmail(loginDto.getEmail());
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        String accessToken = jwtTokennizer.createToken(user.getEmail(), user.getRole().name());
-        String refreshToken = jwtTokennizer.createRefreshToken(user.getEmail(),
-            user.getRole().name());
-
-    }
 
     @PostMapping
     public ResponseEntity<?> saveUser(@RequestBody @Valid UserJoinDto userJoinDto,

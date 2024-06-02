@@ -1,33 +1,39 @@
 package org.team.bookshop.domain.user.controller;
 
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.team.bookshop.domain.user.dto.UserLoginDto;
+import org.team.bookshop.domain.user.dto.UserLoginResponseDto;
+import org.team.bookshop.domain.user.service.AuthenticationService;
 
+
+@RequiredArgsConstructor
+@RequestMapping("/api/auth")
 @RestController
 public class AuthenticationController {
 
-//    private final AuthenticationManager authenticationManager;
-//    private final JwtUtil jwtUtil;
-//
-//    public AuthenticationController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
-//        this.authenticationManager = authenticationManager;
-//        this.jwtUtil = jwtUtil;
-//    }
-//
-//    @PostMapping("/api/login")
-//    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLoginDto userLoginDto) {
-//        try {
-//            Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(),
-//                    userLoginDto.getPassword())
-//            );
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//            String jwt = jwtUtil.generateToken(userLoginDto.getEmail());
-//            return ResponseEntity.ok(new AuthResponse(jwt));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body("Authentication failed");
-//        }
-//    }
+    private final AuthenticationService authenticationService;
 
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponseDto> login(
+        @Valid @RequestBody UserLoginDto userLoginDto) {
+        try {
+            AuthenticationService.TokenResponse tokenResponse = authenticationService.login(
+                userLoginDto);
+            UserLoginResponseDto response = new UserLoginResponseDto(
+                tokenResponse.accessToken(),
+                tokenResponse.refreshToken()
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 }

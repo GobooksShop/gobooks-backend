@@ -70,7 +70,7 @@ public class UserService {
             existingUser.setPassword(user.getPassword());
             existingUser.setPhone(user.getPhone());
             existingUser.setAddress(user.getAddress());
-            existingUser.setRole(user.getRole());
+            existingUser.setRoles(user.getRoles());
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new RuntimeException("User not found with id " + id));
     }

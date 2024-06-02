@@ -3,8 +3,11 @@ package org.team.bookshop.domain.user.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.team.bookshop.domain.user.dto.UserLoginDto;
+import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.domain.user.util.JwtTokenizer;
 
 @RequiredArgsConstructor
@@ -12,23 +15,20 @@ import org.team.bookshop.domain.user.util.JwtTokenizer;
 public class AuthenticationService {
 
     private final JwtTokenizer jwtTokenizer;
-
-    public AuthenticationService(JwtTokenizer jwtTokenizer) {
-        this.jwtTokenizer = jwtTokenizer;
-    }
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public TokenResponse login(UserLoginDto userLoginDto) throws Exception {
-        if (isAuthenticated(userLoginDto)) {
-            String accessToken = jwtTokenizer.generateAccessToken(userLoginDto);
-            String refreshToken = jwtTokenizer.generateRefreshToken(userLoginDto);
-            return new TokenResponse(accessToken, refreshToken);
-        } else {
-            throw new Exception("Authentication failed");
-        }
-    }
+        User user = userRepository.findByEmail(userLoginDto.getEmail())
+            .orElseThrow(() -> new Exception("User not found"));
 
-    private boolean isAuthenticated(UserLoginDto userLoginDto) {
-        return true;
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
+            throw new Exception("Invalid credentials");
+        }
+
+        String accessToken = jwtTokenizer.generateAccessToken(user);
+        String refreshToken = jwtTokenizer.generateRefreshToken(user);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     @Getter
