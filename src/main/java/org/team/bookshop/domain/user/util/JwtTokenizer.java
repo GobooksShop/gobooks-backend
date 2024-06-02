@@ -3,9 +3,11 @@ package org.team.bookshop.domain.user.util;
 import java.util.Collections;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.team.bookshop.domain.user.dto.UserLoginDto;
 import org.team.bookshop.global.config.JwtConfig;
 
+@Component
 public class JwtTokenizer {
 
     private final JwtConfig jwtConfig;
@@ -21,7 +23,7 @@ public class JwtTokenizer {
         long now = System.currentTimeMillis();
         return Jwts.builder()
             .setSubject(userLoginDto.getEmail())
-            .claim("roles", Collections.singletonList(userLoginDto.getRole().name()))
+            .claim("roles", Collections.singletonList(userLoginDto.getRole.name()))
             .setIssuedAt(new Date(now))
             .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())

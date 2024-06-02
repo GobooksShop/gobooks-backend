@@ -1,7 +1,9 @@
 package org.team.bookshop.domain.user.service;
 
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,12 @@ public class UserService {
         user.setEmail(userJoinDto.getEmail());
         user.setName(userJoinDto.getName());
         user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
-        user.setRole(userJoinDto.getRole() != null ? userJoinDto.getRole() : Role.USER);
+
+        Set<Role> roles = userJoinDto.getRoles() != null ? userJoinDto.getRoles() : new HashSet<>();
+        if (roles.isEmpty()) {
+            roles.add(Role.USER); // Assign default role if none provided
+        }
+        user.setRoles(roles);
 
         return userRepository.save(user);
     }
