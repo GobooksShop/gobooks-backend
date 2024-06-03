@@ -21,8 +21,8 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.team.bookshop.global.util.BaseEntity;
 
-@Setter
 @Getter
+@Setter
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 @Entity

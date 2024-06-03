@@ -61,10 +61,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}/roles")
-    public ResponseEntity<String> updateUserRole(@RequestBody UserRoleDto userRoleDto,
-        @PathVariable String id) {
-        userService.updateUserRole(userRoleDto);
-        return new ResponseEntity<>("User role updated successfully", HttpStatus.OK);
+    public ResponseEntity<Void> updateUserRole(@PathVariable Long id
+        , @RequestBody UserRoleDto userRoleDto) {
+        userService.updateUserRole(id, userRoleDto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

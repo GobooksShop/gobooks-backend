@@ -117,23 +117,34 @@ public class UserService {
         return new UserDto(user.getEmail(), user.getName(), roleNames);
     }
 
+
+    //updateUserRole 작업해야함
     @Transactional(readOnly = false)
     public void updateUserRole(Long userId, UserRoleDto userRoleDto) {
-        Set<String> roleNames = userRoleDto.getRoleName();
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        User_Role userRole = userRoleRepository.findByUserId(userId)
-            .orElseThrow(() -> new EntityNotFoundException(
-                "User role not found for userId: " + userId));
-
-        Set<Role> roles = roleNames.stream()
-            .map(roleName -> roleRepository.findByRoleName(Role.RoleName.valueOf(roleName))
-                .orElseThrow(() -> new EntityNotFoundException(
-                    "Role not found with roleName: " + roleName)))
+        Set<Role.RoleName> newRoleNames = userRoleDto.getRoleName().stream()
+            .map(Role.RoleName::valueOf)
             .collect(Collectors.toSet());
 
-        userRole.setRoles(roles);
+        Set<Role> newRoles = newRoleNames.stream()
+            .map(roleName -> roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found for name: " + roleName)))
+            .collect(Collectors.toSet());
 
-        userRoleRepository.save(userRole);
+        Set<User_Role> currentUserRoles = user.getUserRoles();
+
+        currentUserRoles.removeIf(userRole -> !newRoles.contains(userRole.getRole()));
+
+        newRoles.forEach(role -> {
+            if (currentUserRoles.stream().noneMatch(userRole -> userRole.getRole().equals(role))) {
+                User_Role newUserRole = new User_Role();
+                newUserRole.setUser(user);
+                newUserRole.setRole(role);
+                currentUserRoles.add(newUserRole);
+            }
+        });
     }
 
     @Transactional(readOnly = false)
