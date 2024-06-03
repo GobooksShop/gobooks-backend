@@ -14,19 +14,14 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.team.bookshop.global.util.BaseEntity;
-
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
