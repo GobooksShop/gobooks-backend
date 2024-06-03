@@ -15,7 +15,7 @@ spring:
 logging:
   config: classpath:logback-${spring.profiles.active}.xml
 
-spring.config.import: classpath:application-discord.properties
+spring.config.import: classpath:application-jwt.yml,classpath:application-discord.properties
 ---
 spring.config.activate.on-profile: local
 spring:
