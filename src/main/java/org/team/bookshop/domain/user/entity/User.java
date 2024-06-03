@@ -50,7 +50,6 @@ public class User extends BaseEntity {
     private String phone;
     @OneToOne
     @JoinColumn(name = "point_id")
-    @Column(nullable = false)
     private Point point;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -58,12 +57,12 @@ public class User extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "membership_id")
-    @Column(nullable = false)
     private Membership membership;
+
     @OneToMany
     @JoinColumn(name = "user_id")
-    @Column(nullable = false)
     private List<Address> addresses;
+
     private UserRole role;
     private UserStatus status;
     private LocalDateTime deletedAt;
