@@ -1,3 +1,4 @@
+
 package org.team.bookshop.domain.user.entity;
 
 import jakarta.persistence.Column;
@@ -10,48 +11,64 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.team.bookshop.global.util.BaseEntity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Getter
 @Setter
-@Entity
-@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
+@Entity
 public class User extends BaseEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userId;
-  @Column(nullable = false, unique = true)
-  private String email;
-  @Column(nullable = false)
-  private String password;
-  @Column(nullable = false)
-  private String nickname;
-  @Column(nullable = false)
-  private String name;
-  private String phone;
-  @OneToOne
-  @JoinColumn(name = "point_id")
-  @Column(nullable = false)
-  private Point point;
-  @OneToOne
-  @JoinColumn(name = "membership_id")
-  @Column(nullable = false)
-  private Membership membership;
-  @OneToMany
-  @JoinColumn(name = "user_id")
-  @Column(nullable = false)
-  private List<Address> addresses;
-  private UserRole role;
-  private UserStatus status;
-  private LocalDateTime deletedAt;
-  private boolean termsAgreed;
-  private boolean marketingAgreed;
-  private boolean emailVerified;
-  private LocalDateTime lastLogin;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String nickname;
+
+    private String phone;
+    @OneToOne
+    @JoinColumn(name = "point_id")
+    @Column(nullable = false)
+    private Point point;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<User_Role> userRoles = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name = "membership_id")
+    @Column(nullable = false)
+    private Membership membership;
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    @Column(nullable = false)
+    private List<Address> addresses;
+    private UserRole role;
+    private UserStatus status;
+    private LocalDateTime deletedAt;
+    private boolean termsAgreed;
+    private boolean marketingAgreed;
+    private boolean emailVerified;
+    private LocalDateTime lastLogin;
 }
