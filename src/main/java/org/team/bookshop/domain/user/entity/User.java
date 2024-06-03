@@ -1,25 +1,28 @@
+
 package org.team.bookshop.domain.user.entity;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.team.bookshop.global.util.BaseEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
@@ -29,25 +32,43 @@ import org.team.bookshop.global.util.BaseEntity;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min = 1, max = 10)
     @Column(nullable = false)
     private String name;
 
-    @Email
-    @NotBlank
     @Column(nullable = false, unique = true)
     private String email;
 
-    @NotBlank
-    @Size(min = 6)
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private String nickname;
+
+    private String phone;
+    @OneToOne
+    @JoinColumn(name = "point_id")
+    @Column(nullable = false)
+    private Point point;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<User_Role> userRoles = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "membership_id")
+    @Column(nullable = false)
+    private Membership membership;
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    @Column(nullable = false)
+    private List<Address> addresses;
+    private UserRole role;
+    private UserStatus status;
+    private LocalDateTime deletedAt;
+    private boolean termsAgreed;
+    private boolean marketingAgreed;
+    private boolean emailVerified;
+    private LocalDateTime lastLogin;
 }
