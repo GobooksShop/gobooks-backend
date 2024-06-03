@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.user.dto.UserDto;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
+<<<<<<< HEAD
 import org.team.bookshop.domain.user.dto.UserRoleDto;
 import org.team.bookshop.domain.user.dto.UserUpdateDto;
+=======
+>>>>>>> 12b7e2e (feat: jwt기능 추가중 테스트 필요)
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.service.UserConvertService;
 import org.team.bookshop.domain.user.service.UserService;

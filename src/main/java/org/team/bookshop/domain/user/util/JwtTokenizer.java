@@ -25,9 +25,13 @@ public class JwtTokenizer {
         long now = System.currentTimeMillis();
         return Jwts.builder()
             .setSubject(user.getEmail())
+<<<<<<< HEAD
             .claim("roles", user.getUserRoles().stream()
                 .map(userRole -> userRole.getRole().getRoleName().name())
                 .collect(Collectors.toList()))
+=======
+            .claim("roles", user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
+>>>>>>> 12b7e2e (feat: jwt기능 추가중 테스트 필요)
             .setIssuedAt(new Date(now))
             .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())

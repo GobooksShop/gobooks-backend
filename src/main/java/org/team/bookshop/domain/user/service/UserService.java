@@ -97,6 +97,7 @@ public class UserService {
 
 
     @Transactional(readOnly = false)
+<<<<<<< HEAD
     public UserDto updateUser(Long id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
@@ -115,6 +116,18 @@ public class UserService {
             .collect(Collectors.toSet());
 
         return new UserDto(user.getEmail(), user.getName(), roleNames);
+=======
+    public User updateUser(Long id, User user) {
+        return userRepository.findById(id).map(existingUser -> {
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setPhone(user.getPhone());
+            existingUser.setAddress(user.getAddress());
+            existingUser.setRoles(user.getRoles());
+            return userRepository.save(existingUser);
+        }).orElseThrow(() -> new RuntimeException("User not found with id " + id));
+>>>>>>> 12b7e2e (feat: jwt기능 추가중 테스트 필요)
     }
 
 
