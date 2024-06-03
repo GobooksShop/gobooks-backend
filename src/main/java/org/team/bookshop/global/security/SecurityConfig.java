@@ -1,9 +1,12 @@
 package org.team.bookshop.global.security;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +28,7 @@ public class SecurityConfig {
 			)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
-					.requestMatchers("/", "/login","member-register").permitAll()
+					.requestMatchers("/", "/login","/join", "/pro").permitAll()
 					// .requestMatchers("/admin/**").hasRole(Member.Role.ADMIN.name())
 					// .requestMatchers("/my-page/**").hasAnyRole(Member.Role.USER.name(), Member.Role.ADMIN.name())
 					.anyRequest().permitAll()
@@ -51,4 +54,19 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
+	@Bean
+	@ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
+	public WebSecurityCustomizer h2ConsoleCustomizer() {
+		return web -> web.ignoring()
+				.requestMatchers(PathRequest.toH2Console());
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "springdoc.swagger-ui.enabled", havingValue = "true")
+	public WebSecurityCustomizer swaggerCustomizer() {
+		return web -> web.ignoring()
+				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**");
+	}
+
 }

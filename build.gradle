@@ -50,6 +50,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 추가
     implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치 작업을 위한 의존성 추가
 
+    implementation 'io.jsonwebtoken:jjwt:0.9.1' // JWT 토큰 생성을 위한 의존성 추가
+
+
     implementation "com.github.napstr:logback-discord-appender:${discordWebHookVersion}"
 
 }

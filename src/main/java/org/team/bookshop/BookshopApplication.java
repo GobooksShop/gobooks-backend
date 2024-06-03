@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableBatchProcessing
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "org.team.bookshop")
 @EnableJpaAuditing
 public class BookshopApplication {
 
