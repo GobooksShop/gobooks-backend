@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
-import org.team.bookshop.domain.category.dto.CategoryDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryUpdateRequestDto;
 import org.team.bookshop.domain.category.service.CategoryService;
@@ -38,21 +37,30 @@ public class CategoryController {
     return ResponseEntity.ok(categoryDtos);
   }
 
+  @GetMapping("/admin/categories/{categoryId}")
+  public ResponseEntity<CategoryResponseDto> getCategory(
+      @PathVariable Long categoryId) { // Return CategoryResponseDto
+    CategoryResponseDto categoryResponseDto = categoryService.getCategory(categoryId);
+    return ResponseEntity.ok(categoryResponseDto);
+  }
+
   // 관리자 ============
 
   // CREATE
   @PostMapping("/admin/categories")
-  public ResponseEntity<CategoryDto> createCategory(
+  public ResponseEntity<CategoryResponseDto> createCategory(
       @RequestBody CategoryCreateRequestDto categoryCreateRequestDto) {
-    CategoryDto createdCategoryDto = categoryService.createCategory(categoryCreateRequestDto);
+    CategoryResponseDto createdCategoryDto = categoryService.createCategory(
+        categoryCreateRequestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdCategoryDto);
   }
 
   // UPDATE
   @PutMapping("/admin/categories/{categoryId}")
-  public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long categoryId,
+  public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long categoryId,
+      // Return CategoryResponseDto
       @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto) {
-    CategoryDto updatedCategoryDto = categoryService.updateCategory(categoryId,
+    CategoryResponseDto updatedCategoryDto = categoryService.updateCategory(categoryId,
         categoryUpdateRequestDto);
     return ResponseEntity.ok(updatedCategoryDto);
   }

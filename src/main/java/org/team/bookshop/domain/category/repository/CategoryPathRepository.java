@@ -2,12 +2,17 @@ package org.team.bookshop.domain.category.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.team.bookshop.domain.category.entity.Category;
 import org.team.bookshop.domain.category.entity.CategoryPath;
 
 public interface CategoryPathRepository extends JpaRepository<CategoryPath, Long> {
 
-  List<CategoryPath> findByAncestor(Category ancestor);
+  @Query("SELECT cp FROM CategoryPath cp WHERE cp.id.parent = :parent")
+  List<CategoryPath> findByParent(@Param("parent") Category parent);
 
-  List<CategoryPath> findByDescendant(Category descendant);
+  @Query("SELECT cp FROM CategoryPath cp WHERE cp.id.child = :child")
+    // Corrected query for finding by child
+  List<CategoryPath> findByChild(@Param("child") Category child);
 }

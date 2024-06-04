@@ -23,9 +23,9 @@ public class Category extends BaseEntity {
   @Column(name = "name", nullable = false)
   private String name;
 
-  @OneToMany(mappedBy = "id.ancestor")
-  private List<CategoryPath> ancestors;
+  @OneToMany(mappedBy = "id.parent")
+  private List<CategoryPath> parentPaths;
 
-  @OneToMany(mappedBy = "id.descendant")
-  private List<CategoryPath> descendants;
+  @OneToMany(mappedBy = "id.child")
+  private List<CategoryPath> childPaths;
 }

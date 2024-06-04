@@ -23,15 +23,15 @@ public class CategoryPath {
     this.id = id;
   }
 
-  public CategoryPath(Category ancestor, Category descendant) {
-    this.id = new CategoryPathId(ancestor, descendant);
+  public CategoryPath(Category parent, Category child) {
+    this.id = new CategoryPathId(parent, child);
   }
 
-  public Category getAncestor() {
-    return id.getAncestor();
+  public Category getParent() {
+    return id.getParent();
   }
 
-  public Category getDecendant() {
-    return id.getDescendant();
+  public Category getchild() {
+    return id.getChild();
   }
 }

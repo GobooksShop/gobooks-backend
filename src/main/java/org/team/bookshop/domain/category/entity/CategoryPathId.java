@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import org.team.bookshop.global.error.ErrorCode;
+import org.team.bookshop.global.error.exception.ApiException;
 
 @Embeddable
 @Getter
@@ -14,19 +16,22 @@ import lombok.Setter;
 public class CategoryPathId implements Serializable {
 
   @ManyToOne
-  @JoinColumn(name = "ancestor")
-  private Category ancestor;
+  @JoinColumn(name = "parent_id")
+  private Category parent;
 
   @ManyToOne
-  @JoinColumn(name = "descendant")
-  private Category descendant;
+  @JoinColumn(name = "child_id")
+  private Category child;
 
   public CategoryPathId() {
   }
 
-  public CategoryPathId(Category ancestor, Category descendant) {
-    this.ancestor = ancestor;
-    this.descendant = descendant;
+  public CategoryPathId(Category parent, Category child) {
+    if (parent.getId().equals(child.getId())) {
+      throw new ApiException(ErrorCode.SELF_LOOP_CATEGORY_PATH);
+    }
+    this.parent = parent;
+    this.child = child;
   }
 
   // Equals and HashCode
@@ -39,11 +44,11 @@ public class CategoryPathId implements Serializable {
       return false;
     }
     CategoryPathId that = (CategoryPathId) o;
-    return Objects.equals(ancestor, that.ancestor) && Objects.equals(descendant, that.descendant);
+    return Objects.equals(parent, that.parent) && Objects.equals(child, that.child);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(ancestor, descendant);
+    return Objects.hash(parent, child);
   }
 }
