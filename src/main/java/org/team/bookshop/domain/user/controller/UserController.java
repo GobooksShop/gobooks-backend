@@ -3,13 +3,11 @@ package org.team.bookshop.domain.user.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +16,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.team.bookshop.domain.user.dto.UserDto;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
-import org.team.bookshop.domain.user.dto.UserRoleDto;
-import org.team.bookshop.domain.user.dto.UserUpdateDto;
-import org.team.bookshop.domain.user.entity.User;
-import org.team.bookshop.domain.user.service.UserConvertService;
+import org.team.bookshop.domain.user.dto.UserPostDto;
 import org.team.bookshop.domain.user.service.UserService;
+import org.team.bookshop.global.error.ErrorCode;
+import org.team.bookshop.global.error.exception.ApiException;
 
 @RestController
 @Slf4j
@@ -34,37 +30,29 @@ import org.team.bookshop.domain.user.service.UserService;
 public class UserController {
 
     private final UserService userService;
-    private final UserConvertService userConvertService;
-
 
     @PostMapping
     public ResponseEntity<Void> saveUser(@RequestBody @Valid UserJoinDto userJoinDto,
-        BindingResult bindingResult) throws Exception {
+        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, bindingResult);
+            throw new ApiException(ErrorCode.INVALID_INPUT_VALUE);
         }
         userService.saveUser(userJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        UserDto userDto = userService.getUserById(id);
-        return ResponseEntity.ok(userDto);
+    public ResponseEntity<UserPostDto> getUserById(@PathVariable Long id) {
+        UserPostDto userPostDto = userService.getUserById(id);
+        return ResponseEntity.ok(userPostDto);
     }
 
+    //수정후 다시 정보 받아서 수정화면 그대로 띄우는 걸로 생각했는데 어떻게 생각하시는지!
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
-        @RequestBody UserUpdateDto userUpdateDto) throws Exception {
-        UserDto userDto = userService.updateUser(id, userUpdateDto);
-        return ResponseEntity.ok(userDto);
-    }
+    public ResponseEntity<UserPostDto> updateUser(@PathVariable Long id,
+        @RequestBody UserPostDto UserPostDto) {
 
-    @PutMapping("/{id}/roles")
-    public ResponseEntity<Void> updateUserRole(@PathVariable Long id
-        , @RequestBody UserRoleDto userRoleDto) {
-        userService.updateUserRole(id, userRoleDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(userService.updateUser(id, UserPostDto));
     }
 
     @DeleteMapping("/{id}")
@@ -74,11 +62,8 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserDto> userDtos = users.stream()
-            .map(userConvertService::convertToDto)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(userDtos);
+    public ResponseEntity<List<UserPostDto>> getAllUsers() {
+
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }

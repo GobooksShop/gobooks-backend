@@ -1,4 +1,3 @@
-
 package org.team.bookshop.domain.user.entity;
 
 import jakarta.persistence.Column;
@@ -11,14 +10,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.team.bookshop.global.util.BaseEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -43,12 +38,10 @@ public class User extends BaseEntity {
     private String nickname;
 
     private String phone;
+
     @OneToOne
     @JoinColumn(name = "point_id")
     private Point point;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<User_Role> userRoles = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name = "membership_id")

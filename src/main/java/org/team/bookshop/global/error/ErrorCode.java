@@ -15,12 +15,14 @@ public enum ErrorCode {
   HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied", LogLevel.ERROR),
 
   //USER
+  EMAIL_ALREADY_REGISTERED(400, "U001", "Email already registered", LogLevel.ERROR),
 
   //BOOK
 
   //CATEGORY
   SELF_LOOP_CATEGORY_PATH(400, "C007", "The category path should not have self-loops",
       LogLevel.ERROR);
+
   //ORDER
 
   //PAYMENT
