@@ -63,7 +63,6 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<List<UserPostDto>> getAllUsers() {
-
         return ResponseEntity.ok(userService.getAllUsers());
     }
 }

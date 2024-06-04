@@ -11,12 +11,13 @@ import org.team.bookshop.domain.user.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.userRoles ur LEFT JOIN FETCH ur.role WHERE u.email = :email")
+    @Query("SELECT u FROM User u WHERE u.email = :email")
     Optional<User> findByEmail(@Param("email") String email);
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.userRoles ur LEFT JOIN FETCH ur.role WHERE u.id = :id")
+    @Query("SELECT u FROM User u WHERE u.id = :id")
     Optional<User> findByIdWithRoles(@Param("id") Long id);
 
-    @Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userRoles ur LEFT JOIN FETCH ur.role")
-    List<User> findAllWithRoles();
+    @Query("SELECT u FROM User u")
+    List<User> findAll();
+
 }

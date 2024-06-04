@@ -1,8 +1,8 @@
 package org.team.bookshop.domain.user.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +35,9 @@ public class UserService {
         User user = userJoinDto.toEntity();
         user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
 
+//        Set<User_Role> userRoles = createRoles(user, userJoinDto.getRoles());
+//        user.setUserRoles(userRoles);
+
         userRepository.save(user);
     }
 
@@ -47,12 +50,22 @@ public class UserService {
         return userPostDto.toDto(user);
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("User not found with email " + email));
+    }
+
 
     public List<UserPostDto> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream()
-            .map(user -> new UserPostDto().toDto(user))
-            .collect(Collectors.toList());
+        List<UserPostDto> userPostDtos = new ArrayList<>();
+        for (User user : users) {
+            UserPostDto userPostDto = new UserPostDto();
+            userPostDto.toDto(user);
+            userPostDtos.add(userPostDto);
+        }
+        return userPostDtos;
+
     }
 
 

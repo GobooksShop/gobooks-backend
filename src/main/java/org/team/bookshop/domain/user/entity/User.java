@@ -47,10 +47,6 @@ public class User extends BaseEntity {
     @JoinColumn(name = "membership_id")
     private Membership membership;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<Address> addresses;
-
     private UserRole role;
     private UserStatus status;
     private LocalDateTime deletedAt;
