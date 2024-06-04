@@ -71,8 +71,8 @@ public class UserService {
         user.setName(userJoinDto.getName());
         user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
 
-        Set<User_Role> userRoles = createRoles(user, userJoinDto.getRoles());
-        user.setUserRoles(userRoles);
+//        Set<User_Role> userRoles = createRoles(user, userJoinDto.getRoles());
+//        user.setUserRoles(userRoles);
 
         userRepository.save(user);
     }
@@ -84,9 +84,14 @@ public class UserService {
         return userConvertService.convertToDto(user);
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("User not found with email " + email));
+    }
+
 
     public List<User> getAllUsers() {
-        return userRepository.findAllWithRoles();
+        return userRepository.findAll();
     }
 
 
@@ -110,11 +115,11 @@ public class UserService {
 
         userRepository.save(user);
 
-        Set<String> roleNames = user.getUserRoles().stream()
-            .map(userRole -> userRole.getRole().getRoleName().name())
-            .collect(Collectors.toSet());
+//        Set<String> roleNames = user.getUserRoles().stream()
+//            .map(userRole -> userRole.getRole().getRoleName().name())
+//            .collect(Collectors.toSet());
 
-        return new UserDto(user.getEmail(), user.getName(), roleNames);
+        return new UserDto(user.getEmail(), user.getName());
     }
 
 
@@ -133,18 +138,18 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Role not found for name: " + roleName)))
             .collect(Collectors.toSet());
 
-        Set<User_Role> currentUserRoles = user.getUserRoles();
+//        Set<User_Role> currentUserRoles = user.getUserRoles();
 
-        currentUserRoles.removeIf(userRole -> !newRoles.contains(userRole.getRole()));
+//        currentUserRoles.removeIf(userRole -> !newRoles.contains(userRole.getRole()));
 
-        newRoles.forEach(role -> {
-            if (currentUserRoles.stream().noneMatch(userRole -> userRole.getRole().equals(role))) {
-                User_Role newUserRole = new User_Role();
-                newUserRole.setUser(user);
-                newUserRole.setRole(role);
-                currentUserRoles.add(newUserRole);
-            }
-        });
+//        newRoles.forEach(role -> {
+//            if (currentUserRoles.stream().noneMatch(userRole -> userRole.getRole().equals(role))) {
+//                User_Role newUserRole = new User_Role();
+//                newUserRole.setUser(user);
+//                newUserRole.setRole(role);
+//                currentUserRoles.add(newUserRole);
+//            }
+//        });
     }
 
     @Transactional(readOnly = false)

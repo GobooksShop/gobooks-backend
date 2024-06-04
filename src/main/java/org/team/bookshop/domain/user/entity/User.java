@@ -47,16 +47,9 @@ public class User extends BaseEntity {
     @JoinColumn(name = "point_id")
     private Point point;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<User_Role> userRoles = new HashSet<>();
-
     @OneToOne
     @JoinColumn(name = "membership_id")
     private Membership membership;
-
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<Address> addresses;
 
     private UserRole role;
     private UserStatus status;

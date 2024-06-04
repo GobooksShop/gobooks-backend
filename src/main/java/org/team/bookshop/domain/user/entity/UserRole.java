@@ -1,5 +1,8 @@
 package org.team.bookshop.domain.user.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum UserRole {
   USER("ROLE_USER","유저"),
   ADMIN("ROLE_ADMIN","관리자");

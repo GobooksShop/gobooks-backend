@@ -24,6 +24,10 @@ public enum ErrorCode {
 
     //PAYMENT
 
+    //SECURITY
+    SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
+    AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR)
+
     ;
     private final String code;
     private final String message;

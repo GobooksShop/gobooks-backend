@@ -17,9 +17,9 @@ public class UserConvertService {
         UserDto userDto = new UserDto();
         userDto.setName(user.getName());
         userDto.setEmail(user.getEmail());
-        userDto.setRoles(user.getUserRoles().stream()
-            .map(userRole -> userRole.getRole().getRoleName().name())
-            .collect(Collectors.toSet()));
+//        userDto.setRoles(user.getUserRoles().stream()
+//            .map(userRole -> userRole.getRole().getRoleName().name())
+//            .collect(Collectors.toSet()));
         return userDto;
     }
 }
