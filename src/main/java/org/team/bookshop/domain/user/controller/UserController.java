@@ -61,7 +61,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<UserPostDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }

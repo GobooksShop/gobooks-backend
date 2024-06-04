@@ -60,15 +60,14 @@ public class UserPostDto {
     }
 
     public UserPostDto toDto(User user) {
-        UserPostDto userPostDto = new UserPostDto();
-        userPostDto.setEmail(user.getEmail());
-        userPostDto.setPassword(user.getPassword());
-        userPostDto.setNickname(user.getNickname());
-        userPostDto.setName(user.getName());
-        userPostDto.setPhone(user.getPhone());
-        userPostDto.setTermsAgreed(user.isTermsAgreed());
-        userPostDto.setMarketingAgreed(user.isMarketingAgreed());
-        userPostDto.setEmailVerified(user.isEmailVerified());
-        return userPostDto;
+        setEmail(user.getEmail());
+        setPassword(user.getPassword());
+        setNickname(user.getNickname());
+        setName(user.getName());
+        setPhone(user.getPhone());
+        setTermsAgreed(user.isTermsAgreed());
+        setMarketingAgreed(user.isMarketingAgreed());
+        setEmailVerified(user.isEmailVerified());
+        return this;
     }
 }
