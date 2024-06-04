@@ -14,10 +14,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+import org.team.bookshop.domain.order.dto.OrderRequest;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.global.util.BaseEntity;
@@ -26,6 +25,7 @@ import org.team.bookshop.global.util.BaseEntity;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Table(name="orders")
 public class Order extends BaseEntity {
 
@@ -49,4 +49,8 @@ public class Order extends BaseEntity {
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "delivery_id")
   private Delivery delivery;
+
+  public static Order createOrder() {
+      return new Order();
+  }
 }

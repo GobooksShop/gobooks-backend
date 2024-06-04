@@ -8,10 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.global.util.BaseEntity;
 
@@ -20,6 +17,7 @@ import org.team.bookshop.global.util.BaseEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Setter
 public class OrderItem extends BaseEntity {
 
   @Id
@@ -37,5 +35,9 @@ public class OrderItem extends BaseEntity {
 
   private int orderCount;
   private int orderPrice;
+
+  public static OrderItem createOrderItem() {
+    return new OrderItem();
+  }
 
 }
