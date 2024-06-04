@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
 import org.team.bookshop.domain.category.dto.CategoryDto;
 import org.team.bookshop.domain.category.dto.CategoryUpdateRequestDto;
-import org.team.bookshop.domain.category.entity.Category;
 import org.team.bookshop.domain.category.service.CategoryService;
 
 @RestController
@@ -42,10 +41,10 @@ public class CategoryController {
 
   // 카테고리 추가
   @PostMapping("/admin/categories")
-  public ResponseEntity<Category> createCategory(
+  public ResponseEntity<CategoryDto> createCategory(
       @RequestBody CategoryCreateRequestDto categoryCreateRequestDto) {
     CategoryDto createdCategoryDto = categoryService.createCategory(categoryCreateRequestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdCategoryDto.toEntity());
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdCategoryDto);
   }
 
   // 카테고리 수정
