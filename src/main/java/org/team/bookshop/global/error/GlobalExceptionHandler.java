@@ -9,7 +9,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.team.bookshop.global.error.exception.ApiException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.nio.file.AccessDeniedException;
 
@@ -104,5 +106,24 @@ public class GlobalExceptionHandler {
         log.error("ServerInternalException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * 존재 하지 않는 URL 주소를 입력 했을 때 발생함
+     *
+     */
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiException> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        ApiException apiException = new ApiException("No handler found for " + ex.getRequestURL(), ErrorCode.NO_HANDLER_FOUND);
+        return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 리소스를 찾을 수 없는 경우 발생함
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiException> handleNoResourceFoundException(NoResourceFoundException ex) {
+        ApiException apiException = new ApiException("No handler found for " + ex.getResourcePath(), ErrorCode.NO_RESOURCE_FOUND);
+        return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
 }

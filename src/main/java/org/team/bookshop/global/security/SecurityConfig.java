@@ -40,8 +40,8 @@ public class SecurityConfig {
 									.requestMatchers(HttpMethod.GET, "/").permitAll()
 									.requestMatchers(HttpMethod.POST, "/api/auth/").permitAll()
 									.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-									.requestMatchers("/api/admin/**").hasAnyAuthority(UserRole.ADMIN.getRole())
-									.requestMatchers("/api/users/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.USER.getRole())
+//									.requestMatchers("/api/admin/**").hasAnyAuthority(UserRole.ADMIN.getRole())
+//									.requestMatchers("/api/users/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.USER.getRole())
 									.anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
 					)
 					.addFilterBefore(new JwtCustomFilter(userService, jwtTokenizer), UsernamePasswordAuthenticationFilter.class)

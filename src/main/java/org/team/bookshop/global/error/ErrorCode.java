@@ -13,6 +13,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "C004", "Server Error", LogLevel.ERROR),
     INVALID_TYPE_VALUE(400, "C005", " Invalid Type Value", LogLevel.ERROR),
     HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied", LogLevel.ERROR),
+    NO_HANDLER_FOUND(404, "C007", "No Handler found", LogLevel.ERROR),
+    NO_RESOURCE_FOUND(404, "C008", "No Resource found", LogLevel.ERROR),
 
     //USER
     EMAIL_ALREADY_REGISTERED(400, "U001", "Email already registered", LogLevel.ERROR),
