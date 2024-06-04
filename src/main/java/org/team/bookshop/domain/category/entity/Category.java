@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import java.util.Set;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.team.bookshop.global.util.BaseEntity;
@@ -24,8 +24,8 @@ public class Category extends BaseEntity {
   private String name;
 
   @OneToMany(mappedBy = "id.ancestor")
-  private Set<CategoryPath> ancestorPaths;
+  private List<CategoryPath> ancestors;
 
   @OneToMany(mappedBy = "id.descendant")
-  private Set<CategoryPath> descendantPaths;
+  private List<CategoryPath> descendants;
 }

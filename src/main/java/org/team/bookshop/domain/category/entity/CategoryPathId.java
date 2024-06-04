@@ -24,6 +24,11 @@ public class CategoryPathId implements Serializable {
   public CategoryPathId() {
   }
 
+  public CategoryPathId(Category ancestor, Category descendant) {
+    this.ancestor = ancestor;
+    this.descendant = descendant;
+  }
+
   // Equals and HashCode
   @Override
   public boolean equals(Object o) {
