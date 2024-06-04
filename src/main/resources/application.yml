@@ -30,6 +30,8 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+    defer-datasource-initialization: true  #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
+
   h2:
     console:
       enabled: true
@@ -37,6 +39,11 @@ spring:
 logging:
   discord:
     webhook-uri-local: ${DISCORD_WEBHOOK_LOCAL_URL}
+  # hibernate에 바인딩된 값을 콘솔에서 보기위한 설정
+  level:
+    org.springframework.context: DEBUG
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace
 
 ---
 spring.config.import: classpath:application-db.properties
@@ -57,10 +64,16 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+    defer-datasource-initialization: true #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
 
 logging:
   discord:
     webhook-uri-dev: ${DISCORD_WEBHOOK_DEV_URL}
+  # hibernate에 바인딩된 값을 콘솔에서 보기위한 설정
+  level:
+    org.springframework.context: DEBUG
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace
 springdoc:
   swagger-ui:
     enabled:
