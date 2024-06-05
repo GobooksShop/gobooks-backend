@@ -1,59 +1,45 @@
 package org.team.bookshop.domain.product.entity;
 
-import ch.qos.logback.core.status.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.util.Date;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import lombok.*;
 
 @Entity
-@Table(name = "book")
+@Table(name = "products")
 @Getter
+@Setter // Add this if you need to mutate fields directly
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_id", updatable = false)
-    private Long bookId;
+    private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "publication_year", nullable = false)
-    private Date publicationYear;
-
-    @Column(name = "author", nullable = false)
+    @Column(nullable = false)
     private String author;
 
-    @Column(name = "isbn", nullable = false)
+    @Column(nullable = false)
     private String isbn;
 
-    @Column(name = "fixed_price", nullable = false)
-    private int fixedPrice;
-
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private int fixedPrice;
+
+    @Column(nullable = false)
+    private LocalDate publicationYear;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
     @Builder
-    public Product(String author, String title, String isbn, String content, int fixedPrice, Date publicationYear, Status status) {
-        this.author = author;
+    public Product(String title, String author, String isbn, String content, int fixedPrice, LocalDate publicationYear, Status status) {
         this.title = title;
+        this.author = author;
         this.isbn = isbn;
         this.content = content;
         this.fixedPrice = fixedPrice;
@@ -61,13 +47,17 @@ public class Product {
         this.status = status;
     }
 
-    public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public enum Status {
+        AVAILABLE, UNAVAILABLE
     }
 
-    public enum Status {
-        AVAILABLE,
-        UNAVAILABLE
+    public void update(String title, String author, String isbn, String content, int fixedPrice, LocalDate publicationYear, Status status) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.content = content;
+        this.fixedPrice = fixedPrice;
+        this.publicationYear = publicationYear;
+        this.status = status;
     }
 }

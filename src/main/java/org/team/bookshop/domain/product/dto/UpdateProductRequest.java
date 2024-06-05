@@ -1,19 +1,32 @@
-package org.team.bookshop.domain.product.request;
+package org.team.bookshop.domain.product.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
 @Setter
 public class UpdateProductRequest {
-
-
-  private Long bookId;
-
   @NotBlank(message = "Title is required")
   private String title;
 
-  @NotBlank(message = "Description is required")
-  private String description;
+  @NotBlank(message = "Author is required")
+  private String author;
+
+  @NotBlank(message = "ISBN is required")
+  private String isbn;
+
+  @NotBlank(message = "Content is required")
+  private String content;
+
+  @NotNull(message = "Fixed price is required")
+  private int fixedPrice;
+
+  @NotNull(message = "Publication year is required")
+  private LocalDate publicationYear;
+
+  private Product.Status status;
 }

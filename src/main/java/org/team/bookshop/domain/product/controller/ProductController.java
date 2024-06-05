@@ -1,66 +1,52 @@
 package org.team.bookshop.domain.product.controller;
 
 import jakarta.validation.Valid;
-import java.security.Principal;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.team.bookshop.domain.product.dto.AddProductRequest;
+import org.team.bookshop.domain.product.dto.ProductResponse;
+import org.team.bookshop.domain.product.dto.UpdateProductRequest;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.service.ProductService;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api/products")
 public class ProductController {
-
   private final ProductService productService;
 
-  @PostMapping("/api/products")
-  public ResponseEntity<Product> addProduct(@RequestBody AddProductRequest request,
-      Principal principal) {
-    Product savedProduct = productService.save(request, principal.getName());
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(savedProduct);
+  @PostMapping
+  public ResponseEntity<Product> addProduct(@RequestBody @Valid AddProductRequest request) {
+    Product savedProduct = productService.save(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
   }
 
-  @GetMapping("/api/products")
-  public ResponseEntity<List<org.team.bookshop.domain.product.response.ProductResponse>> findAllProducts() {
-//        List<org.team.bookshop.domain.product.response.ProductResponse> products = productService.findAll();
-//                .stream()
-//                .map(ProductResponse::new)
-//                .toList();
-    return ResponseEntity.ok()
-        .body(null);
+  @GetMapping
+  public ResponseEntity<List<ProductResponse>> findAllProducts() {
+    List<ProductResponse> products = productService.findAll();
+    return ResponseEntity.ok(products);
   }
 
-  @GetMapping("/api/products/{id}")
-  public ResponseEntity<org.team.bookshop.domain.product.response.ProductResponse> findProduct(
-      @PathVariable Long id) {
-    Product product = productService.findById(id);
-    return ResponseEntity.ok()
-        .body(new org.team.bookshop.domain.product.response.ProductResponse(product));
+  @GetMapping("/{id}")
+  public ResponseEntity<ProductResponse> findProduct(@PathVariable Long id) {
+    ProductResponse product = productService.findById(id);
+    return ResponseEntity.ok(product);
   }
 
-  @DeleteMapping("/api/products/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
     productService.delete(id);
-    return ResponseEntity.ok()
-        .build();
+    return ResponseEntity.ok().build();
   }
 
-  @PutMapping("/api/products/{id}")
-  public ResponseEntity<Product> updateProduct(@PathVariable long id,
-      @Valid @RequestBody org.team.bookshop.domain.product.request.UpdateProductRequest request) {
+  @PutMapping("/{id}")
+  public ResponseEntity<Product> updateProduct(@PathVariable long id, @Valid @RequestBody UpdateProductRequest request) {
     Product updatedProduct = productService.update(id, request);
-    return ResponseEntity.ok()
-        .body(updatedProduct);
+    return ResponseEntity.ok(updatedProduct);
   }
 }
+

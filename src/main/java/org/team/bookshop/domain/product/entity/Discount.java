@@ -22,3 +22,4 @@ public class Discount {
   private LocalDateTime validTo;
 
 }
+
