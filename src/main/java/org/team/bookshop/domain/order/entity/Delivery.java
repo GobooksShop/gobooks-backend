@@ -8,10 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.team.bookshop.domain.order.enums.DeliveryStatus;
 import org.team.bookshop.global.util.BaseEntity;
 
@@ -19,6 +17,7 @@ import org.team.bookshop.global.util.BaseEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Setter
 public class Delivery extends BaseEntity {
 
   @Id
@@ -32,4 +31,15 @@ public class Delivery extends BaseEntity {
   private LocalDate deliveryStart;
   private LocalDate deliveryComp;
   private Long trackingNumber;
+
+  public static Delivery createDelivery() {
+    return new Delivery();
+  }
+
+  public Delivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, LocalDate deliveryComp, Long trackingNumber) {
+    this.deliveryStatus = deliveryStatus;
+    this.deliveryStart = deliveryStart;
+    this.deliveryComp = deliveryComp;
+    this.trackingNumber = trackingNumber;
+  }
 }

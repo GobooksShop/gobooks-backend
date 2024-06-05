@@ -12,15 +12,14 @@ import java.util.List;
 @Data
 public class OrderRequest {
 
-    private Long userId;
-
     private List<OrderItemRequest> orderItemRequests;
+    private OrderAddressDto orderAddressDto;
 
     public OrderRequest() {
     }
 
-    public OrderRequest(Long userId, List<OrderItemRequest> orderItemRequests) {
-        this.userId = userId;
+    public OrderRequest(List<OrderItemRequest> orderItemRequests, OrderAddressDto orderAddressDto) {
         this.orderItemRequests = orderItemRequests;
+        this.orderAddressDto = orderAddressDto;
     }
 }
