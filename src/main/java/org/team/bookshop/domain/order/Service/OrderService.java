@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.order.dto.OrderItemRequest;
-import org.team.bookshop.domain.order.dto.OrderRequest;
-import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
+import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.entity.OrderItem;
@@ -18,13 +17,13 @@ import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
 import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.repository.AddressRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,17 +35,18 @@ public class OrderService {
     private final DeliveryRepository deliveryRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final AddressRepository addressRepository;
 
     @Transactional
-    public void save(OrderRequest orderRequest) {
+    public void save(OrderCreateRequest orderCreateRequest) {
         Order order = Order.createOrder();
 
-        // user
-        // 후에 cookie를 통해 userID를 받아오는 로직 추가해야 함
+        // User
+        // 후에 cookie를 통해 userID를 받아오는 부분을 추가해야 함
         User user = userRepository.findById(1L).orElseThrow(() -> new IllegalStateException("해당하는 회원이 없습니다."));
 
         // orderItems
-        List<OrderItemRequest> orderItemRequests = orderRequest.getOrderItemRequests();
+        List<OrderItemRequest> orderItemRequests = orderCreateRequest.getOrderItemRequests();
         List<OrderItem> orderItems = new ArrayList<>();
 
         int totalCount = 0;
@@ -66,17 +66,15 @@ public class OrderService {
         }
 
         // Delivery
-        Delivery delivery = Delivery.createDelivery();
-        delivery.setDeliveryStart(LocalDate.now());
-        delivery.setDeliveryStatus(DeliveryStatus.READY);
-        delivery.setTrackingNumber(1L);
-
-        Address address = orderRequest.getOrderAddressDto().toEntity();
-        address.setDelivery(delivery);
-
+        Delivery delivery = orderCreateRequest.toDeliveryEntity();
         deliveryRepository.save(delivery);
 
-        order.setTotalAmount(totalCount);
+        // Address
+        Address address = orderCreateRequest.toAddressEntity();
+        address.setDelivery(delivery);
+        addressRepository.save(address);
+
+        order.setOrderTotalAmount(totalCount);
         order.setOrderTotalPrice(totalPrice);
 
         order.setOrderStatus(OrderStatus.ACCEPTED);
@@ -86,9 +84,5 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-//    public void update(OrderUpdateRequest orderUpdateRequest) {
-//        Order order = orderRepository.findById(orderUpdateRequest.getOrderId()).orElseThrow(() -> new IllegalStateException("해당하는 주문이 없습니다."));
-//
-//    }
 
 }

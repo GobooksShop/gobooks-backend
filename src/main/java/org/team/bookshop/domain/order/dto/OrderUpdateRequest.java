@@ -6,13 +6,14 @@ import org.team.bookshop.domain.user.entity.Address;
 @Data
 public class OrderUpdateRequest {
     private Long orderId;
-    private Address address;
+
+    private OrderAddressUpdate orderAddressUpdate;
 
     public OrderUpdateRequest() {
     }
 
-    public OrderUpdateRequest(Long orderId, Address address) {
+    public OrderUpdateRequest(Long orderId, OrderAddressUpdate orderAddressUpdate) {
         this.orderId = orderId;
-        this.address = address;
+        this.orderAddressUpdate = orderAddressUpdate;
     }
 }

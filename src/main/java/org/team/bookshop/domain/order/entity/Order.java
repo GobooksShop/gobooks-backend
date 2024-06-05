@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
-import org.team.bookshop.domain.order.dto.OrderRequest;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.global.util.BaseEntity;
@@ -35,7 +34,7 @@ public class Order extends BaseEntity {
   private User user;
 
   private int orderTotalPrice;
-  private int totalAmount;
+  private int orderTotalAmount;
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "delivery_id")

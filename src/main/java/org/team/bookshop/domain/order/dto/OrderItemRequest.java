@@ -23,7 +23,7 @@ public class OrderItemRequest {
         this.orderPrice = orderPrice;
     }
 
-    public OrderItem toOrderItem() {
+    public OrderItem toEntity() {
         OrderItem orderItem = OrderItem.createOrderItem();
         orderItem.setOrderCount(orderCount);
         orderItem.setOrderPrice(orderPrice);

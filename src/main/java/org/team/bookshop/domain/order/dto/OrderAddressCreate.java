@@ -6,7 +6,7 @@ import lombok.Data;
 import org.team.bookshop.domain.user.entity.Address;
 
 @Data
-public class OrderAddressDto {
+public class OrderAddressCreate {
 
     @NotBlank(message = "우편번호는 빈 값일 수 없습니다.")
     private String zipcode;

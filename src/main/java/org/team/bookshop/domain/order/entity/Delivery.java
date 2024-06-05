@@ -32,14 +32,14 @@ public class Delivery extends BaseEntity {
   private LocalDate deliveryComp;
   private Long trackingNumber;
 
-  public static Delivery createDelivery() {
-    return new Delivery();
+  public static Delivery createDelivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+    return new Delivery(deliveryStatus, deliveryStart, trackingNumber);
   }
 
-  public Delivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, LocalDate deliveryComp, Long trackingNumber) {
+
+  public Delivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
     this.deliveryStatus = deliveryStatus;
     this.deliveryStart = deliveryStart;
-    this.deliveryComp = deliveryComp;
     this.trackingNumber = trackingNumber;
   }
 }
