@@ -1,11 +1,11 @@
 package org.team.bookshop.domain.category.entity;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
 import java.util.Objects;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
@@ -13,25 +13,21 @@ import org.team.bookshop.global.error.exception.ApiException;
 @Embeddable
 @Getter
 @Setter
+@NoArgsConstructor
 public class CategoryPathId implements Serializable {
 
   @ManyToOne
-  @JoinColumn(name = "parent_id")
   private Category parent;
 
   @ManyToOne
-  @JoinColumn(name = "child_id")
-  private Category child;
+  private Category children;
 
-  public CategoryPathId() {
-  }
-
-  public CategoryPathId(Category parent, Category child) {
-    if (parent.getId().equals(child.getId())) {
+  public CategoryPathId(Category parent, Category children) {
+    if (parent.getId().equals(children.getId())) {
       throw new ApiException(ErrorCode.SELF_LOOP_CATEGORY_PATH);
     }
     this.parent = parent;
-    this.child = child;
+    this.children = children;
   }
 
   // Equals and HashCode
@@ -44,11 +40,11 @@ public class CategoryPathId implements Serializable {
       return false;
     }
     CategoryPathId that = (CategoryPathId) o;
-    return Objects.equals(parent, that.parent) && Objects.equals(child, that.child);
+    return Objects.equals(parent, that.parent) && Objects.equals(children, that.children);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(parent, child);
+    return Objects.hash(parent, children);
   }
 }

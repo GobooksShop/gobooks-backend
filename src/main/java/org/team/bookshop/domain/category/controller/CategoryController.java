@@ -39,7 +39,7 @@ public class CategoryController {
 
   @GetMapping("/admin/categories/{categoryId}")
   public ResponseEntity<CategoryResponseDto> getCategory(
-      @PathVariable Long categoryId) { // Return CategoryResponseDto
+      @PathVariable Long categoryId) {
     CategoryResponseDto categoryResponseDto = categoryService.getCategory(categoryId);
     return ResponseEntity.ok(categoryResponseDto);
   }
@@ -58,7 +58,6 @@ public class CategoryController {
   // UPDATE
   @PutMapping("/admin/categories/{categoryId}")
   public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long categoryId,
-      // Return CategoryResponseDto
       @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto) {
     CategoryResponseDto updatedCategoryDto = categoryService.updateCategory(categoryId,
         categoryUpdateRequestDto);

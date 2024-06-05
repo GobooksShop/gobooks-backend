@@ -12,6 +12,6 @@ public interface CategoryPathRepository extends JpaRepository<CategoryPath, Long
   @Query("SELECT cp FROM CategoryPath cp WHERE cp.id.parent = :parent")
   List<CategoryPath> findByParent(@Param("parent") Category parent);
 
-  @Query("SELECT cp FROM CategoryPath cp WHERE cp.id.child = :child")
-  List<CategoryPath> findByChild(@Param("child") Category child);
+  @Query("SELECT cp FROM CategoryPath cp WHERE cp.id.children = :children")
+  List<CategoryPath> findByChildren(@Param("children") Category children);
 }

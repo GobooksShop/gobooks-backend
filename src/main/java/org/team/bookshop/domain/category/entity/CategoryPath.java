@@ -3,6 +3,9 @@ package org.team.bookshop.domain.category.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,22 +19,23 @@ public class CategoryPath {
   @EmbeddedId
   private CategoryPathId id;
 
-  @Column(name = "depth")
-  private Long depth;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("parent")
+  private Category parent;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("children")
+  private Category children;
+
+  @Column(name = "depth", nullable = false)
+  private int depth;
 
   public CategoryPath(CategoryPathId id) {
     this.id = id;
   }
 
-  public CategoryPath(Category parent, Category child) {
-    this.id = new CategoryPathId(parent, child);
-  }
-
-  public Category getParent() {
-    return id.getParent();
-  }
-
-  public Category getchild() {
-    return id.getChild();
+  public CategoryPath(Category parent, Category children, int depth) {
+    this.id = new CategoryPathId(parent, children);
+    this.depth = depth;
   }
 }

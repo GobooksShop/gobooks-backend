@@ -36,15 +36,15 @@ public class CategoryService {
   @Transactional
   public CategoryResponseDto createCategory(CategoryCreateRequestDto categoryCreateRequestDto) {
     Category category = categoryCreateRequestDto.toEntity();
-    Category parentCategory = categoryRepository.findById(categoryCreateRequestDto.getParentId())
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+    Category parentCategory = null;
+    if (categoryCreateRequestDto.getParentId() != null) {
+      parentCategory = categoryRepository.findById(categoryCreateRequestDto.getParentId())
+          .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+      category.setParent(parentCategory);
+    }
     Category createdCategory = categoryRepository.save(category);
-
-    createPath(createdCategory, parentCategory);
-
     return CategoryResponseDto.fromEntity(createdCategory, new ArrayList<>(), parentCategory);
   }
-
 
   private void createPath(Category category, Category parentCategory) {
     List<CategoryPath> paths = new ArrayList<>();
@@ -65,12 +65,7 @@ public class CategoryService {
   // READ ALL
   public List<CategoryResponseDto> getAllCategories() {
     List<Category> categories = categoryRepository.findAll();
-//    return categories.stream()
-//        .map(category -> {
-//          List<CategoryResponseDto> children = getChildren(category.getId());
-//          return CategoryResponseDto.fromEntity(category, children);
-//        })
-//        .collect(Collectors.toList());
+
     return buildCategoryTree(categories, null);
   }
 
@@ -131,7 +126,7 @@ public class CategoryService {
   }
 
   public void deletePaths(Category category) {
-    List<CategoryPath> paths = categoryPathRepository.findByChild(category);
+    List<CategoryPath> paths = categoryPathRepository.findByChildren(category);
     categoryPathRepository.deleteAll(paths);
   }
 }

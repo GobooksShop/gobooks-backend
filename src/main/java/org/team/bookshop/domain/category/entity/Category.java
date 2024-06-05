@@ -1,19 +1,26 @@
 package org.team.bookshop.domain.category.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Category extends BaseEntity {
 
   @Id
@@ -23,9 +30,13 @@ public class Category extends BaseEntity {
   @Column(name = "name", nullable = false)
   private String name;
 
-  @OneToMany(mappedBy = "id.parent")
-  private List<CategoryPath> parentPaths;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_id")
+  private Category parent;
 
-  @OneToMany(mappedBy = "id.child")
-  private List<CategoryPath> childPaths;
+  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<CategoryPath> parentPaths = new ArrayList<>();
+
+  @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<CategoryPath> childrenPaths = new ArrayList<>();
 }
