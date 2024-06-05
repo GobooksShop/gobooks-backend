@@ -65,6 +65,25 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 존재 하지 않는 URL 주소를 입력 했을 때 발생함
+     *
+     */
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NO_HANDLER_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * 리소스를 찾을 수 없는 경우 발생함
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NO_RESOURCE_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    /**
      * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생합
      */
 //    @ExceptionHandler(AccessDeniedException.class)
@@ -73,7 +92,6 @@ public class GlobalExceptionHandler {
 //        final ErrorResponse response = ErrorResponse.of(ErrorCode.HANDLE_ACCESS_DENIED);
 //        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.HANDLE_ACCESS_DENIED.getStatus()));
 //    }
-
 
     /**
      * 각 도메인별 비지니스 CustomException 동작하는 메서드 입니다!.
@@ -106,24 +124,5 @@ public class GlobalExceptionHandler {
         log.error("ServerInternalException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * 존재 하지 않는 URL 주소를 입력 했을 때 발생함
-     *
-     */
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiException> handleNoHandlerFoundException(NoHandlerFoundException ex) {
-        ApiException apiException = new ApiException("No handler found for " + ex.getRequestURL(), ErrorCode.NO_HANDLER_FOUND);
-        return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * 리소스를 찾을 수 없는 경우 발생함
-     */
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiException> handleNoResourceFoundException(NoResourceFoundException ex) {
-        ApiException apiException = new ApiException("No handler found for " + ex.getResourcePath(), ErrorCode.NO_RESOURCE_FOUND);
-        return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
 }
