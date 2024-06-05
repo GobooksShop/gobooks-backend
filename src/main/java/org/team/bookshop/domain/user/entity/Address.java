@@ -1,14 +1,10 @@
 package org.team.bookshop.domain.user.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Getter
@@ -24,6 +20,10 @@ public class Address extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "user_id")
   private User user;
+
+  @OneToOne
+  @JoinColumn(name = "delivery_id")
+  private Delivery delivery;
 
   private String label;
   private Boolean isPrimary;

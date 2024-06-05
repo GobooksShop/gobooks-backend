@@ -32,6 +32,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    @Transactional
     public void save(OrderRequest orderRequest) {
         Order order = Order.createOrder();
 
