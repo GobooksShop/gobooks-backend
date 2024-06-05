@@ -23,6 +23,7 @@ public class JwtTokenizer {
   public String generateAccessToken(User user) {
 
     Claims claims = Jwts.claims();
+    claims.put("userID", user.getId());
     claims.put("userEmail", user.getEmail());
     claims.put("role", user.getRole().getRole());
 
@@ -38,6 +39,7 @@ public class JwtTokenizer {
   public String generateRefreshToken(User user) {
 
     Claims claims = Jwts.claims();
+    claims.put("userID", user.getId());
     claims.put("userEmail", user.getEmail());
     claims.put("role", user.getRole().getRole());
 
