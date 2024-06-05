@@ -11,6 +11,7 @@ import org.team.bookshop.domain.product.repository.ProductRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.team.bookshop.global.error.exception.EntityNotFoundException;
 
 @RequiredArgsConstructor
 @Service
@@ -30,19 +31,19 @@ public class ProductService {
   public ProductResponse findById(long id) {
     return productRepository.findById(id)
             .map(ProductResponse::new)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
   }
 
   public void delete(long id) {
     Product product = productRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
     productRepository.delete(product);
   }
 
   @Transactional
   public Product update(long id, UpdateProductRequest request) {
     Product product = productRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
     product.update(
             request.getTitle(),
             request.getAuthor(),
