@@ -56,6 +56,8 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
+    implementation 'org.springframework.boot:spring-boot-starter-mail' //메일 인증 추가
+
     implementation "com.github.napstr:logback-discord-appender:${discordWebHookVersion}"
 
 }

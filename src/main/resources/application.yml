@@ -11,6 +11,17 @@ spring:
       location: C:\\upload
       max-request-size: 30MB
       max-file-size: 10MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: chany9119@gmail.com
+    password: bgbdcvyrvvygwyub
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   config: classpath:logback-${spring.profiles.active}.xml

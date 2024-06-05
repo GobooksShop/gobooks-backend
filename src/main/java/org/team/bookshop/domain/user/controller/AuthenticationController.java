@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.user.dto.TokenResponseDto;
 import org.team.bookshop.domain.user.dto.UserLoginDto;
@@ -28,10 +29,11 @@ public class AuthenticationController {
     private final JwtTokenizer jwtTokenizer;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
+    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto,
+        HttpServletResponse response) {
         User user = authenticationService.login(userLoginDto);
 
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity(userLoginDto, HttpStatus.NOT_FOUND);
         }
 
@@ -46,6 +48,17 @@ public class AuthenticationController {
         response.addHeader(HttpHeaders.AUTHORIZATION, user.getRole().getRole());
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    @PostMapping("/send-code")
+    public void sendVerificationCode(@RequestParam String email) {
+        authenticationService.sendVerificationCode(email);
+    }
+
+    @PostMapping("/verify-code")
+    public boolean isVerifyCode(@RequestParam String email, @RequestParam String code) {
+        return authenticationService.isVerifyCode(email, code);
     }
 }
 
