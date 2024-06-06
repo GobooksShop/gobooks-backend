@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import org.team.bookshop.global.security.JwtTokenizer;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @RestController
+@Slf4j
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -38,20 +40,35 @@ public class AuthenticationController {
         User user = authenticationService.login(userLoginDto);
 
         if (user == null) {
-            return new ResponseEntity(userLoginDto, HttpStatus.NOT_FOUND);
+            return new ResponseEntity(userLoginDto, HttpStatus.UNAUTHORIZED);
         }
 
-        String jwtToken = jwtTokenizer.generateAccessToken(user);
+        String accessToken = jwtTokenizer.generateAccessToken(user);
+        String refreshToken = jwtTokenizer.generateRefreshToken(user);
 
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, jwtToken);
+        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+//        cookie.setSecure(true); // https 적용시 사용
+        cookie.setPath("/");
         cookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
 
         response.addCookie(cookie);
-        response.addHeader(HttpHeaders.AUTHORIZATION, user.getRole().getRole());
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(accessToken, user.getName(), user.getEmail(), user.getRole().getRole());
 
-        return new ResponseEntity(HttpStatus.OK);
+        return ResponseEntity.ok(tokenResponseDto);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        log.info("Logout request received");
+        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true); // https 적용시 사용
+        cookie.setPath("/"); // 쿠키의 경로를 지정해야 브라우저가 올바르게 삭제합니다.
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
 
