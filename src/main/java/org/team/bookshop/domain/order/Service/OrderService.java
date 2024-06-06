@@ -83,6 +83,7 @@ public class OrderService {
         order.setUser(user);
 
         orderRepository.save(order);
+        return order.getId();
     }
 
     @Transactional
