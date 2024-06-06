@@ -36,8 +36,10 @@ public class Product {
     @Column(nullable = false)
     private Status status;
 
+    private int stockQuantity;
+
     @Builder
-    public Product(String title, String author, String isbn, String content, int fixedPrice, LocalDate publicationYear, Status status) {
+    public Product(String title, String author, String isbn, String content, int fixedPrice, LocalDate publicationYear, Status status, int stockQuantity) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -45,6 +47,7 @@ public class Product {
         this.fixedPrice = fixedPrice;
         this.publicationYear = publicationYear;
         this.status = status;
+        this.stockQuantity = stockQuantity;
     }
 
     public enum Status {
@@ -59,5 +62,16 @@ public class Product {
         this.fixedPrice = fixedPrice;
         this.publicationYear = publicationYear;
         this.status = status;
+    }
+
+    public void decreaseStock(int quantity) {
+        if(stockQuantity - quantity < 0) {
+            throw new IllegalStateException("현재 상품 재고가 부족합니다.");
+        }
+        stockQuantity -= quantity;
+    }
+
+    public void increaseStock(int quantity) {
+        stockQuantity += quantity;
     }
 }

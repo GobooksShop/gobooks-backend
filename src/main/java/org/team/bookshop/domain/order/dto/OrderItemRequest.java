@@ -24,9 +24,11 @@ public class OrderItemRequest {
     }
 
     public OrderItem toEntity() {
-        OrderItem orderItem = OrderItem.createOrderItem();
-        orderItem.setOrderCount(orderCount);
-        orderItem.setOrderPrice(orderPrice);
+        OrderItem orderItem = OrderItem.createOrderItem(orderCount, orderPrice);
         return orderItem;
+    }
+
+    public OrderItem toOrderItemEntity() {
+        return OrderItem.createOrderItem(orderCount, orderPrice);
     }
 }

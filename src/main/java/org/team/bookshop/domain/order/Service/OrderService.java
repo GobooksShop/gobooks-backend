@@ -3,8 +3,7 @@ package org.team.bookshop.domain.order.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team.bookshop.domain.order.dto.OrderItemRequest;
-import org.team.bookshop.domain.order.dto.OrderCreateRequest;
+import org.team.bookshop.domain.order.dto.*;
 import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.entity.OrderItem;
@@ -46,23 +45,25 @@ public class OrderService {
         User user = userRepository.findById(1L).orElseThrow(() -> new IllegalStateException("해당하는 회원이 없습니다."));
 
         // orderItems
-        List<OrderItemRequest> orderItemRequests = orderCreateRequest.getOrderItemRequests();
-        List<OrderItem> orderItems = new ArrayList<>();
+        List<OrderItem> orderItems = orderCreateRequest.toOrderItems();
+        List<Long> productIds = orderCreateRequest.toProductIds();
 
         int totalCount = 0;
         int totalPrice = 0;
 
-        for (OrderItemRequest orderItemRequest : orderItemRequests) {
-            OrderItem orderItem = OrderItem.createOrderItem();
-            Product product = productRepository.findById(orderItemRequest.getProductId()).orElseThrow(() -> new IllegalStateException("해당하는 상품이 없습니다."));
+        for (int i = 0; i < orderItems.size(); i++) {
+            Long productId = productIds.get(i);
+            OrderItem orderItem = orderItems.get(i);
+
+            Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalStateException("해당하는 상품이 존재하지 않습니다"));
+            product.decreaseStock(orderItem.getOrderCount());
             orderItem.setProduct(product);
-            orderItem.setOrderPrice(orderItemRequest.getOrderPrice());
-            orderItem.setOrderCount(orderItem.getOrderCount());
             orderItem.setOrder(order);
 
+            totalCount += orderItem.getOrderCount();
+            totalPrice += orderItem.getOrderPrice();
+
             orderItemRepository.save(orderItem);
-            totalCount += orderItemRequest.getOrderCount();
-            totalPrice += orderItemRequest.getOrderPrice();
         }
 
         // Delivery
@@ -84,5 +85,27 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
+    public void update(OrderUpdateRequest orderUpdateRequest) {
+        Long orderId = orderUpdateRequest.getOrderId();
+        OrderAddressUpdate orderAddressUpdate = orderUpdateRequest.getOrderAddressUpdate();
+
+        Delivery delivery = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다")).getDelivery();
+
+        Address address = addressRepository.findByDelivery(delivery);
+
+        address.setZipcode(orderAddressUpdate.getZipcode());
+        address.setAddress1(orderAddressUpdate.getAddress1());
+        address.setAddress2(orderAddressUpdate.getAddress2());
+        address.setRecipientName(orderAddressUpdate.getRecipientName());
+        address.setRecipientPhone(orderAddressUpdate.getRecipientPhone());
+    }
+
+    @Transactional
+    public void delete(OrderDeleteRequest orderDeleteRequest) {
+        Long orderId = orderDeleteRequest.getOrderId();
+        // 주문 취소 시 관련 주문 수량 원상복귀
+        orderRepository.deleteById(orderId);
+    }
 
 }

@@ -36,8 +36,12 @@ public class OrderItem extends BaseEntity {
   private int orderCount;
   private int orderPrice;
 
-  public static OrderItem createOrderItem() {
-    return new OrderItem();
+  public static OrderItem createOrderItem(int orderCount, int orderPrice) {
+    return new OrderItem(orderCount, orderPrice);
   }
 
+  public OrderItem(int orderCount, int orderPrice) {
+    this.orderCount = orderCount;
+    this.orderPrice = orderPrice;
+  }
 }
