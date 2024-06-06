@@ -1,9 +1,8 @@
 package org.team.bookshop.domain.category.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.category.entity.Category;
@@ -12,11 +11,12 @@ import org.team.bookshop.domain.category.entity.Category;
 @NoArgsConstructor
 public class CategoryResponseDto extends CategoryDto {
 
-  @JsonInclude(Include.NON_NULL)
+  @JsonIgnore // 순환참조 방지
   private CategoryResponseDto parent;
 
   private List<CategoryResponseDto> children;
 
+  @Builder
   public CategoryResponseDto(Long id, String name, List<CategoryResponseDto> children,
       CategoryResponseDto parent) {
     super(id, name);
@@ -29,9 +29,16 @@ public class CategoryResponseDto extends CategoryDto {
   }
 
   public static CategoryResponseDto fromEntity(Category category,
-      List<CategoryResponseDto> children, Category parent) {
-    return new CategoryResponseDto(category.getId(), category.getName(),
-        children, parent != null ? fromEntity(parent, new ArrayList<>(), null) : null);
+      List<CategoryResponseDto> children) {
+    return CategoryResponseDto.builder()
+        .id(category.getId())
+        .name(category.getName())
+        .parent(
+            category.getParent() != null ? CategoryResponseDto.fromEntity(category.getParent(),
+                children) : null
+        )
+        .children(children)
+        .build();
   }
 
 }

@@ -30,8 +30,9 @@ public class CategoryPath {
   @Column(name = "depth", nullable = false)
   private int depth;
 
-  public CategoryPath(CategoryPathId id) {
+  public CategoryPath(CategoryPathId id, int depth) {
     this.id = id;
+    this.depth = depth;
   }
 
   public CategoryPath(Category parent, Category children, int depth) {

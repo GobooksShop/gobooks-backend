@@ -31,17 +31,17 @@ public class CategoryController {
   // 전체 사용자 ========
 
   // READ
-  @GetMapping("/categories")
-  public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
-    List<CategoryResponseDto> categoryDtos = categoryService.getAllCategories();
-    return ResponseEntity.ok(categoryDtos);
-  }
+//  @GetMapping("/categories")
+//  public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
+//    List<CategoryResponseDto> categoryDtos = categoryService.getAllCategories();
+//    return ResponseEntity.ok(categoryDtos);
+//  }
 
-  @GetMapping("/admin/categories/{categoryId}")
-  public ResponseEntity<CategoryResponseDto> getCategory(
+  @GetMapping("/categories/{categoryId}")
+  public ResponseEntity<List<CategoryResponseDto>> getCategory(
       @PathVariable Long categoryId) {
-    CategoryResponseDto categoryResponseDto = categoryService.getCategory(categoryId);
-    return ResponseEntity.ok(categoryResponseDto);
+    List<CategoryResponseDto> categoryResponseDtoList = categoryService.getChildren(categoryId);
+    return ResponseEntity.ok(categoryResponseDtoList);
   }
 
   // 관리자 ============
