@@ -37,7 +37,7 @@ public class OrderService {
     private final AddressRepository addressRepository;
 
     @Transactional
-    public void save(OrderCreateRequest orderCreateRequest) {
+    public Long save(OrderCreateRequest orderCreateRequest) {
         Order order = Order.createOrder();
 
         // User
@@ -102,10 +102,26 @@ public class OrderService {
     }
 
     @Transactional
-    public void delete(OrderDeleteRequest orderDeleteRequest) {
+    public Long delete(OrderDeleteRequest orderDeleteRequest) {
         Long orderId = orderDeleteRequest.getOrderId();
-        // 주문 취소 시 관련 주문 수량 원상복귀
+
+        Order order = orderRepository.findWithAllRelatedEntityById(orderId);
+
+        List<OrderItem> orderItems = order.getOrderItems();
+        for (OrderItem orderItem : orderItems) {
+            // 재고수량 회복
+            orderItem.getProduct().increaseStock(orderItem.getOrderCount());
+
+            // orderItem 삭제
+            orderItemRepository.delete(orderItem);
+        }
+
+        Delivery delivery = order.getDelivery();
+        deliveryRepository.delete(delivery);
+
+        // 관련된 엔티티인 delivery, address, orderItem모두 삭제하기
         orderRepository.deleteById(orderId);
+        return orderId;
     }
 
 }
