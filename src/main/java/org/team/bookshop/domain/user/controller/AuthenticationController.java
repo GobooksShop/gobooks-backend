@@ -4,10 +4,12 @@ package org.team.bookshop.domain.user.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.user.dto.TokenResponseDto;
 import org.team.bookshop.domain.user.dto.UserLoginDto;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.domain.user.service.AuthenticationService;
 import org.team.bookshop.global.config.JwtConfig;
 import org.team.bookshop.global.security.JwtTokenizer;
@@ -27,6 +30,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final JwtTokenizer jwtTokenizer;
+    private final UserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto,
@@ -52,13 +56,24 @@ public class AuthenticationController {
 
 
     @PostMapping("/send-code")
-    public void sendVerificationCode(@RequestParam String email) {
+    public ResponseEntity<Void> sendVerificationCode(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
         authenticationService.sendVerificationCode(email);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify-code")
-    public boolean isVerifyCode(@RequestParam String email, @RequestParam String code) {
-        return authenticationService.isVerifyCode(email, code);
+    public ResponseEntity<Boolean> verifyCode(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String code = payload.get("code");
+        boolean isVerified = authenticationService.isVerifyCode(email, code);
+        return ResponseEntity.ok(isVerified);
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = userRepository.existsByEmail(email);
+        return ResponseEntity.ok(exists);
     }
 }
 
