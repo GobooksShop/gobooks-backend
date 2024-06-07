@@ -1,5 +1,6 @@
 package org.team.bookshop.domain.category.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,8 +36,22 @@ public class Category extends BaseEntity {
   private Category parent;
 
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<CategoryPath> parentPaths = new ArrayList<>();
+  @JsonManagedReference
+  private List<Category> children = new ArrayList<>();
 
-  @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<CategoryPath> childrenPaths = new ArrayList<>();
+  public void addChild(Category child) {
+    children.add(child);
+    child.setParent(this);
+  }
+
+  public void removeChild(Category child) {
+    children.remove(child);
+    child.setParent(null);
+  }
+
+//  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+//  private List<CategoryPath> parentPaths = new ArrayList<>();
+//
+//  @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
+//  private List<CategoryPath> childrenPaths = new ArrayList<>();
 }
