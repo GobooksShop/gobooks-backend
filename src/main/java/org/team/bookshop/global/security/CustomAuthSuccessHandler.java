@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.entity.UserRole;
@@ -16,15 +17,16 @@ import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
 
 @Component
-public class CustomAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
+    LogoutSuccessHandler {
 
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
+    private String defaultRedirectUrl = "http://localhost:3000";
 
     public CustomAuthSuccessHandler(JwtTokenizer jwtTokenizer, UserRepository userRepository) {
         this.jwtTokenizer = jwtTokenizer;
         this.userRepository = userRepository;
-        setDefaultTargetUrl("http://localhost:3000");
     }
 
 
@@ -44,7 +46,25 @@ public class CustomAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        super.onAuthenticationSuccess(request, response, authentication);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.sendRedirect(defaultRedirectUrl);
+        response.getWriter().write("Login successful");
+    }
+
+    @Override
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
+        Authentication authentication)
+        throws IOException {
+        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        cookie.setMaxAge(0); // Set the max age to 0 to delete the cookie
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.sendRedirect(defaultRedirectUrl);
+        response.getWriter().write("Logout successful");
     }
 
     private User findOrCreateUser(Map<String, Object> attributes) {
