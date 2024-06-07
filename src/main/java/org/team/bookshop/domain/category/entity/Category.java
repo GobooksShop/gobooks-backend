@@ -12,7 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +34,7 @@ public class Category extends BaseEntity {
   private String name;
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-  private List<BookCategory> bookCategories = new ArrayList<>();
+  private Set<BookCategory> bookCategories = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id")
@@ -50,6 +52,15 @@ public class Category extends BaseEntity {
   public void removeChild(Category child) {
     children.remove(child);
     child.setParent(null);
+  }
+
+  // 상품 추가 시, 해당 카테고리의 상위 카테고리에도 추가되는 메서드
+  public void addParentCategories() {
+    Category current = this;
+    while (current.getParent() != null) {
+      current.getParent().getBookCategories().addAll(this.getBookCategories());
+      current = current.getParent();
+    }
   }
 
 //  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)

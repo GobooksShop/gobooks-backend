@@ -1,58 +1,96 @@
 package org.team.bookshop.domain.product.service;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.team.bookshop.domain.category.entity.BookCategory;
+import org.team.bookshop.domain.category.entity.BookCategoryId;
+import org.team.bookshop.domain.category.entity.Category;
+import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.domain.product.dto.AddProductRequest;
 import org.team.bookshop.domain.product.dto.ProductResponse;
 import org.team.bookshop.domain.product.dto.UpdateProductRequest;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.team.bookshop.global.error.ErrorCode;
+import org.team.bookshop.global.error.exception.ApiException;
 import org.team.bookshop.global.error.exception.EntityNotFoundException;
 
 @RequiredArgsConstructor
 @Service
 public class ProductService {
-  private final ProductRepository productRepository;
 
-  public Product save(AddProductRequest request) {
-    return productRepository.save(request.toEntity());
+  private final ProductRepository productRepository;
+  private final CategoryRepository categoryRepository;
+
+  @Transactional
+  public Product createProduct(AddProductRequest request) {
+    Product product = request.toEntity();
+
+    Set<BookCategory> bookCategories = request.getCategoryIds().stream()
+        .map(categoryId -> {
+          Category category = categoryRepository.findById(categoryId)
+              .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+          category.addParentCategories();
+          return new BookCategory(new BookCategoryId(product.getId(), categoryId), product,
+              category);
+        })
+        .collect(Collectors.toSet());
+
+    product.setBookCategories(bookCategories);
+
+    return productRepository.save(product);
   }
 
   public List<ProductResponse> findAll() {
     return productRepository.findAll().stream()
-            .map(ProductResponse::new)
-            .collect(Collectors.toList());
+        .map(ProductResponse::new)
+        .collect(Collectors.toList());
   }
 
   public ProductResponse findById(long id) {
     return productRepository.findById(id)
-            .map(ProductResponse::new)
-            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
+        .map(ProductResponse::new)
+        .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
   }
 
   public void delete(long id) {
     Product product = productRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
+        .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
     productRepository.delete(product);
   }
 
   @Transactional
   public Product update(long id, UpdateProductRequest request) {
     Product product = productRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
+        .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
     product.update(
-            request.getTitle(),
-            request.getAuthor(),
-            request.getIsbn(),
-            request.getContent(),
-            request.getFixedPrice(),
-            request.getPublicationYear(),
-            request.getStatus()
+        request.getTitle(),
+        request.getAuthor(),
+        request.getIsbn(),
+        request.getContent(),
+        request.getFixedPrice(),
+        request.getPublicationYear(),
+        request.getStatus()
     );
     return product;
+  }
+
+  // 특정 카테고리의 상품 리스트 조회
+  public List<ProductResponse> getProductsByCategoryId(Long categoryId) {
+    List<Product> categories = categoryRepository.findByCategoryId(categoryId);
+
+    List<Product> products = categories.stream()
+        .flatMap(category -> category.getBookCategories().stream())
+        .map(BookCategory::getProduct)
+        .distinct()
+        .collect(Collectors.toList());
+
+    return products.stream()
+        .map(ProductResponse::fromEntity)
+        .collect(Collectors.toList());
   }
 }

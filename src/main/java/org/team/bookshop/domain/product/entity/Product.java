@@ -1,5 +1,6 @@
 package org.team.bookshop.domain.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,7 +57,8 @@ public class Product {
   private int stockQuantity;
 
   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-  private List<BookCategory> bookCategories = new ArrayList<>();
+  @JsonIgnore
+  private Set<BookCategory> bookCategories = new HashSet<>();
 
   @Builder
   public Product(String title, String author, String isbn, String content, int fixedPrice,
