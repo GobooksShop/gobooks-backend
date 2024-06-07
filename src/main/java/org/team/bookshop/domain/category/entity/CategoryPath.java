@@ -19,11 +19,11 @@ public class CategoryPath {
   @EmbeddedId
   private CategoryPathId id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("parent")
   private Category parent;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("children")
   private Category children;
 
@@ -37,6 +37,8 @@ public class CategoryPath {
 
   public CategoryPath(Category parent, Category children, int depth) {
     this.id = new CategoryPathId(parent, children);
+    this.parent = parent;
+    this.children = children;
     this.depth = depth;
   }
 }

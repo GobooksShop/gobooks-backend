@@ -7,8 +7,6 @@ import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.team.bookshop.global.error.ErrorCode;
-import org.team.bookshop.global.error.exception.ApiException;
 
 @Embeddable
 @Getter
@@ -23,15 +21,14 @@ public class CategoryPathId implements Serializable {
   private Category children;
 
   public CategoryPathId(Category parent, Category children) {
-    if (parent.getId().equals(children.getId())) {
-      throw new ApiException(ErrorCode.SELF_LOOP_CATEGORY_PATH);
-    }
+//    if (parent.getId().equals(children.getId())) {
+//      throw new ApiException(ErrorCode.SELF_LOOP_CATEGORY_PATH);
+//    }
     this.parent = parent;
     this.children = children;
   }
 
   // Equals and HashCode
-  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -40,11 +37,16 @@ public class CategoryPathId implements Serializable {
       return false;
     }
     CategoryPathId that = (CategoryPathId) o;
-    return Objects.equals(parent, that.parent) && Objects.equals(children, that.children);
+    return Objects.equals(parent != null ? parent.getId() : null,
+        that.parent != null ? that.parent.getId() : null) &&
+        Objects.equals(children != null ? children.getId() : null,
+            that.children != null ? that.children.getId() : null);
   }
+
 
   @Override
   public int hashCode() {
-    return Objects.hash(parent, children);
+    return Objects.hash(parent != null ? parent.getId() : null,
+        children != null ? children.getId() : null);
   }
 }
