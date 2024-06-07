@@ -31,30 +31,35 @@ public class ProductController {
 
   private final ProductService productService;
 
+  //상품 추가(관리자)
   @PostMapping
   public ResponseEntity<Product> addProduct(@RequestBody @Valid AddProductRequest request) {
     Product savedProduct = productService.createProduct(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
   }
 
+  //모든 상품 조회(구매자)
   @GetMapping
   public ResponseEntity<List<ProductResponse>> findAllProducts() {
     List<ProductResponse> products = productService.findAll();
     return ResponseEntity.ok(products);
   }
 
+  //삼품 조회(구매자)
   @GetMapping("/{id}")
   public ResponseEntity<ProductResponse> findProduct(@PathVariable Long id) {
     ProductResponse product = productService.findById(id);
     return ResponseEntity.ok(product);
   }
 
+  //상품 삭제(관리자)
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
     productService.delete(id);
     return ResponseEntity.ok().build();
   }
 
+  //상품 수정(관리자)
   @PutMapping("/{id}")
   public ResponseEntity<Product> updateProduct(@PathVariable long id,
       @Valid @RequestBody UpdateProductRequest request) {
