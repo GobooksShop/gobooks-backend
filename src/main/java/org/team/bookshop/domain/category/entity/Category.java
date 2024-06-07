@@ -31,6 +31,9 @@ public class Category extends BaseEntity {
   @Column(name = "name", nullable = false)
   private String name;
 
+  @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+  private List<BookCategory> bookCategories = new ArrayList<>();
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id")
   private Category parent;

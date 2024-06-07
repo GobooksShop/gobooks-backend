@@ -1,24 +1,31 @@
 package org.team.bookshop.domain.category.entity;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.team.bookshop.domain.product.entity.Product;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookCategory {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @EmbeddedId
+  private BookCategoryId id;
 
-//  @OneToOne
-//  @JoinColumn(name = "book_id")
-//  private Book book;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("bookId")
+  private Product product;
 
-  @OneToOne
-  @JoinColumn(name = "category_id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("categoryId")
   private Category category;
 }
