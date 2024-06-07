@@ -6,11 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.team.bookshop.global.util.BaseEntity;
@@ -47,6 +45,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "membership_id")
     private Membership membership;
 
+    private String providerId; //OAuth2 기존 로그인 정보를 저장하기 위한 providerId
     private UserRole role;
     private UserStatus status;
     private LocalDateTime deletedAt;
