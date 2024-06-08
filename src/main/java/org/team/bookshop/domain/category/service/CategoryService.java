@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.team.bookshop.domain.category.dto.CategoryChildrenResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryUpdateRequestDto;
@@ -27,8 +28,9 @@ public class CategoryService {
   }
 
   // READ
+  // 하위 계층을 모두 조회
   public CategoryResponseDto getCategoryWithChildren(Long parentId) {
-    Category parent = categoryRepository.findById(parentId)
+    Category parent = categoryRepository.findByIdWithChildren(parentId)
         .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
 
     List<Category> children = parent.getChildren();
@@ -39,6 +41,16 @@ public class CategoryService {
         .collect(Collectors.toList()));
 
     return parentDto;
+  }
+
+  // 바로 아래 depth만 조회
+  public List<CategoryChildrenResponseDto> getCategoryWithDirectChildren(Long parentId) {
+    Category parent = categoryRepository.findById(parentId)
+        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+
+    return parent.getChildren().stream()
+        .map(CategoryChildrenResponseDto::fromEntity)
+        .collect(Collectors.toList());
   }
 
   // CREATE
