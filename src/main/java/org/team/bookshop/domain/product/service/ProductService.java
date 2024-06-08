@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.domain.category.entity.BookCategoryId;
@@ -92,5 +94,18 @@ public class ProductService {
     return products.stream()
         .map(ProductResponse::fromEntity)
         .collect(Collectors.toList());
+  }
+
+  // 상품 리스트 페이징 조회
+  public Page<ProductResponse> getProductsByCategoryId(Long categoryId, Pageable pageable) {
+    if (categoryId == null || categoryId <= 0) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+    Page<Product> productPage = productRepository.findByCategory(categoryId, pageable);
+    if (productPage.isEmpty()) {
+      throw new ApiException(ErrorCode.NO_PRODUCTS_IN_CATEGORY);
+    }
+
+    return productPage.map(ProductResponse::fromEntity);
   }
 }
