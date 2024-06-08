@@ -45,6 +45,7 @@ public class ProductController {
     return ResponseEntity.ok(products);
   }
 
+  //controller 분리(관리자, 구매자)
   //삼품 조회(구매자)
   @GetMapping("/{id}")
   public ResponseEntity<ProductResponse> findProduct(@PathVariable Long id) {

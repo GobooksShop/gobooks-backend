@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
-@Setter
+@Setter //setter 제거 하기
 public class AddProductRequest {
 
   @NotBlank(message = "Title is required")
