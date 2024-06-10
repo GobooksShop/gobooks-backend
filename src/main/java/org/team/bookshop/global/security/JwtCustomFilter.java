@@ -38,7 +38,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
     }
 
     Cookie jwtTokenCookie = Arrays.stream(request.getCookies())
-        .filter(cookie -> cookie.getName().equals(JwtConfig.JWT_COOKIE_NAME))
+        .filter(cookie -> cookie.getName().equals(JwtConfig.REFRESH_JWT_COOKIE_NAME))
         .findFirst()
         .orElse(null);
 

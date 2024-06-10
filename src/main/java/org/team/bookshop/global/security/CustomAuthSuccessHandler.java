@@ -39,7 +39,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         User user = findOrCreateUser(attributes);
         String jwtToken = jwtTokenizer.generateAccessToken(user);
 
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, jwtToken);
+        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, jwtToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
@@ -55,7 +55,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication)
         throws IOException {
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, null);
+        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, null);
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setMaxAge(0); // Set the max age to 0 to delete the cookie

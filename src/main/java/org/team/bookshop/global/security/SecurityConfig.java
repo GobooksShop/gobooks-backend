@@ -29,7 +29,7 @@ import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private UserService userService;
+    private final UserService userService;
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
@@ -60,8 +60,7 @@ public class SecurityConfig {
                     .logoutUrl("/logout")
                     .logoutSuccessHandler(customAuthSuccessHandler)
                     .invalidateHttpSession(true)
-                    .deleteCookies(JwtConfig.JWT_COOKIE_NAME)
-                    .deleteCookies("JSESSIONID")
+                    .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )
                 .addFilterBefore(new JwtCustomFilter(userService, jwtTokenizer),
                     UsernamePasswordAuthenticationFilter.class)

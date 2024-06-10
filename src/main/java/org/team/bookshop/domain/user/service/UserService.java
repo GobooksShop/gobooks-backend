@@ -35,9 +35,6 @@ public class UserService {
         User user = userJoinDto.toEntity();
         user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
 
-//        Set<User_Role> userRoles = createRoles(user, userJoinDto.getRoles());
-//        user.setUserRoles(userRoles);
-
         userRepository.save(user);
     }
 
