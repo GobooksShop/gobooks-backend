@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.config.JwtConfig;
 
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {
 

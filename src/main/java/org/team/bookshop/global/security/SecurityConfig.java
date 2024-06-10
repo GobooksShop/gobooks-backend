@@ -19,8 +19,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.team.bookshop.domain.user.repository.UserRepository;
-import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.config.JwtConfig;
 import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
@@ -29,9 +27,6 @@ import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserService userService;
-    private final JwtTokenizer jwtTokenizer;
-    private final UserRepository userRepository;
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
 
     @Bean
@@ -54,7 +49,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2Login ->
                     oauth2Login
-                        .successHandler(new CustomAuthSuccessHandler(jwtTokenizer, userRepository))
+                        .successHandler(new CustomAuthSuccessHandler())
                 )
                 .logout(logout -> logout
                     .logoutUrl("/logout")
@@ -62,7 +57,7 @@ public class SecurityConfig {
                     .invalidateHttpSession(true)
                     .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )
-                .addFilterBefore(new JwtCustomFilter(userService, jwtTokenizer),
+                .addFilterBefore(new JwtCustomFilter(),
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
