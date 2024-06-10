@@ -47,6 +47,6 @@ public class OrderItem extends BaseEntity {
   }
 
   public OrderItemResponse toOrderItemResponse() {
-    return new OrderItemResponse(product.getId(), product.getTitle(), orderCount, orderPrice);
+    return new OrderItemResponse(id, product.getId(), product.getTitle(), orderCount, orderPrice);
   }
 }

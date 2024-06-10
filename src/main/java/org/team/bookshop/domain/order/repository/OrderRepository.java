@@ -7,6 +7,11 @@ import org.team.bookshop.domain.order.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-  @Query("select o from Order o join fetch o.orderItems join fetch o.delivery where o.id = :orderId")
+  @Query("select o from Order o " +
+          "join fetch o.orderItems oi " +
+          "join fetch o.delivery d " +
+          "join fetch d.address " +
+          "join fetch oi.product " +
+          "where o.id = :orderId")
   Order findWithAllRelatedEntityById(@Param("orderId") Long orderId);
 }

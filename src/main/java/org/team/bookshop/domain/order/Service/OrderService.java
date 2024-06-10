@@ -33,9 +33,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final DeliveryRepository deliveryRepository;
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private final AddressRepository addressRepository;
 
 
     public Order findById(Long orderId) {
@@ -47,6 +45,8 @@ public class OrderService {
         // 주문 생성 요청을 바탕으로 Order 엔티티를 만드는 과정
         Order order = Order.createOrder();
 
+        System.out.println("orderCreateRequest address = " + orderCreateRequest.getOrderAddressCreate());
+
         // User
         // 후에 cookie를 통해 userID를 받아오는 부분을 추가해야 함
         //User user = userRepository.findById(1L).orElseThrow(() -> new IllegalStateException("해당하는 회원이 없습니다."));
@@ -54,6 +54,7 @@ public class OrderService {
         // 주문 생성 요청을 바탕으로 OrderItems 엔티티를 만드는 과정
         List<OrderItem> orderItems = orderCreateRequest.toOrderItems();
         List<Long> productIds = orderCreateRequest.toProductIds();
+        System.out.println("productIds = " + productIds);
 
         int totalCount = 0;
         int totalPrice = 0;
@@ -62,7 +63,9 @@ public class OrderService {
             Long productId = productIds.get(i);
             OrderItem orderItem = orderItems.get(i);
 
-            Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalStateException("해당하는 상품이 존재하지 않습니다"));
+            System.out.println("productId = " + productId);
+
+            Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalStateException("product not exist 해당하는 상품이 존재하지 않습니다"));
             product.decreaseStock(orderItem.getOrderCount()); // 주문 상품의 재고 감소
 
             orderItem.setProduct(product);
@@ -78,6 +81,7 @@ public class OrderService {
         // 주문 생성 요청을 바탕으로 Delivery, Address 엔티티를 만드는 과정
         Delivery delivery = orderCreateRequest.toDeliveryEntity();
         Address address = orderCreateRequest.toAddressEntity();
+        address.setDelivery(delivery);
         delivery.setAddress(address);
         deliveryRepository.save(delivery);
 
@@ -97,9 +101,12 @@ public class OrderService {
     @Transactional
     public Long update(OrderUpdateRequest orderUpdateRequest) {
         Long orderId = orderUpdateRequest.getOrderId();
+
         OrderAddressUpdate orderAddressUpdate = orderUpdateRequest.getOrderAddressUpdate();
 
-        Address address = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다")).getDelivery().getAddress();
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("해당 주문이 존재하지 않습니다"));
+        Delivery delivery = order.getDelivery();
+        Address address = delivery.getAddress();
 
         // 주문 수정 요청을 바탕으로 기존의 주소를 수정
         address.setZipcode(orderAddressUpdate.getZipcode());
@@ -138,4 +145,7 @@ public class OrderService {
         return orderId;
     }
 
+    public Order findByIdForCreateResponse(long orderId) {
+        return orderRepository.findWithAllRelatedEntityById(orderId);
+    }
 }

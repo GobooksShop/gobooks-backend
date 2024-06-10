@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class OrderItemResponse {
 
+    private Long orderItemId;
     private Long productId;
     private String productName;
     private int orderCount;
@@ -13,7 +14,8 @@ public class OrderItemResponse {
     public OrderItemResponse() {
     }
 
-    public OrderItemResponse(Long productId, String productName, int orderCount, int orderPrice) {
+    public OrderItemResponse(Long orderItemId, Long productId, String productName, int orderCount, int orderPrice) {
+        this.orderItemId = orderItemId;
         this.productId = productId;
         this.productName = productName;
         this.orderCount = orderCount;
