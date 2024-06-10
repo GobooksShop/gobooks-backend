@@ -1,16 +1,13 @@
 package org.team.bookshop.domain.order.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 import lombok.*;
+import org.team.bookshop.domain.order.dto.OrderDeliveryResponse;
 import org.team.bookshop.domain.order.enums.DeliveryStatus;
+import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.global.util.BaseEntity;
 
 @AllArgsConstructor
@@ -32,14 +29,20 @@ public class Delivery extends BaseEntity {
   private LocalDate deliveryComp;
   private Long trackingNumber;
 
+  @OneToOne(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Address address;
+
   public static Delivery createDelivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
     return new Delivery(deliveryStatus, deliveryStart, trackingNumber);
   }
-
 
   public Delivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
     this.deliveryStatus = deliveryStatus;
     this.deliveryStart = deliveryStart;
     this.trackingNumber = trackingNumber;
+  }
+
+  public OrderDeliveryResponse toOrderDeliveryResponse() {
+    return new OrderDeliveryResponse(address.getZipcode(), address.getAddress1(), address.getAddress2(), address.getRecipientName(), address.getRecipientPhone(), deliveryStatus);
   }
 }
