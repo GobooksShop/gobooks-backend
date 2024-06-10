@@ -11,16 +11,10 @@ import org.team.bookshop.domain.user.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.email = :email")
     Optional<User> findByEmail(@Param("email") String email);
 
-    @Query("SELECT u FROM User u WHERE u.id = :id")
-    Optional<User> findByIdWithRoles(@Param("id") Long id);
-
-    @Query("SELECT u FROM User u")
     List<User> findAll();
-
-    @Query("SELECT u FROM User u WHERE u.providerId = :providerId")
+    
     Optional<User> findByProviderId(@Param("providerId") String providerId);
 
     boolean existsByEmail(@Param("email") String email);

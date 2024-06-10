@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +45,7 @@ public class AuthenticationController {
         String accessToken = jwtTokenizer.generateAccessToken(user);
         String refreshToken = jwtTokenizer.generateRefreshToken(user);
 
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, refreshToken);
+        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, refreshToken);
         cookie.setHttpOnly(true);
 //        cookie.setSecure(true); // https 적용시 사용
         cookie.setPath("/");
@@ -61,7 +60,7 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         log.info("Logout request received");
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, null);
+        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, null);
         cookie.setHttpOnly(true);
         // cookie.setSecure(true); // https 적용시 사용
         cookie.setPath("/"); // 쿠키의 경로를 지정해야 브라우저가 올바르게 삭제합니다.

@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -17,18 +19,14 @@ import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
 
 @Component
+@NoArgsConstructor(force = true)
+@RequiredArgsConstructor
 public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
     LogoutSuccessHandler {
 
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
-    private String defaultRedirectUrl = "http://localhost:3000";
-
-    public CustomAuthSuccessHandler(JwtTokenizer jwtTokenizer, UserRepository userRepository) {
-        this.jwtTokenizer = jwtTokenizer;
-        this.userRepository = userRepository;
-    }
-
+    private final String DEFAULT_REDIRECT_URL = "http://localhost:3000";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -39,7 +37,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         User user = findOrCreateUser(attributes);
         String jwtToken = jwtTokenizer.generateAccessToken(user);
 
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, jwtToken);
+        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, jwtToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
@@ -47,7 +45,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         response.addCookie(cookie);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.sendRedirect(defaultRedirectUrl);
+        response.sendRedirect(DEFAULT_REDIRECT_URL);
         response.getWriter().write("Login successful");
     }
 
@@ -55,7 +53,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication)
         throws IOException {
-        Cookie cookie = new Cookie(JwtConfig.JWT_COOKIE_NAME, null);
+        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, null);
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setMaxAge(0); // Set the max age to 0 to delete the cookie
@@ -63,7 +61,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         response.addCookie(cookie);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.sendRedirect(defaultRedirectUrl);
+        response.sendRedirect(DEFAULT_REDIRECT_URL);
         response.getWriter().write("Logout successful");
     }
 

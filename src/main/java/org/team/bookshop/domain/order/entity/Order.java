@@ -5,8 +5,12 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.*;
+import org.team.bookshop.domain.order.dto.OrderCreateResponse;
+import org.team.bookshop.domain.order.dto.OrderItemResponses;
+import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.global.util.BaseEntity;
@@ -45,5 +49,19 @@ public class Order extends BaseEntity {
 
   public static Order createOrder() {
       return new Order();
+  }
+
+  public OrderCreateResponse toOrderCreateResponse() {
+    return new OrderCreateResponse(id,
+            new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
+            orderStatus,
+            delivery.toOrderDeliveryResponse());
+  }
+
+  public OrderUpdateResponse toOrderUpdateResponse() {
+    return new OrderUpdateResponse(id,
+            new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
+            orderStatus,
+            delivery.toOrderDeliveryResponse());
   }
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.config.JwtConfig;
 
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {
 
@@ -38,7 +40,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
     }
 
     Cookie jwtTokenCookie = Arrays.stream(request.getCookies())
-        .filter(cookie -> cookie.getName().equals(JwtConfig.JWT_COOKIE_NAME))
+        .filter(cookie -> cookie.getName().equals(JwtConfig.REFRESH_JWT_COOKIE_NAME))
         .findFirst()
         .orElse(null);
 
