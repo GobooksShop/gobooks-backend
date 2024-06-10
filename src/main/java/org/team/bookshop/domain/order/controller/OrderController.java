@@ -46,11 +46,12 @@ public class OrderController {
 
     // 주문 수정
     @PatchMapping("/update")
-    public ResponseEntity<OrderUpdateResponse> updateOrder(OrderUpdateRequest orderUpdateRequest) {
+    public ResponseEntity<OrderUpdateResponse> updateOrder(
+            @RequestBody OrderUpdateRequest orderUpdateRequest) {
         Long updatedOrderId = orderService.update(orderUpdateRequest);
-        OrderUpdateResponse orderUpdateResponse = orderService.findById(updatedOrderId).toOrderUpdateResponse();
+        OrderUpdateResponse orderUpdateResponse = orderService.findByIdForCreateResponse(updatedOrderId).toOrderUpdateResponse();
 
-        return new ResponseEntity<>(orderUpdateResponse, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(orderUpdateResponse);
     }
 
     // 주문 삭제

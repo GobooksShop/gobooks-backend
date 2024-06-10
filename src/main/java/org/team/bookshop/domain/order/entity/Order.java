@@ -60,7 +60,7 @@ public class Order extends BaseEntity {
 
   public OrderUpdateResponse toOrderUpdateResponse() {
     return new OrderUpdateResponse(id,
-            orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList()),
+            new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
             orderStatus,
             delivery.toOrderDeliveryResponse());
   }
