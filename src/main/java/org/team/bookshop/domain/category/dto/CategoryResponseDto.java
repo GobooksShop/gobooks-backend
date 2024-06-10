@@ -1,6 +1,5 @@
 package org.team.bookshop.domain.category.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +18,6 @@ public class CategoryResponseDto {
   private String name;
 
   @JsonIgnore // 순환참조 방지
-  @JsonBackReference
   private CategoryResponseDto parent;
 
   private List<CategoryResponseDto> children;

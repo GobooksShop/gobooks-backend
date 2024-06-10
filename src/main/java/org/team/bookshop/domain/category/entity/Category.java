@@ -62,10 +62,4 @@ public class Category extends BaseEntity {
       current = current.getParent();
     }
   }
-
-//  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<CategoryPath> parentPaths = new ArrayList<>();
-//
-//  @OneToMany(mappedBy = "children", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<CategoryPath> childrenPaths = new ArrayList<>();
 }

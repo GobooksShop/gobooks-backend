@@ -1,19 +1,16 @@
 package org.team.bookshop.domain.category.dto;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.category.entity.Category;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class CategoryDto {
 
   private Long id;
   private String name;
   private Long parentId;
-
-  public CategoryDto() {
-  }
 
   public CategoryDto(String name) {
     this.name = name;

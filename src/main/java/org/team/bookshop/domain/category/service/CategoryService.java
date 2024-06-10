@@ -9,7 +9,6 @@ import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryUpdateRequestDto;
 import org.team.bookshop.domain.category.entity.Category;
-import org.team.bookshop.domain.category.repository.CategoryPathRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
@@ -19,12 +18,9 @@ import org.team.bookshop.global.error.exception.ApiException;
 public class CategoryService {
 
   private final CategoryRepository categoryRepository;
-  private final CategoryPathRepository categoryPathRepository;
 
-  public CategoryService(CategoryRepository categoryRepository,
-      CategoryPathRepository categoryPathRepository) {
+  public CategoryService(CategoryRepository categoryRepository) {
     this.categoryRepository = categoryRepository;
-    this.categoryPathRepository = categoryPathRepository;
   }
 
   // READ
