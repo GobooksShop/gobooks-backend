@@ -9,9 +9,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.BookshopApplication;
-import org.team.bookshop.domain.order.dto.OrderAddressCreate;
-import org.team.bookshop.domain.order.dto.OrderCreateRequest;
-import org.team.bookshop.domain.order.dto.OrderItemRequest;
+import org.team.bookshop.domain.order.dto.*;
 import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.entity.OrderItem;
@@ -132,6 +130,28 @@ class OrderServiceTest {
             orderService.save(orderCreateRequestForStockTest);
         }).isInstanceOf(IllegalStateException.class);
     }
-    
+
+    @Test
+    void 주문수정테스트() {
+        // 주문
+        OrderItemRequest orderItemRequest1 = new OrderItemRequest(1L, 2, 18000);
+        OrderItemRequest orderItemRequest2 = new OrderItemRequest(2L, 3, 27000);
+        OrderAddressCreate orderAddressCreate = new OrderAddressCreate("56442", "서울특별시 용산구 한강로 11", "62-34", "홍길동", "010-1234-5678");
+
+        OrderCreateRequest orderCreateRequest = new OrderCreateRequest(List.of(orderItemRequest1, orderItemRequest2), orderAddressCreate);
+        // 주문 완료
+        orderService.save(orderCreateRequest);
+        // 주문 완료
+
+        OrderAddressUpdate orderAddressUpdate = new OrderAddressUpdate("23333", "부산광역시 영도구 태종로", "17-1", "홍길동", "010-5678-1234");
+        OrderUpdateRequest orderUpdateRequest = new OrderUpdateRequest(1L, orderAddressUpdate);
+        Long updatedOrderId = orderService.update(orderUpdateRequest);
+
+        // 주문 수정 완료
+
+        Order foundOrder = orderService.findById(updatedOrderId);
+        assertThat(foundOrder.getDelivery().getAddress().getZipcode()).isEqualTo("23333");
+
+    }
 
 }
