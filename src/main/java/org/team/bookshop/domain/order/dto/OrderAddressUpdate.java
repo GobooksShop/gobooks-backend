@@ -25,6 +25,14 @@ public class OrderAddressUpdate {
     @Pattern(regexp = "^\\d{10,11}$", message = "받는사람 연락처는 10자리 또는 11자리 숫자여야 합니다.")
     private String recipientPhone;
 
+    public OrderAddressUpdate(String zipcode, String address1, String address2, String recipientName, String recipientPhone) {
+        this.zipcode = zipcode;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.recipientName = recipientName;
+        this.recipientPhone = recipientPhone;
+    }
+
     public Address toEntity(){
         Address address = new Address();
         address.setZipcode(zipcode);

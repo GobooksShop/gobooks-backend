@@ -10,11 +10,11 @@ import java.util.List;
 public class OrderCreateResponse {
 
     private Long orderId;
-    private List<OrderItemResponse> orderItemResponses = new ArrayList<>();
+    private OrderItemResponses orderItemResponses;
     private OrderStatus orderStatus;
     private OrderDeliveryResponse orderDeliveryResponse;
 
-    public OrderCreateResponse(Long orderId, List<OrderItemResponse> orderItemResponses, OrderStatus orderStatus, OrderDeliveryResponse orderDeliveryResponse) {
+    public OrderCreateResponse(Long orderId, OrderItemResponses orderItemResponses, OrderStatus orderStatus, OrderDeliveryResponse orderDeliveryResponse) {
         this.orderId = orderId;
         this.orderItemResponses = orderItemResponses;
         this.orderStatus = orderStatus;

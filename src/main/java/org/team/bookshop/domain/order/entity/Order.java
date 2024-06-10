@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import lombok.*;
 import org.team.bookshop.domain.order.dto.OrderCreateResponse;
+import org.team.bookshop.domain.order.dto.OrderItemResponses;
 import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.user.entity.User;
@@ -52,7 +53,7 @@ public class Order extends BaseEntity {
 
   public OrderCreateResponse toOrderCreateResponse() {
     return new OrderCreateResponse(id,
-            orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList()),
+            new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
             orderStatus,
             delivery.toOrderDeliveryResponse());
   }
