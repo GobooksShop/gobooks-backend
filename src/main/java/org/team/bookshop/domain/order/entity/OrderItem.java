@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.team.bookshop.domain.order.dto.OrderItemResponse;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.global.util.BaseEntity;
 
@@ -43,5 +44,9 @@ public class OrderItem extends BaseEntity {
   public OrderItem(int orderCount, int orderPrice) {
     this.orderCount = orderCount;
     this.orderPrice = orderPrice;
+  }
+
+  public OrderItemResponse toOrderItemResponse() {
+    return new OrderItemResponse(product.getId(), product.getTitle(), orderCount, orderPrice);
   }
 }
