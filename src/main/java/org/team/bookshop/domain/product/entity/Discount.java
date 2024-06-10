@@ -22,4 +22,4 @@ public class Discount {
   private LocalDateTime validTo;
 
 }
-//status 말고 discountStatus를 하나 만들기
+//status 말고 discount Status를 하나 만들기
