@@ -121,7 +121,7 @@ public class OrderService {
     @Transactional
     public Long delete(OrderDeleteRequest orderDeleteRequest) {
         Long orderId = orderDeleteRequest.getOrderId();
-
+        System.out.println("orderId = " + orderId);
         Order order = orderRepository.findWithAllRelatedEntityById(orderId);
 
         // 해당 주문 내에 포함된 상품의 재고를 다시 원상복구 한다.

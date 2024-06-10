@@ -56,7 +56,8 @@ public class OrderController {
 
     // 주문 삭제
     @DeleteMapping("/delete")
-    public ResponseEntity<OrderDeleteResponse> deleteOrder(OrderDeleteRequest orderDeleteRequest) {
+    public ResponseEntity<OrderDeleteResponse> deleteOrder(
+            @RequestBody OrderDeleteRequest orderDeleteRequest) {
         Long deletedOrderId = orderService.delete(orderDeleteRequest);
         OrderDeleteResponse orderDeleteResponse = new OrderDeleteResponse(deletedOrderId, true);
 
