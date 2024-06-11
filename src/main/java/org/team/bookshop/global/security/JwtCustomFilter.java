@@ -38,14 +38,12 @@ public class JwtCustomFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
     FilterChain filterChain) throws ServletException, IOException {
     try {
-      String jwtAccessToken = getJwtFromRequest(request);
-
-      if (jwtAccessToken != null && !isTokenBlacklisted(jwtAccessToken) && jwtTokenizer.validateToken(jwtAccessToken)) {
+      String jwtAccessToken = jwtTokenizer.getJwtFromRequest(request);
+      if (jwtAccessToken != null && jwtTokenizer.validateToken(jwtAccessToken,"access")) {
         handleValidToken(jwtAccessToken, request);
       } else {
         String refreshToken = getRefreshTokenFromCookies(request.getCookies());
-
-        if (refreshToken != null && !isTokenBlacklisted(refreshToken) && !jwtTokenizer.isExpired(refreshToken)) {
+        if (refreshToken != null && jwtTokenizer.validateToken(refreshToken, "refresh")) {
           String newAccessToken = jwtTokenizer.refreshAccessToken(refreshToken);
           response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
           handleValidToken(newAccessToken, request);
@@ -57,40 +55,23 @@ public class JwtCustomFilter extends OncePerRequestFilter {
       response.getWriter().write("Unauthorized");
       return;
     }
-
     filterChain.doFilter(request, response);
   }
 
-  private String getJwtFromRequest(HttpServletRequest request) {
-    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      return authorizationHeader.substring(7);
-    }
-    return null;
-  }
-
   private String getRefreshTokenFromCookies(Cookie[] cookies) {
-    if (cookies == null) {
-      return null;
-    }
-    return Arrays.stream(cookies)
-        .filter(cookie -> JwtConfig.REFRESH_JWT_COOKIE_NAME.equals(cookie.getName()))
-        .map(Cookie::getValue)
-        .findFirst()
-        .orElse(null);
-  }
-
-  private boolean isTokenBlacklisted(String token) {
-    return tokenRepository.findByToken(token).isPresent();
+    return (cookies == null) ? null : Arrays.stream(cookies)
+            .filter(cookie -> JwtConfig.REFRESH_JWT_COOKIE_NAME.equals(cookie.getName()))
+            .map(Cookie::getValue)
+            .findFirst()
+            .orElse(null);
   }
 
   private void handleValidToken(String token, HttpServletRequest request) {
     Long userId = Long.valueOf(jwtTokenizer.getUserId(token));
     User user = userRepository.findById(userId).orElse(null);
-
     if (user != null) {
       UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-          user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole())));
+              user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole())));
       authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }

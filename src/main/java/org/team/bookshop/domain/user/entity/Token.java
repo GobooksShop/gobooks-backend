@@ -7,13 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "tokens")
 public class Token {
@@ -29,4 +29,13 @@ public class Token {
   private LocalDateTime expires;
   @Column(nullable = false)
   private LocalDateTime created;
+
+  @Builder
+  public Token(Long id, String token, String type, LocalDateTime expires, LocalDateTime created) {
+    this.id = id;
+    this.token = token;
+    this.type = type;
+    this.expires = expires;
+    this.created = created;
+  }
 }

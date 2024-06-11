@@ -1,17 +1,27 @@
 package org.team.bookshop.global.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.team.bookshop.domain.user.entity.Token;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.repository.TokenRepository;
 import org.team.bookshop.global.config.JwtConfig;
+import org.team.bookshop.global.error.ErrorCode;
+import org.team.bookshop.global.error.exception.ApiException;
 
 @Component
 @RequiredArgsConstructor
@@ -19,6 +29,7 @@ public class JwtTokenizer {
 
   private final JwtConfig jwtConfig;
   private final PrincipalDetailsService principalDetailsService;
+  private final TokenRepository tokenRepository;
 
   public String generateAccessToken(User user) {
 
@@ -57,13 +68,8 @@ public class JwtTokenizer {
 
   public Authentication getAuthentication(String token){
     Claims claims = parseToken(token);
-    UserDetails userDetails = principalDetailsService.loadUserByUsername(claims.get("userEmail").toString());
+    UserDetails userDetails = principalDetailsService.loadUserByUsername(claims.get("userID").toString());
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-  }
-
-  public boolean isExpired(String token) {
-    Date expiredDate = parseToken(token).getExpiration();
-    return expiredDate.before(new Date());
   }
 
   public Claims parseToken(String token) {
@@ -73,21 +79,25 @@ public class JwtTokenizer {
         .getBody();
   }
 
-  public boolean validateToken(String token) {
+  public boolean validateToken(String token, String typeName) {
     try {
       Jwts.parser()
           .setSigningKey(jwtConfig.getSecretKey().getBytes())
           .parseClaimsJws(token);
-      return true;
-    } catch (Exception e) {
+      return !isTokenBlacklisted(token);
+    } catch (ExpiredJwtException e) {
+      addTokenToBlacklist(token, typeName);
+      return false;
+    }
+    catch (Exception e) {
       return false;
     }
   }
 
   // 리프레시 토큰을 이용해 토큰을 재발급 하기위한 함수
   public String refreshAccessToken(String refreshToken) {
-    if (isExpired(refreshToken)) {
-      throw new IllegalArgumentException("Refresh token is expired");
+    if (!validateToken(refreshToken, "refresh")) {
+      throw new ApiException("Refresh token is expired", ErrorCode.REFRESH_TOKEN_EXPIRED);
     }
     String userId = getUserId(refreshToken);
     UserDetails userDetails = principalDetailsService.loadUserByUsername(userId);
@@ -96,13 +106,32 @@ public class JwtTokenizer {
   }
 
   public String refreshRefreshToken(String refreshToken) {
-    if (isExpired(refreshToken)) {
+      addTokenToBlacklist(refreshToken, "refresh");
       String userId = getUserId(refreshToken);
       UserDetails userDetails = principalDetailsService.loadUserByUsername(userId);
       User user = ((PrincipalDetails) userDetails).getUser();
       return generateRefreshToken(user);
-    }
-    return refreshToken;
+  }
+
+  public void addTokenToBlacklist(String token, String typeName){
+    Token blacklistedToken = Token.builder()
+            .token(token)
+            .type(typeName)
+            .expires(LocalDateTime.now().plusSeconds(JwtConfig.REFRESH_TOKEN_EXPIRATION_TIME / 1000))
+            .created(LocalDateTime.now())
+            .build();
+    tokenRepository.save(blacklistedToken);
+  }
+
+  public String getJwtFromRequest(HttpServletRequest request) {
+    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    return (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+            ? authorizationHeader.substring(7)
+            : null;
+  }
+
+  public boolean isTokenBlacklisted(String token) {
+    return tokenRepository.findByToken(token).isPresent();
   }
 
 }

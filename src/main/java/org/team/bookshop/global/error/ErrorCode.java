@@ -31,9 +31,13 @@ public enum ErrorCode {
 
   //PAYMENT
 
-  //Scure
+  //Secure
   SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
-  AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR);;
+  AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR),
+  REFRESH_TOKEN_EXPIRED(401, "S003", "Refresh token has expired", LogLevel.ERROR),
+  REFRESH_TOKEN_ISNULL(401, "S004", "Refresh token is null", LogLevel.ERROR),
+  INVALID_REFRESH_TOKEN(401, "S004", "Refresh token is null", LogLevel.ERROR)
+  ;;
 
   private final String code;
   private final String message;

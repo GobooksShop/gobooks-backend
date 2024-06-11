@@ -44,7 +44,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto,
-        HttpServletResponse response) {
+                                                  HttpServletResponse response) {
         User user = authenticationService.login(userLoginDto);
 
         if (user == null) {
@@ -76,13 +76,7 @@ public class AuthenticationController {
 
         if (jwtTokenCookie != null) {
             String refreshToken = jwtTokenCookie.getValue();
-            Token blacklistedToken = new Token();
-            blacklistedToken.setToken(refreshToken);
-            blacklistedToken.setType("refresh");
-            blacklistedToken.setExpires(
-                LocalDateTime.now().plusSeconds(JwtConfig.REFRESH_TOKEN_EXPIRATION_TIME / 1000));
-            blacklistedToken.setCreated(LocalDateTime.now());
-            tokenRepository.save(blacklistedToken);
+            jwtTokenizer.addTokenToBlacklist(refreshToken, "refresh");
         }
 
         Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, null);
@@ -103,38 +97,31 @@ public class AuthenticationController {
             .orElse(null);
 
         if (refreshTokenCookie == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new ApiException("리프레시 쿠키 값이 NULL 입니다.",ErrorCode.REFRESH_TOKEN_ISNULL);
         }
 
         String refreshToken = refreshTokenCookie.getValue();
         if (tokenRepository.findByToken(refreshToken).isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new ApiException("유효하지 않는 리프레시 토큰 입니다.", ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        String newAccessToken;
-        String newRefreshToken = refreshToken;
-
         try {
-            newAccessToken = jwtTokenizer.refreshAccessToken(refreshToken);
+            String newAccessToken = jwtTokenizer.refreshAccessToken(refreshToken);
+
+            if (!jwtTokenizer.validateToken(refreshToken, "refresh")) {
+                Cookie newCookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, jwtTokenizer.refreshRefreshToken(refreshToken));
+                newCookie.setHttpOnly(true);
+                newCookie.setPath("/");
+                newCookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
+                response.addCookie(newCookie);
+            }
+            Long userId = Long.valueOf(jwtTokenizer.getUserId(newAccessToken));
+            User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+            TokenResponseDto tokenResponseDto = new TokenResponseDto(newAccessToken, user.getName(), user.getEmail(), user.getRole().getRole());
+            return ResponseEntity.ok(tokenResponseDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        if (jwtTokenizer.isExpired(refreshToken)) {
-            newRefreshToken = jwtTokenizer.refreshRefreshToken(refreshToken);
-            Cookie newCookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, newRefreshToken);
-            newCookie.setHttpOnly(true);
-            newCookie.setPath("/");
-            newCookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
-            response.addCookie(newCookie);
-        }
-
-        Long userId = Long.valueOf(jwtTokenizer.getUserId(newAccessToken));
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(newAccessToken, user.getName(), user.getEmail(), user.getRole().getRole());
-
-        return ResponseEntity.ok(tokenResponseDto);
     }
 
 
