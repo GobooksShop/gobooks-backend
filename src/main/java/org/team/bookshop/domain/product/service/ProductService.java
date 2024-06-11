@@ -95,9 +95,9 @@ public class ProductService {
       throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
     }
 
-    List<Product> categories = categoryRepository.findByCategoryId(categoryId);
+    List<Product> productsFromCategory = categoryRepository.findByCategoryId(categoryId);
 
-    List<Product> products = categories.stream()
+    List<Product> products = productsFromCategory.stream()
         .flatMap(category -> category.getBookCategories().stream())
         .map(BookCategory::getProduct)
         .distinct()

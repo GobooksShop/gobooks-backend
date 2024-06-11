@@ -12,16 +12,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
   boolean existsByParentId(Long id);
 
-  @Query(value = """
-      WITH RECURSIVE category_tree (id, parent_id) AS (
-          SELECT id, parent_id FROM category WHERE id = :categoryId
-          UNION ALL
-          SELECT c.id, c.parent_id FROM category c JOIN category_tree ct ON c.parent_id = ct.id
-      )
-      SELECT p.* FROM products p
-      JOIN book_category bc ON p.id = bc.product_id
-      JOIN category_tree ct ON bc.category_id = ct.id
-      """, nativeQuery = true)
+  @Query("SELECT DISTINCT p FROM Product p " +
+      "JOIN FETCH p.bookCategories bc " +
+      "JOIN FETCH bc.category c " +
+      "WHERE c.id = :categoryId")
   List<Product> findByCategoryId(@Param("categoryId") Long categoryId);
 
   @Query("SELECT c FROM Category c LEFT JOIN FETCH c.children WHERE c.id = :parentId")
