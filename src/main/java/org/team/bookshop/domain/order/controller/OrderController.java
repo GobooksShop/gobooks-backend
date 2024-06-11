@@ -23,23 +23,13 @@ public class OrderController {
     private final OrderService orderService;
     private final ProductRepository productRepository;
 
-    @GetMapping("/testInit")
-    @Transactional
-    public void init() {
-//        Product product1 = new Product("제목1", "작가1", "isbn1", "책1 내용입니다", 20000, LocalDate.ofYearDay(2020, 15), Product.Status.AVAILABLE, 20);
-//        Product product2 = new Product("제목2", "작가2", "isbn2", "책2 내용입니다", 30000, LocalDate.ofYearDay(2024, 30), Product.Status.AVAILABLE, 30);
-
-//        Product savedProduct1 = productRepository.save(product1);
-//        Product savedProduct2 = productRepository.save(product2);
-    }
-
     // 주문 생성
     @PostMapping("/create")
     public ResponseEntity<OrderCreateResponse> createOrder(
             @RequestBody OrderCreateRequest orderCreateRequest) {
-
         Long savedOrderId = orderService.save(orderCreateRequest);
-        OrderCreateResponse orderCreateResponse = orderService.findByIdForCreateResponse(1L).toOrderCreateResponse();
+        System.out.println("savedOrderId = " + savedOrderId);
+        OrderCreateResponse orderCreateResponse = orderService.findByIdForCreateResponse(savedOrderId).toOrderCreateResponse();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderCreateResponse);
     }

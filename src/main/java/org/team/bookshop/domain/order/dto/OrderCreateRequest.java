@@ -14,31 +14,16 @@ import java.util.stream.Collectors;
 @Data
 public class OrderCreateRequest {
 
-    private List<OrderItemRequest> orderItemRequests;
-    private OrderAddressCreate orderAddressCreate;
+
+    List<OrderItemRequest> orderItemRequests;
 
     public OrderCreateRequest() {
     }
 
-    public OrderCreateRequest(List<OrderItemRequest> orderItemRequests, OrderAddressCreate orderAddressCreate) {
+    public OrderCreateRequest(List<OrderItemRequest> orderItemRequests) {
         this.orderItemRequests = orderItemRequests;
-        this.orderAddressCreate = orderAddressCreate;
     }
 
-    public Address toAddressEntity() {
-        Address address = new Address();
-        address.setZipcode(orderAddressCreate.getZipcode());
-        address.setAddress1(orderAddressCreate.getAddress1());
-        address.setAddress2(orderAddressCreate.getAddress2());
-        address.setRecipientName(orderAddressCreate.getRecipientName());
-        address.setRecipientPhone(orderAddressCreate.getRecipientPhone());
-        return address;
-    }
-
-    public Delivery toDeliveryEntity() {
-        Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1L);
-        return delivery;
-    }
 
     public List<OrderItem> toOrderItems() {
         return orderItemRequests.stream().map(oir -> oir.toOrderItemEntity()).collect(Collectors.toList());

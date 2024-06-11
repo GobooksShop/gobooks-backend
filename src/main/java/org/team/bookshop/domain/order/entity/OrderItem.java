@@ -30,6 +30,8 @@ public class OrderItem extends BaseEntity {
   @JoinColumn(name = "order_id")
   private Order order;
 
+
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "book_id")
   private Product product;
