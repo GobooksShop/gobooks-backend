@@ -26,11 +26,11 @@ public class OrderController {
     @GetMapping("/testInit")
     @Transactional
     public void init() {
-        Product product1 = new Product("제목1", "작가1", "isbn1", "책1 내용입니다", 20000, LocalDate.ofYearDay(2020, 15), Product.Status.AVAILABLE, 20);
-        Product product2 = new Product("제목2", "작가2", "isbn2", "책2 내용입니다", 30000, LocalDate.ofYearDay(2024, 30), Product.Status.AVAILABLE, 30);
+//        Product product1 = new Product("제목1", "작가1", "isbn1", "책1 내용입니다", 20000, LocalDate.ofYearDay(2020, 15), Product.Status.AVAILABLE, 20);
+//        Product product2 = new Product("제목2", "작가2", "isbn2", "책2 내용입니다", 30000, LocalDate.ofYearDay(2024, 30), Product.Status.AVAILABLE, 30);
 
-        Product savedProduct1 = productRepository.save(product1);
-        Product savedProduct2 = productRepository.save(product2);
+//        Product savedProduct1 = productRepository.save(product1);
+//        Product savedProduct2 = productRepository.save(product2);
     }
 
     // 주문 생성
