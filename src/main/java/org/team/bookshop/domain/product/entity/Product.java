@@ -24,7 +24,7 @@ import org.team.bookshop.domain.category.entity.BookCategory;
 @Entity
 @Table(name = "products")
 @Getter
-@Setter // Add this if you need to mutate fields directly
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
@@ -60,9 +60,11 @@ public class Product {
   @JsonIgnore
   private Set<BookCategory> bookCategories = new HashSet<>();
 
+  private String pictureUrl;
+
   @Builder
   public Product(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status, int stockQuantity) {
+      LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl) {
     this.title = title;
     this.author = author;
     this.isbn = isbn;
@@ -71,6 +73,7 @@ public class Product {
     this.publicationYear = publicationYear;
     this.status = status;
     this.stockQuantity = stockQuantity;
+    this.pictureUrl = pictureUrl;
   }
 
   public enum Status {

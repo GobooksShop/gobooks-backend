@@ -79,6 +79,7 @@ public class ProductService {
         request.getFixedPrice(),
         request.getPublicationYear(),
         request.getStatus()
+
     );
     return product;
   }

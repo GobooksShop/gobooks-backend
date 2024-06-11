@@ -19,6 +19,8 @@ public class ProductResponse {
   private final int fixedPrice;
   private final LocalDate publicationYear;
   private final Product.Status status;
+  private final String pictureUrl;
+
 
   @JsonIgnoreProperties("bookCategories")
   private List<SimpleCategoryResponseDto> categories;
@@ -32,6 +34,8 @@ public class ProductResponse {
     this.fixedPrice = product.getFixedPrice();
     this.publicationYear = product.getPublicationYear();
     this.status = product.getStatus();
+    this.pictureUrl = product.getPictureUrl();
+
   }
 
   public static ProductResponse fromEntity(Product product) {

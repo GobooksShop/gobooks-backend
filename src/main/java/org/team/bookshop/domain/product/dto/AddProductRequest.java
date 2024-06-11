@@ -30,6 +30,13 @@ public class AddProductRequest {
   @NotNull(message = "Publication year is required")
   private LocalDate publicationYear;
 
+  @NotNull(message = "Status is required")
+  private Product.Status status;
+
+  private int stockQuantity;
+
+  private String pictureUrl;
+
   @NotNull(message = "Category IDs are required")
   private List<Long> categoryIds;
 
