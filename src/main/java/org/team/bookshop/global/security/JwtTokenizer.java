@@ -51,8 +51,8 @@ public class JwtTokenizer {
           .signWith(SignatureAlgorithm.HS256, Base64.getEncoder().encodeToString(jwtConfig.getSecretKey().getBytes()))
           .compact();
   }
-  public String getUserEmail(String token) {
-    return parseToken(token).get("userEmail").toString();
+  public String getUserId(String token) {
+    return parseToken(token).get("userID").toString();
   }
 
   public Authentication getAuthentication(String token){
@@ -72,4 +72,37 @@ public class JwtTokenizer {
         .parseClaimsJws(token)
         .getBody();
   }
+
+  public boolean validateToken(String token) {
+    try {
+      Jwts.parser()
+          .setSigningKey(jwtConfig.getSecretKey().getBytes())
+          .parseClaimsJws(token);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  // 리프레시 토큰을 이용해 토큰을 재발급 하기위한 함수
+  public String refreshAccessToken(String refreshToken) {
+    if (isExpired(refreshToken)) {
+      throw new IllegalArgumentException("Refresh token is expired");
+    }
+    String userId = getUserId(refreshToken);
+    UserDetails userDetails = principalDetailsService.loadUserByUsername(userId);
+    User user = ((PrincipalDetails) userDetails).getUser();
+    return generateAccessToken(user);
+  }
+
+  public String refreshRefreshToken(String refreshToken) {
+    if (isExpired(refreshToken)) {
+      String userId = getUserId(refreshToken);
+      UserDetails userDetails = principalDetailsService.loadUserByUsername(userId);
+      User user = ((PrincipalDetails) userDetails).getUser();
+      return generateRefreshToken(user);
+    }
+    return refreshToken;
+  }
+
 }

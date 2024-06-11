@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,15 +20,22 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.team.bookshop.domain.user.repository.TokenRepository;
+import org.team.bookshop.domain.user.repository.UserRepository;
+import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.config.JwtConfig;
 import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true) // 메서드 보안 활성화
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
+    private final JwtTokenizer jwtTokenizer;
+    private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -41,15 +49,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                             .requestMatchers(HttpMethod.GET, "/").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/api/auth/").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-//									.requestMatchers("/api/admin/**").hasAnyAuthority(UserRole.ADMIN.getRole())
-//									.requestMatchers("/api/users/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.USER.getRole())
-                            .anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
+                            .requestMatchers("/api/auth/**").permitAll()
+                            .requestMatchers("/api/users/**").permitAll()
+                            .requestMatchers("/api/categories/**").permitAll()
+                            .requestMatchers("/api/products/**").permitAll()
+                            .anyRequest().authenticated()
+//                            .anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
                 )
                 .oauth2Login(oauth2Login ->
                     oauth2Login
-                        .successHandler(new CustomAuthSuccessHandler())
+                        .successHandler(customAuthSuccessHandler)
                 )
                 .logout(logout -> logout
                     .logoutUrl("/logout")
@@ -57,7 +66,7 @@ public class SecurityConfig {
                     .invalidateHttpSession(true)
                     .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )
-                .addFilterBefore(new JwtCustomFilter(),
+                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer, tokenRepository),
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);

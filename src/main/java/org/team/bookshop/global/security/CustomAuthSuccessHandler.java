@@ -19,7 +19,6 @@ import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
 
 @Component
-@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
     LogoutSuccessHandler {

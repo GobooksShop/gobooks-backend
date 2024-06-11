@@ -9,68 +9,91 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.repository.TokenRepository;
+import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.config.JwtConfig;
+import org.team.bookshop.global.error.exception.ApiException;
 
-@NoArgsConstructor(force = true)
+@Slf4j
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {
 
-  private final UserService userService;
+  private final UserRepository userRepository;
   private final JwtTokenizer jwtTokenizer;
+  private final TokenRepository tokenRepository;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
     FilterChain filterChain) throws ServletException, IOException {
-    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    try {
+      String jwtAccessToken = getJwtFromRequest(request);
 
-    if(authorizationHeader == null ||
-        request.getCookies() == null
-    ) {
-      filterChain.doFilter(request, response);
+      if (jwtAccessToken != null && !isTokenBlacklisted(jwtAccessToken) && jwtTokenizer.validateToken(jwtAccessToken)) {
+        handleValidToken(jwtAccessToken, request);
+      } else {
+        String refreshToken = getRefreshTokenFromCookies(request.getCookies());
+
+        if (refreshToken != null && !isTokenBlacklisted(refreshToken) && !jwtTokenizer.isExpired(refreshToken)) {
+          String newAccessToken = jwtTokenizer.refreshAccessToken(refreshToken);
+          response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
+          handleValidToken(newAccessToken, request);
+        }
+      }
+    } catch (ApiException ex) {
+      log.error("Could not set user authentication in security context", ex);
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.getWriter().write("Unauthorized");
       return;
     }
-
-    Cookie jwtTokenCookie = Arrays.stream(request.getCookies())
-        .filter(cookie -> cookie.getName().equals(JwtConfig.REFRESH_JWT_COOKIE_NAME))
-        .findFirst()
-        .orElse(null);
-
-    if(jwtTokenCookie == null) {
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    String jwtToken = jwtTokenCookie.getValue();
-
-    if(jwtTokenizer.isExpired(jwtToken)){
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    String email = jwtTokenizer.getUserEmail(jwtToken);
-    User user = userService.getUserByEmail(email);
-
-    if(user == null){
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-        user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole())));
-
-    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
     filterChain.doFilter(request, response);
+  }
+
+  private String getJwtFromRequest(HttpServletRequest request) {
+    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      return authorizationHeader.substring(7);
+    }
+    return null;
+  }
+
+  private String getRefreshTokenFromCookies(Cookie[] cookies) {
+    if (cookies == null) {
+      return null;
+    }
+    return Arrays.stream(cookies)
+        .filter(cookie -> JwtConfig.REFRESH_JWT_COOKIE_NAME.equals(cookie.getName()))
+        .map(Cookie::getValue)
+        .findFirst()
+        .orElse(null);
+  }
+
+  private boolean isTokenBlacklisted(String token) {
+    return tokenRepository.findByToken(token).isPresent();
+  }
+
+  private void handleValidToken(String token, HttpServletRequest request) {
+    Long userId = Long.valueOf(jwtTokenizer.getUserId(token));
+    User user = userRepository.findById(userId).orElse(null);
+
+    if (user != null) {
+      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+          user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole())));
+      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    }
   }
 }
 
