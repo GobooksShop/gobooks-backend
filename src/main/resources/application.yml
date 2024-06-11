@@ -26,7 +26,7 @@ spring:
 logging:
   config: classpath:logback-${spring.profiles.active}.xml
 
-spring.config.import: classpath:application-jwt.yml,classpath:application-discord.properties,classpath:application-oauth2.yml
+spring.config.import: classpath:application-jwt.yml,classpath:application-discord.yml,classpath:application-oauth2.yml
 ---
 spring.config.activate.on-profile: local
 spring:
@@ -57,7 +57,7 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 
 ---
-spring.config.import: classpath:application-db.properties
+spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: dev
 spring:
   datasource:
@@ -70,11 +70,16 @@ spring:
     url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${database.username}
     password: ${database.password}
+  sql: # mysql에서는 data.sql를 빌드시 실행하려면 추가해야됨.
+    init:
+      mode: always
   jpa:
+    hibernate:
+      ddl-auto: create
     properties:
       hibernate:
-        show_sql: true
         format_sql: true
+    show-sql: true
     defer-datasource-initialization: true #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
 
 logging:
