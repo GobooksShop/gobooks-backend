@@ -1,6 +1,6 @@
 package org.team.bookshop.domain.product.service;
 
-import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.domain.category.entity.BookCategoryId;
 import org.team.bookshop.domain.category.entity.Category;
@@ -23,12 +24,13 @@ import org.team.bookshop.global.error.exception.EntityNotFoundException;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class ProductService {
 
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
 
-  @Transactional
+  //대량일때는 성능이슈
   public Product createProduct(AddProductRequest request) {
     Product product = request.toEntity();
 
@@ -77,6 +79,7 @@ public class ProductService {
         request.getFixedPrice(),
         request.getPublicationYear(),
         request.getStatus()
+
     );
     return product;
   }

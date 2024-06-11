@@ -3,6 +3,7 @@ package org.team.bookshop.domain.product.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.team.bookshop.domain.product.entity.Product;
@@ -28,5 +29,12 @@ public class UpdateProductRequest {
   @NotNull(message = "Publication year is required")
   private LocalDate publicationYear;
 
+  @NotNull(message = "Status is required")
   private Product.Status status;
+
+  private int stockQuantity;
+
+  private String pictureUrl;
+
+  private List<Long> categoryIds;
 }
