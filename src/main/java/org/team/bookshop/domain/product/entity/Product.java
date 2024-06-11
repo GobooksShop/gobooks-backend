@@ -1,6 +1,6 @@
 package org.team.bookshop.domain.product.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,8 +56,8 @@ public class Product {
 
   private int stockQuantity;
 
-  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-  @JsonIgnore
+  @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
+  @JsonIgnoreProperties("product")
   private Set<BookCategory> bookCategories = new HashSet<>();
 
   private String pictureUrl;

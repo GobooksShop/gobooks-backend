@@ -28,8 +28,9 @@ public class ProductController {
 
   //상품 추가(관리자)
   @PostMapping
-  public ResponseEntity<Product> addProduct(@RequestBody @Valid AddProductRequest request) {
-    Product savedProduct = productService.createProduct(request);
+  public ResponseEntity<AddProductRequest> addProduct(
+      @RequestBody @Valid AddProductRequest request) {
+    AddProductRequest savedProduct = productService.createProduct(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
   }
 

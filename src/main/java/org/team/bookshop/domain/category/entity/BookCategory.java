@@ -22,7 +22,7 @@ public class BookCategory {
   private BookCategoryId id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("bookId")
+  @MapsId("productId")
   private Product product;
 
   @ManyToOne(fetch = FetchType.LAZY)

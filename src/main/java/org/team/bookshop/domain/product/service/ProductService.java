@@ -31,22 +31,27 @@ public class ProductService {
   private final CategoryRepository categoryRepository;
 
   //대량일때는 성능이슈
-  public Product createProduct(AddProductRequest request) {
-    Product product = request.toEntity();
+  @Transactional
+  public AddProductRequest createProduct(AddProductRequest requestDto) {
+    Product product = productRepository.save(requestDto.toEntity());
 
-    Set<BookCategory> bookCategories = request.getCategoryIds().stream()
+    Set<BookCategory> bookCategories = requestDto.getCategoryIds().stream()
         .map(categoryId -> {
           Category category = categoryRepository.findById(categoryId)
               .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-          category.addParentCategories();
-          return new BookCategory(new BookCategoryId(product.getId(), categoryId), product,
-              category);
+          BookCategory bookCategory = new BookCategory(
+              new BookCategoryId(product.getId(), category.getId()),
+              product,
+              category
+          );
+
+          product.getBookCategories().add(bookCategory);
+
+          return bookCategory;
         })
         .collect(Collectors.toSet());
 
-    product.setBookCategories(bookCategories);
-
-    return productRepository.save(product);
+    return new AddProductRequest(product);
   }
 
   public List<ProductResponse> findAll() {
@@ -86,6 +91,10 @@ public class ProductService {
 
   // 특정 카테고리의 상품 리스트 조회
   public List<ProductResponse> getProductsByCategoryId(Long categoryId) {
+    if (categoryId == null || categoryId <= 0) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+
     List<Product> categories = categoryRepository.findByCategoryId(categoryId);
 
     List<Product> products = categories.stream()

@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BookCategoryId implements Serializable {
 
-  private Long bookId;
+  private Long productId;
   private Long categoryId;
 
   @Override
@@ -27,11 +27,11 @@ public class BookCategoryId implements Serializable {
       return false;
     }
     BookCategoryId that = (BookCategoryId) o;
-    return Objects.equals(bookId, that.bookId) && Objects.equals(categoryId, that.categoryId);
+    return Objects.equals(productId, that.productId) && Objects.equals(categoryId, that.categoryId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(bookId, categoryId);
+    return Objects.hash(productId, categoryId);
   }
 }
