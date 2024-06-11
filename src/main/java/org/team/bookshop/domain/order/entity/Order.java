@@ -28,6 +28,9 @@ public class Order extends BaseEntity {
   @Column(name = "order_id")
   private Long id;
 
+  @Column(unique = true)
+  private String merchantId;
+
   private LocalDateTime orderDateTime;
 
   @Enumerated(EnumType.STRING)
@@ -52,10 +55,11 @@ public class Order extends BaseEntity {
   }
 
   public OrderCreateResponse toOrderCreateResponse() {
-    return new OrderCreateResponse(id,
+    return new OrderCreateResponse(
+            id,
+            merchantId,
             new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
-            orderStatus,
-            delivery.toOrderDeliveryResponse());
+            orderStatus);
   }
 
   public OrderUpdateResponse toOrderUpdateResponse() {
