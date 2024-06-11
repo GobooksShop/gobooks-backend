@@ -1,0 +1,40 @@
+package org.team.bookshop.domain.category.controller;
+
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.team.bookshop.domain.category.dto.CategoryChildrenResponseDto;
+import org.team.bookshop.domain.category.dto.CategoryResponseDto;
+import org.team.bookshop.domain.category.service.CategoryService;
+
+@RestController
+@RequestMapping("/api")
+public class CategoryViewController {
+
+  private final CategoryService categoryService;
+
+  public CategoryViewController(CategoryService categoryService) {
+    this.categoryService = categoryService;
+  }
+
+  // READ
+  // 하위 계층을 모두 조회
+  @GetMapping("/categories/{categoryId}")
+  public ResponseEntity<CategoryResponseDto> getCategoryWithChildren(
+      @PathVariable Long categoryId) {
+    CategoryResponseDto responseDto = categoryService.getCategoryWithChildren(categoryId);
+    return ResponseEntity.ok(responseDto);
+  }
+
+  // 바로 아래 depth만 조회
+  @GetMapping("/categories/{categoryId}/children")
+  public ResponseEntity<List<CategoryChildrenResponseDto>> getCategoryWithDirectChildren(
+      @PathVariable Long categoryId) {
+    List<CategoryChildrenResponseDto> children = categoryService.getCategoryWithDirectChildren(
+        categoryId);
+    return ResponseEntity.ok(children);
+  }
+}

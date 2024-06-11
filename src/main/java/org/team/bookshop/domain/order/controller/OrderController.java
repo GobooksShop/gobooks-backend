@@ -1,31 +1,56 @@
 package org.team.bookshop.domain.order.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.team.bookshop.global.error.ErrorCode;
-import org.team.bookshop.global.error.exception.ApiException;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.team.bookshop.domain.order.Service.OrderService;
+import org.team.bookshop.domain.order.dto.*;
+import org.team.bookshop.domain.product.entity.Product;
+import org.team.bookshop.domain.product.repository.ProductRepository;
+import org.team.bookshop.domain.product.service.ProductService;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
-@Slf4j
-@Tag(name = "주문")
-@RequestMapping("/api/v1/order")
+@RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
+    private final OrderService orderService;
+    private final ProductRepository productRepository;
 
-    //localhost:8080/order
-    @GetMapping()
-    @Operation(summary = "주문을 확인합니다.", description = "유저가 주문을 찾습니다.")
-    public ResponseEntity<String> returnUrl(){
-        try{
-            throw new ApiException(ErrorCode.INVALID_INPUT_VALUE);
-        }catch(ApiException e){
-            log.error("ErrorMessage: {} \n ",e.getMessage(), e);
-        }
-        return ResponseEntity.ok().build();
+    // 주문 생성
+    @PostMapping("/create")
+    public ResponseEntity<OrderCreateResponse> createOrder(
+            @RequestBody OrderCreateRequest orderCreateRequest) {
+        Long savedOrderId = orderService.save(orderCreateRequest);
+        System.out.println("savedOrderId = " + savedOrderId);
+        OrderCreateResponse orderCreateResponse = orderService.findByIdForCreateResponse(savedOrderId).toOrderCreateResponse();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderCreateResponse);
+    }
+
+    // 주문 수정
+    @PatchMapping("/update")
+    public ResponseEntity<OrderUpdateResponse> updateOrder(
+            @RequestBody OrderUpdateRequest orderUpdateRequest) {
+        Long updatedOrderId = orderService.update(orderUpdateRequest);
+        OrderUpdateResponse orderUpdateResponse = orderService.findByIdForCreateResponse(updatedOrderId).toOrderUpdateResponse();
+
+        return ResponseEntity.status(HttpStatus.OK).body(orderUpdateResponse);
+    }
+
+    // 주문 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<OrderDeleteResponse> deleteOrder(
+            @RequestBody OrderDeleteRequest orderDeleteRequest) {
+        Long deletedOrderId = orderService.delete(orderDeleteRequest);
+        OrderDeleteResponse orderDeleteResponse = new OrderDeleteResponse(deletedOrderId, true);
+
+        return new ResponseEntity<>(orderDeleteResponse, HttpStatus.OK);
     }
 }

@@ -6,51 +6,61 @@ import org.springframework.boot.logging.LogLevel;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
 
-    // Common
-    INVALID_INPUT_VALUE(400, "C001", " Invalid Input Value", LogLevel.ERROR),
-    METHOD_NOT_ALLOWED(405, "C002", " Invalid Input Value", LogLevel.ERROR),
-    ENTITY_NOT_FOUND(400, "C003", " Entity Not Found", LogLevel.ERROR),
-    INTERNAL_SERVER_ERROR(500, "C004", "Server Error", LogLevel.ERROR),
-    INVALID_TYPE_VALUE(400, "C005", " Invalid Type Value", LogLevel.ERROR),
-    HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied", LogLevel.ERROR),
+  // Common
+  INVALID_INPUT_VALUE(400, "C001", " Invalid Input Value", LogLevel.ERROR),
+  METHOD_NOT_ALLOWED(405, "C002", " Invalid Input Value", LogLevel.ERROR),
+  ENTITY_NOT_FOUND(400, "C003", " Entity Not Found", LogLevel.ERROR),
+  INTERNAL_SERVER_ERROR(500, "C004", "Server Error", LogLevel.ERROR),
+  INVALID_TYPE_VALUE(400, "C005", " Invalid Type Value", LogLevel.ERROR),
+  HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied", LogLevel.ERROR),
+  NO_HANDLER_FOUND(404, "C007", "No Handler found", LogLevel.ERROR),
+  NO_RESOURCE_FOUND(404, "C008", "No Resource found", LogLevel.ERROR),
 
-    //USER
+  //USER
+  EMAIL_ALREADY_REGISTERED(400, "U001", "Email already registered", LogLevel.ERROR),
 
-    //BOOK
+  //BOOK
 
-    //CATEGORY
+  //CATEGORY
+  SELF_LOOP_CATEGORY_PATH(400, "C009", "The category path should not have self-loops",
+      LogLevel.ERROR),
+  CATEGORY_HAS_CHILDREN(400, "C010", "Cannot delete a category that has children", LogLevel.ERROR),
+  NO_PRODUCTS_IN_CATEGORY(404, "C012", "No Products in Category", LogLevel.ERROR),
 
-    //ORDER
+  //ORDER
 
-    //PAYMENT
+  //PAYMENT
 
-    ;
-    private final String code;
-    private final String message;
-    private int status;
-    private final LogLevel logLevel;
+  //Scure
+  SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
+  AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR);;
 
-    ErrorCode(final int status, final String code, final String message, LogLevel logLevel) {
-        this.status = status;
-        this.message = message;
-        this.code = code;
-        this.logLevel = logLevel;
-    }
+  private final String code;
+  private final String message;
+  private int status;
+  private final LogLevel logLevel;
 
-    public String getMessage() {
-        return this.message;
-    }
+  ErrorCode(final int status, final String code, final String message, LogLevel logLevel) {
+    this.status = status;
+    this.message = message;
+    this.code = code;
+    this.logLevel = logLevel;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public String getMessage() {
+    return this.message;
+  }
 
-    public int getStatus() {
-        return status;
-    }
+  public String getCode() {
+    return code;
+  }
 
-    public LogLevel getLogLevel() {
-        return logLevel;
-    }
+  public int getStatus() {
+    return status;
+  }
+
+  public LogLevel getLogLevel() {
+    return logLevel;
+  }
 
 }
