@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,8 +46,6 @@ public class OrderService {
         // 주문 생성 요청을 바탕으로 Order 엔티티를 만드는 과정
         Order order = Order.createOrder();
 
-        System.out.println("orderCreateRequest address = " + orderCreateRequest.getOrderAddressCreate());
-
         // User
         // 후에 cookie를 통해 userID를 받아오는 부분을 추가해야 함
         //User user = userRepository.findById(1L).orElseThrow(() -> new IllegalStateException("해당하는 회원이 없습니다."));
@@ -54,7 +53,6 @@ public class OrderService {
         // 주문 생성 요청을 바탕으로 OrderItems 엔티티를 만드는 과정
         List<OrderItem> orderItems = orderCreateRequest.toOrderItems();
         List<Long> productIds = orderCreateRequest.toProductIds();
-        System.out.println("productIds = " + productIds);
 
         int totalCount = 0;
         int totalPrice = 0;
@@ -78,17 +76,10 @@ public class OrderService {
             order.getOrderItems().add(orderItem);
         }
 
-        // 주문 생성 요청을 바탕으로 Delivery, Address 엔티티를 만드는 과정
-        Delivery delivery = orderCreateRequest.toDeliveryEntity();
-        Address address = orderCreateRequest.toAddressEntity();
-        address.setDelivery(delivery);
-        delivery.setAddress(address);
-        deliveryRepository.save(delivery);
-
-        order.setDelivery(delivery);
-
         order.setOrderTotalAmount(totalCount);
         order.setOrderTotalPrice(totalPrice);
+
+        order.setMerchantId(UUID.randomUUID().toString());
 
         order.setOrderStatus(OrderStatus.ACCEPTED);
         order.setOrderDateTime(LocalDateTime.now());
@@ -134,8 +125,6 @@ public class OrderService {
             orderItemRepository.delete(orderItem);
         }
 
-
-
         // 관련된 엔티티인 delivery, address, orderItem모두 삭제
         Delivery delivery = order.getDelivery();
         deliveryRepository.delete(delivery);
@@ -146,6 +135,21 @@ public class OrderService {
     }
 
     public Order findByIdForCreateResponse(long orderId) {
-        return orderRepository.findWithAllRelatedEntityById(orderId);
+        return orderRepository.findWithOrderItems(orderId);
+    }
+
+    @Transactional
+    public void setOrderAddress(Long orderId, OrderAddressCreate orderAddressCreate) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다"));
+
+        Address address = orderAddressCreate.toEntity();
+        Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1L);
+        address.setDelivery(delivery);
+        delivery.setAddress(address);
+        
+        deliveryRepository.save(delivery);
+
+        order.setDelivery(delivery);
+
     }
 }
