@@ -46,10 +46,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                             .requestMatchers(HttpMethod.GET,"/").permitAll()
-                            .requestMatchers("/api/auth/**").permitAll()
-                            .requestMatchers(HttpMethod.POST,"/api/users/**").permitAll()
-                            .requestMatchers(HttpMethod.GET,"/api/categories/**").permitAll()
-                            .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
+//                            .requestMatchers("/api/auth/**").permitAll()
+//                            .requestMatchers(HttpMethod.POST,"/api/users/**").permitAll()
+//                            .requestMatchers(HttpMethod.GET,"/api/categories/**").permitAll()
+//                            .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
+                            .requestMatchers("/api/users/**").permitAll()
+                            .requestMatchers("/api/categories/**").permitAll()
+                            .requestMatchers("/api/products/**").permitAll()
+                            .requestMatchers("/api/admin/**").permitAll()
                             .anyRequest().authenticated()
 //                            .anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
                 )

@@ -17,78 +17,79 @@ import org.team.bookshop.global.error.exception.ApiException;
 @Transactional
 public class CategoryService {
 
-  private final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-  public CategoryService(CategoryRepository categoryRepository) {
-    this.categoryRepository = categoryRepository;
-  }
-
-  // READ
-  // 하위 계층을 모두 조회
-  public CategoryResponseDto getCategoryWithChildren(Long parentId) {
-    Category parent = categoryRepository.findByIdWithChildren(parentId)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-
-    List<Category> children = parent.getChildren();
-
-    CategoryResponseDto parentDto = CategoryResponseDto.fromEntity(parent);
-    parentDto.setChildren(children.stream()
-        .map(CategoryResponseDto::fromEntity)
-        .collect(Collectors.toList()));
-
-    return parentDto;
-  }
-
-  // 바로 아래 depth만 조회
-  public List<CategoryChildrenResponseDto> getCategoryWithDirectChildren(Long parentId) {
-    Category parent = categoryRepository.findById(parentId)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-
-    return parent.getChildren().stream()
-        .map(CategoryChildrenResponseDto::fromEntity)
-        .collect(Collectors.toList());
-  }
-
-  // CREATE
-  public CategoryResponseDto createCategory(
-      CategoryCreateRequestDto createRequestDto) {
-    Category parent = null;
-    Long parentId = createRequestDto.getParentId();
-
-    if (parentId != null) {
-      parent = categoryRepository.findById(parentId)
-          .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
-    Category category = new Category();
-    category.setName(createRequestDto.getName());
-    category.setParent(parent);
-
-    Category savedCategory = categoryRepository.save(category);
-    return CategoryResponseDto.fromEntity(savedCategory);
-  }
-
-  // UPDATE
-  public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto updateRequestDto) {
-    Category category = categoryRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-    category.setName(updateRequestDto.getName());
-    return CategoryResponseDto.fromEntity(categoryRepository.save(category));
-  }
-
-  // DELETE
-  public void deleteCategory(Long id) {
-    Category category = categoryRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-    if (!categoryRepository.existsByParentId(id)) {
-      if (category.getParent() != null) {
-        category.getParent().removeChild(category);
-      }
-      categoryRepository.deleteById(id);
-    } else {
-      throw new ApiException(ErrorCode.CATEGORY_HAS_CHILDREN);
+    public List<CategoryResponseDto> getRootCategories() {
+        List<Category> rootCategories = categoryRepository.findRootCategory();
+        return rootCategories.stream()
+            .map(CategoryResponseDto::fromEntity)
+            .collect(Collectors.toList());
     }
-  }
+
+    // READ
+    // 하위 계층을 모두 조회
+    public CategoryResponseDto getCategoryWithChildren(Long parentId) {
+        Category parent = categoryRepository.findByIdWithChildren(parentId)
+            .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+
+        List<Category> children = parent.getChildren();
+
+        CategoryResponseDto parentDto = CategoryResponseDto.fromEntity(parent);
+        parentDto.setChildren(children.stream()
+            .map(CategoryResponseDto::fromEntity)
+            .collect(Collectors.toList()));
+
+        return parentDto;
+    }
+
+    // 바로 아래 depth만 조회
+    public List<CategoryChildrenResponseDto> getCategoryWithDirectChildren(Long parentId) {
+        Category parent = categoryRepository.findById(parentId)
+            .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+
+        return parent.getChildren().stream()
+            .map(CategoryChildrenResponseDto::fromEntity)
+            .collect(Collectors.toList());
+    }
+
+    // CREATE
+    public CategoryResponseDto createCategory(
+        CategoryCreateRequestDto createRequestDto) {
+        Category parent = null;
+        Long parentId = createRequestDto.getParentId();
+
+        if (parentId != null) {
+            parent = categoryRepository.findById(parentId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+        }
+
+        Category category = new Category();
+        category.setName(createRequestDto.getName());
+        category.setParent(parent);
+
+        Category savedCategory = categoryRepository.save(category);
+        return CategoryResponseDto.fromEntity(savedCategory);
+    }
+
+    // UPDATE
+    public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto updateRequestDto) {
+        Category category = categoryRepository.findById(id)
+            .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+        category.setName(updateRequestDto.getName());
+        return CategoryResponseDto.fromEntity(categoryRepository.save(category));
+    }
+
+    // DELETE
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+            .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+
+        categoryRepository.delete(category);
+    }
 
 
   /* 클로저테이블 고려

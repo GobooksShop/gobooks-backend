@@ -14,27 +14,33 @@ import org.team.bookshop.domain.category.service.CategoryService;
 @RequestMapping("/api")
 public class CategoryViewController {
 
-  private final CategoryService categoryService;
+    private final CategoryService categoryService;
 
-  public CategoryViewController(CategoryService categoryService) {
-    this.categoryService = categoryService;
-  }
+    public CategoryViewController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
-  // READ
-  // 하위 계층을 모두 조회
-  @GetMapping("/categories/{categoryId}")
-  public ResponseEntity<CategoryResponseDto> getCategoryWithChildren(
-      @PathVariable Long categoryId) {
-    CategoryResponseDto responseDto = categoryService.getCategoryWithChildren(categoryId);
-    return ResponseEntity.ok(responseDto);
-  }
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryResponseDto>> getRootCategories() {
+        List<CategoryResponseDto> rootCategories = categoryService.getRootCategories();
+        return ResponseEntity.ok(rootCategories);
+    }
 
-  // 바로 아래 depth만 조회
-  @GetMapping("/categories/{categoryId}/children")
-  public ResponseEntity<List<CategoryChildrenResponseDto>> getCategoryWithDirectChildren(
-      @PathVariable Long categoryId) {
-    List<CategoryChildrenResponseDto> children = categoryService.getCategoryWithDirectChildren(
-        categoryId);
-    return ResponseEntity.ok(children);
-  }
+    // READ
+    // 하위 계층을 모두 조회
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<CategoryResponseDto> getCategoryWithChildren(
+        @PathVariable Long categoryId) {
+        CategoryResponseDto responseDto = categoryService.getCategoryWithChildren(categoryId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 바로 아래 depth만 조회
+    @GetMapping("/categories/{categoryId}/children")
+    public ResponseEntity<List<CategoryChildrenResponseDto>> getCategoryWithDirectChildren(
+        @PathVariable Long categoryId) {
+        List<CategoryChildrenResponseDto> children = categoryService.getCategoryWithDirectChildren(
+            categoryId);
+        return ResponseEntity.ok(children);
+    }
 }
