@@ -2,9 +2,7 @@ package org.team.bookshop.global.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.team.bookshop.domain.user.entity.User;
 
@@ -20,7 +18,7 @@ public class PrincipalDetails implements UserDetails {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
     authorities.add(() ->
-        user.getRole().getRole()
+        user.getRole().getRoleName()
     );
 
     return authorities;
