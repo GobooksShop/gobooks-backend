@@ -1,6 +1,9 @@
 package org.team.bookshop.domain.category.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +27,29 @@ public class CategoryService {
     }
 
     public List<CategoryResponseDto> getRootCategories() {
-        List<Category> rootCategories = categoryRepository.findRootCategory();
-        return rootCategories.stream()
-            .map(CategoryResponseDto::fromEntity)
-            .collect(Collectors.toList());
+        List<Object[]> categories = categoryRepository.findRootCategory();
+        Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+        List<CategoryResponseDto> rootCategories = new ArrayList<>();
+
+        for (Object[] category : categories) {
+            Long id = ((Number) category[0]).longValue();
+            String name = (String) category[1];
+            Long parentId = category[2] != null ? ((Number) category[2]).longValue() : null;
+
+            CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
+            categoryMap.put(id, categoryDto);
+
+            if (parentId == null) {
+                rootCategories.add(categoryDto);
+            } else {
+                CategoryResponseDto parentCategory = categoryMap.get(parentId);
+                if (parentCategory != null) {
+                    parentCategory.getChildren().add(categoryDto);
+                }
+            }
+        }
+
+        return rootCategories;
     }
 
     // READ
