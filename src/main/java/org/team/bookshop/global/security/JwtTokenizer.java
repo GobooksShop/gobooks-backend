@@ -139,6 +139,7 @@ public class JwtTokenizer {
           .created(LocalDateTime.now())
           .build();
       tokenRepository.save(blacklistedToken);
+      return;
     }
     throw new ApiException("Invalid refresh token.",ErrorCode.BANDED_TOKEN);
   }
