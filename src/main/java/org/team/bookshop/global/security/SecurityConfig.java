@@ -22,7 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.team.bookshop.domain.user.repository.TokenRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
-import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.config.JwtConfig;
 import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
@@ -53,6 +52,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/users/**").permitAll()
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
+                            .requestMatchers("/api/admin/**").permitAll()
                             .anyRequest().authenticated()
 //                            .anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
                 )
