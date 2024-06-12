@@ -87,14 +87,8 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-        if (!categoryRepository.existsByParentId(id)) {
-            if (category.getParent() != null) {
-                category.getParent().removeChild(category);
-            }
-            categoryRepository.deleteById(id);
-        } else {
-            throw new ApiException(ErrorCode.CATEGORY_HAS_CHILDREN);
-        }
+
+        categoryRepository.delete(category);
     }
 
 
