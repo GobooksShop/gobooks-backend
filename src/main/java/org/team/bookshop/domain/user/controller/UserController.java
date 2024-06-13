@@ -63,10 +63,4 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping
-    public ResponseEntity<List<UserPostDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
 }
