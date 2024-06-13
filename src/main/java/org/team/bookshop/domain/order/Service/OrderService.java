@@ -70,7 +70,7 @@ public class OrderService {
             orderItem.setOrder(order);
 
             totalCount += orderItem.getOrderCount();
-            totalPrice += orderItem.getOrderPrice();
+            totalPrice += orderItem.getOrderPrice() * orderItem.getOrderCount();
 
             orderItemRepository.save(orderItem);
             order.getOrderItems().add(orderItem);
