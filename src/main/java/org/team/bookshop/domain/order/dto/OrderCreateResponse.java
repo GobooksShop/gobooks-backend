@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class OrderCreateResponse {
-
     private Long orderId;
     private String merchantId;
     private OrderItemResponses orderItemResponses;
