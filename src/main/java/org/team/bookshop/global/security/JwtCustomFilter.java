@@ -31,6 +31,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
     @NotNull FilterChain filterChain) throws ServletException, IOException {
     try {
       String jwtAccessToken = jwtTokenizer.getJwtFromRequest(request);
+
       if (jwtAccessToken != null && jwtTokenizer.validateAccessToken(jwtAccessToken)) {
         setSecurityContext(jwtAccessToken, request);
       } else {
@@ -39,15 +40,31 @@ public class JwtCustomFilter extends OncePerRequestFilter {
           String newAccessToken = jwtTokenizer.updateAccessToken(refreshToken);
           response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
           setSecurityContext(newAccessToken, request);
+          responseUnauthorized(response, "Token refreshed, please retry with new access token");
+          return;
         }
       }
     } catch (ApiException ex) {
       log.error("Could not set user authentication in security context", ex);
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.getWriter().write("Unauthorized");
+      responseUnauthorized(response, "Unauthorized");
       return;
     }
     filterChain.doFilter(request, response);
+  }
+
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    String path = request.getRequestURI();
+    String method = request.getMethod();
+    return path.startsWith("/api/auth") ||
+        path.startsWith("/api/users") ||
+        path.startsWith("/api/categories") && method.equals("GET") ||
+        path.startsWith("/api/products") && method.equals("GET");
+  }
+
+  private void responseUnauthorized(HttpServletResponse response, String message) throws IOException {
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.getWriter().write(message);
   }
 
   private void setSecurityContext(String token, HttpServletRequest request) {
@@ -60,5 +77,6 @@ public class JwtCustomFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
   }
+
 }
 

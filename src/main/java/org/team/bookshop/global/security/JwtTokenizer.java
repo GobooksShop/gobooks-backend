@@ -92,9 +92,9 @@ public class JwtTokenizer {
       parseToken(token);
       return true;
     } catch (ExpiredJwtException e) {
-      log.error("Access token has expired: " + e.getMessage());
+      log.error("Access token has expired: {}", e.getMessage());
     } catch (JwtException e) {
-      log.error("Invalid access token: " + e.getMessage());
+      log.error("Invalid access token: {}", e.getMessage());
     }
     return false;
   }
@@ -104,7 +104,7 @@ public class JwtTokenizer {
       parseToken(token);  // parseToken에서 유효성 검사
       return !isTokenBlacklisted(token);
     } catch (ExpiredJwtException e) {
-      log.error("Refresh token has expired: " + e.getMessage());
+      log.error("Refresh token has expired: {}", e.getMessage());
     }
     return false;
   }

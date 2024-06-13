@@ -26,7 +26,7 @@ import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // 메서드 보안 활성화
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 

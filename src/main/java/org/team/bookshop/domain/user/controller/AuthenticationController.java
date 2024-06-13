@@ -68,7 +68,7 @@ public class AuthenticationController {
         String refreshToken = jwtTokenizer.getRefreshTokenFromCookies(request);
 
         try {
-            if (jwtTokenizer.validateRefreshToken(refreshToken)) {
+            if (refreshToken != null && jwtTokenizer.validateRefreshToken(refreshToken)) {
                 String newAccessToken = jwtTokenizer.updateAccessToken(refreshToken);
                 String newRefreshToken = jwtTokenizer.updateRefreshToken(refreshToken);
                 jwtTokenizer.addTokenToBlacklist(refreshToken, "refresh token rotation");

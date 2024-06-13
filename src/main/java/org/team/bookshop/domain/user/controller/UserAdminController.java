@@ -11,14 +11,14 @@ import org.team.bookshop.domain.user.dto.UserPostDto;
 import org.team.bookshop.domain.user.service.UserService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class UserAdminController {
 
   private final UserService userService;
 
-  @GetMapping
+  @GetMapping("/users")
   public ResponseEntity<List<UserPostDto>> getAllUsers() {
     return ResponseEntity.ok(userService.getAllUsers());
   }
