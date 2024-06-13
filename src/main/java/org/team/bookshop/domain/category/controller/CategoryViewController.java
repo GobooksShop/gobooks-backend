@@ -26,6 +26,12 @@ public class CategoryViewController {
         return ResponseEntity.ok(rootCategories);
     }
 
+    @GetMapping("/categories/hierarchy")
+    public ResponseEntity<List<CategoryResponseDto>> getCategoryHierarchy() {
+        List<CategoryResponseDto> categoryHierarchy = categoryService.getCategoryHierarchy();
+        return ResponseEntity.ok(categoryHierarchy);
+    }
+
     // READ
     // 하위 계층을 모두 조회
     @GetMapping("/categories/{categoryId}")

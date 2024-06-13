@@ -89,41 +89,18 @@ public class ProductService {
         return product;
     }
 
-    // 특정 카테고리의 상품 리스트 조회
+
     public List<ProductResponse> getProductsByCategoryId(Long categoryId) {
-        List<Category> categories = categoryRepository.findAllSubcategories(categoryId);
-        List<Long> categoryIds = categories.stream()
-            .map(Category::getId)
-            .collect(Collectors.toList());
-
-        List<Product> products = productRepository.findByCategoryIds(categoryIds);
-
-        if (products.isEmpty()) {
-            throw new ApiException(ErrorCode.NO_PRODUCTS_IN_CATEGORY);
-        }
-
+        List<Product> products = productRepository.findByCategoryIds(categoryId);
         return products.stream()
             .map(ProductResponse::new)
             .collect(Collectors.toList());
     }
 
-    // 상품 리스트 페이징 조회
     public Page<ProductResponse> getProductsByCategoryId(Long categoryId, Pageable pageable) {
-        if (categoryId == null || categoryId <= 0) {
-            throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
-        }
-
-        List<Category> categories = categoryRepository.findAllSubcategories(categoryId);
-        List<Long> categoryIds = categories.stream()
-            .map(Category::getId)
-            .collect(Collectors.toList());
-
-        Page<Product> productPage = productRepository.findByCategoryIds(categoryIds, pageable);
-
-        if (productPage.isEmpty()) {
-            throw new ApiException(ErrorCode.NO_PRODUCTS_IN_CATEGORY);
-        }
-
-        return productPage.map(ProductResponse::new);
+        Page<Product> products = productRepository.findByCategoryIds(categoryId, pageable);
+        return products.map(ProductResponse::new);
     }
+
+
 }

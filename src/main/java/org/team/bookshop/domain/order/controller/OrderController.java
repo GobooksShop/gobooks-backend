@@ -45,12 +45,11 @@ public class OrderController {
     }
 
     // 주문 삭제
-    @DeleteMapping("/delete")
-    public ResponseEntity<OrderDeleteResponse> deleteOrder(
-            @RequestBody OrderDeleteRequest orderDeleteRequest) {
-        Long deletedOrderId = orderService.delete(orderDeleteRequest);
-        OrderDeleteResponse orderDeleteResponse = new OrderDeleteResponse(deletedOrderId, true);
+    @DeleteMapping("/delete/{orderId}")
+    public ResponseEntity<Void> deleteOrder(
+            @PathVariable("orderId") Long orderId) {
+        Long deletedOrderId = orderService.delete(orderId);
 
-        return new ResponseEntity<>(orderDeleteResponse, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

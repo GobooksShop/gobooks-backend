@@ -13,12 +13,14 @@ public class OrderCreateResponse {
     private String merchantId;
     private OrderItemResponses orderItemResponses;
     private OrderStatus orderStatus;
+    private int orderTotalPrice;
 
-    public OrderCreateResponse(Long orderId, String merchantId, OrderItemResponses orderItemResponses, OrderStatus orderStatus) {
+    public OrderCreateResponse(Long orderId, String merchantId, OrderItemResponses orderItemResponses, OrderStatus orderStatus, int orderTotalPrice) {
         this.orderId = orderId;
         this.merchantId = merchantId;
         this.orderItemResponses = orderItemResponses;
         this.orderStatus = orderStatus;
+        this.orderTotalPrice = orderTotalPrice;
     }
 
     public OrderCreateResponse() {
