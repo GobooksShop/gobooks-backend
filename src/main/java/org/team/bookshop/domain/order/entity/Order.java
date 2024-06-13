@@ -59,7 +59,8 @@ public class Order extends BaseEntity {
             id,
             merchantId,
             new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
-            orderStatus);
+            orderStatus,
+            orderTotalPrice);
   }
 
   public OrderUpdateResponse toOrderUpdateResponse() {
