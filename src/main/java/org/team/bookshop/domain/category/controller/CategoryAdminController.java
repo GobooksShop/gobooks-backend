@@ -2,6 +2,7 @@ package org.team.bookshop.domain.category.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.team.bookshop.domain.category.service.CategoryService;
 
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class CategoryAdminController {
 
   private final CategoryService categoryService;

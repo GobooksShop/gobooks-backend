@@ -22,12 +22,13 @@ public enum ErrorCode {
   //BOOK
 
   //CATEGORY
-  SELF_LOOP_CATEGORY_PATH(400, "C009", "The category path should not have self-loops",
-      LogLevel.ERROR),
-  CATEGORY_HAS_CHILDREN(400, "C010", "Cannot delete a category that has children", LogLevel.ERROR),
-  NO_PRODUCTS_IN_CATEGORY(404, "C012", "No Products in Category", LogLevel.ERROR),
+  INVALID_PARENT_CATEGORY(400, "C009", "Invalid Parent Category", LogLevel.ERROR),
 
   //ORDER
+  NOT_ENOUGH_STOCK_QUANTITY(400, "O001", "Stock Quantity of Product is not enough", LogLevel.ERROR),
+  NO_EXISTING_BOOK(404, "O002", "Book with entered id doesn't exist", LogLevel.ERROR),
+  INVALID_PRODUCT_PRICE_INFO(400, "O003", "Entered Price doesn't match", LogLevel.ERROR),
+  NO_EXISTING_ORDER(404, "O004", "Order with entered id doesn't exist", LogLevel.ERROR),
 
   //PAYMENT
 
