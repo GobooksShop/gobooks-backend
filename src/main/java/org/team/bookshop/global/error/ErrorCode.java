@@ -22,10 +22,7 @@ public enum ErrorCode {
   //BOOK
 
   //CATEGORY
-  SELF_LOOP_CATEGORY_PATH(400, "C009", "The category path should not have self-loops",
-      LogLevel.ERROR),
-  CATEGORY_HAS_CHILDREN(400, "C010", "Cannot delete a category that has children", LogLevel.ERROR),
-  NO_PRODUCTS_IN_CATEGORY(404, "C012", "No Products in Category", LogLevel.ERROR),
+  INVALID_PARENT_CATEGORY(400, "C009", "Invalid Parent Category", LogLevel.ERROR),
 
   //ORDER
 

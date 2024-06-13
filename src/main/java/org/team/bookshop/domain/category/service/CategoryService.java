@@ -109,10 +109,69 @@ public class CategoryService {
 
   // UPDATE
   public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto updateRequestDto) {
-    Category category = categoryRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+    // 1. Category 엔티티 조회
+    List<Object[]> categoryData = categoryRepository.findByIdWithChildren(id);
+    if (categoryData.isEmpty()) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+
+    // 2. 조회된 데이터를 Category 엔티티로 변환
+    Category category = convertToCategoryEntity(categoryData.get(0));
+
+    // 3. 이름 업데이트
     category.setName(updateRequestDto.getName());
+
+    // 4. parentId 업데이트: null 체크 후 부모 카테고리 설정
+    if (updateRequestDto.getParentId() != null) {
+      List<Object[]> parentCategoryData = categoryRepository.findByIdWithChildren(
+          updateRequestDto.getParentId());
+      if (parentCategoryData.isEmpty()) {
+        throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+      }
+
+      Category parentCategory = convertToCategoryEntity(parentCategoryData.get(0));
+
+      if (isChildCategory(category, parentCategory)) {
+        throw new ApiException(ErrorCode.INVALID_PARENT_CATEGORY);
+      }
+
+      category.setParent(parentCategory);
+    } else {
+      category.setParent(null);
+    }
+
+    // 5. 변경 사항 저장
     return CategoryResponseDto.fromEntity(categoryRepository.save(category));
+  }
+
+  private Category convertToCategoryEntity(Object[] data) {
+    Long id = (Long) data[0];
+    String name = (String) data[1];
+    Long parentId = (Long) data[2];
+
+    Category category = new Category();
+    category.setId(id);
+    category.setName(name);
+
+    if (parentId != null) {
+      Category parent = new Category();
+      parent.setId(parentId);
+      category.setParent(parent);
+    }
+
+    return category;
+  }
+
+  // 순환 참조 방지 로직
+  private boolean isChildCategory(Category category, Category potentialParent) {
+    Category current = potentialParent;
+    while (current != null) {
+      if (current.getId().equals(category.getId())) {
+        return true;
+      }
+      current = current.getParent();
+    }
+    return false;
   }
 
   // DELETE
@@ -123,32 +182,32 @@ public class CategoryService {
     categoryRepository.delete(category);
   }
 
-    // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
-    public List<CategoryResponseDto> getCategoryHierarchy() {
-        List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
-        Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
-        List<CategoryResponseDto> rootCategories = new ArrayList<>();
+  // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
+  public List<CategoryResponseDto> getCategoryHierarchy() {
+    List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
+    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+    List<CategoryResponseDto> rootCategories = new ArrayList<>();
 
-        for (CategoryDto categoryDto : categories) {
-            Long id = categoryDto.getId();
-            String name = categoryDto.getName();
-            Long parentId = categoryDto.getParentId();
+    for (CategoryDto categoryDto : categories) {
+      Long id = categoryDto.getId();
+      String name = categoryDto.getName();
+      Long parentId = categoryDto.getParentId();
 
-            CategoryResponseDto categoryResponseDto = new CategoryResponseDto(id, name);
-            categoryMap.put(id, categoryResponseDto);
+      CategoryResponseDto categoryResponseDto = new CategoryResponseDto(id, name);
+      categoryMap.put(id, categoryResponseDto);
 
-            if (parentId == null) {
-                rootCategories.add(categoryResponseDto);
-            } else {
-                CategoryResponseDto parentCategory = categoryMap.get(parentId);
-                if (parentCategory != null) {
-                    parentCategory.getChildren().add(categoryResponseDto);
-                }
-            }
+      if (parentId == null) {
+        rootCategories.add(categoryResponseDto);
+      } else {
+        CategoryResponseDto parentCategory = categoryMap.get(parentId);
+        if (parentCategory != null) {
+          parentCategory.getChildren().add(categoryResponseDto);
         }
-
-        return rootCategories;
+      }
     }
+
+    return rootCategories;
+  }
 
 
   /* 클로저테이블 고려
