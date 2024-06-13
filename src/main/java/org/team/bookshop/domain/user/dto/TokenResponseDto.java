@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class TokenResponseDto {
 
     private String accessToken;
+    private Long userId;
     private String name;
     private String email;
     private String role;

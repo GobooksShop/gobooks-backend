@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -20,21 +20,19 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.team.bookshop.domain.user.repository.TokenRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
 import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true) // 메서드 보안 활성화
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -47,8 +45,11 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                            .requestMatchers(HttpMethod.GET, "/").permitAll()
+                            .requestMatchers(HttpMethod.GET,"/").permitAll()
                             .requestMatchers("/api/auth/**").permitAll()
+//                            .requestMatchers(HttpMethod.POST,"/api/users/**").permitAll()
+//                            .requestMatchers(HttpMethod.GET,"/api/categories/**").permitAll()
+//                            .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
                             .requestMatchers("/api/users/**").permitAll()
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
@@ -66,7 +67,7 @@ public class SecurityConfig {
                     .invalidateHttpSession(true)
                     .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )
-                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer, tokenRepository),
+                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer),
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
