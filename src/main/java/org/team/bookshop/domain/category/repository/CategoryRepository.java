@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.team.bookshop.domain.category.entity.Category;
 
-public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
+public interface CategoryRepository extends JpaRepository<Category, Long>,
+    CategoryRepositoryCustom {
 
 //    boolean existsByParentId(Long id);
 //
@@ -47,4 +48,18 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
       + "OR c.parent.id = :categoryId "
       + "OR c.parent.parent.id = :categoryId")
   List<Category> findAllSubcategories(@Param("categoryId") Long categoryId);
+
+  @Query(value = """
+      WITH RECURSIVE category_path (id, name, parent_id) AS (
+        SELECT id, name, parent_id
+        FROM category
+        WHERE id = :categoryId
+        UNION ALL
+        SELECT c.id, c.name, c.parent_id
+        FROM category c
+        INNER JOIN category_path cp ON cp.parent_id = c.id
+      )
+      SELECT * FROM category_path;
+      """, nativeQuery = true)
+  List<Object[]> findCategoryPath(@Param("categoryId") Long categoryId);
 }

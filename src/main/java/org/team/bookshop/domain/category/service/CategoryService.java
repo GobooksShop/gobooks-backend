@@ -1,6 +1,7 @@
 package org.team.bookshop.domain.category.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,5 +208,24 @@ public class CategoryService {
     }
 
     return rootCategories;
+  }
+
+  // BreadCrumb
+  public List<CategoryDto> getBreadcrumbs(Long categoryId) {
+    List<Object[]> result = categoryRepository.findCategoryPath(categoryId);
+    if (result.isEmpty()) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+
+    List<CategoryDto> breadcrumbs = result.stream()
+        .map(objects -> new CategoryDto(
+            ((Number) objects[0]).longValue(),
+            (String) objects[1],
+            objects[2] != null ? ((Number) objects[2]).longValue() : null
+        ))
+        .collect(Collectors.toList());
+
+    Collections.reverse(breadcrumbs);
+    return breadcrumbs;
   }
 }
