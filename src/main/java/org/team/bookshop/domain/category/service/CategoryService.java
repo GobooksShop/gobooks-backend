@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.category.dto.CategoryChildrenResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
+import org.team.bookshop.domain.category.dto.CategoryDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryUpdateRequestDto;
 import org.team.bookshop.domain.category.entity.Category;
@@ -111,6 +112,33 @@ public class CategoryService {
             .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
 
         categoryRepository.delete(category);
+    }
+
+    // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
+    public List<CategoryResponseDto> getCategoryHierarchy() {
+        List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
+        Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+        List<CategoryResponseDto> rootCategories = new ArrayList<>();
+
+        for (CategoryDto categoryDto : categories) {
+            Long id = categoryDto.getId();
+            String name = categoryDto.getName();
+            Long parentId = categoryDto.getParentId();
+
+            CategoryResponseDto categoryResponseDto = new CategoryResponseDto(id, name);
+            categoryMap.put(id, categoryResponseDto);
+
+            if (parentId == null) {
+                rootCategories.add(categoryResponseDto);
+            } else {
+                CategoryResponseDto parentCategory = categoryMap.get(parentId);
+                if (parentCategory != null) {
+                    parentCategory.getChildren().add(categoryResponseDto);
+                }
+            }
+        }
+
+        return rootCategories;
     }
 
 

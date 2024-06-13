@@ -56,10 +56,10 @@ public class SecurityConfig {
                             .anyRequest().authenticated()
 //                            .anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
                 )
-                .oauth2Login(oauth2Login ->
-                    oauth2Login
-                        .successHandler(customAuthSuccessHandler)
-                )
+//                .oauth2Login(oauth2Login ->
+//                    oauth2Login
+//                        .successHandler(customAuthSuccessHandler)
+//                )
                 .logout(logout -> logout
                     .logoutUrl("/logout")
                     .logoutSuccessHandler(customAuthSuccessHandler)
