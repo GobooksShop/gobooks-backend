@@ -70,7 +70,7 @@ public class OrderService {
             orderItem.setOrder(order);
 
             totalCount += orderItem.getOrderCount();
-            totalPrice += orderItem.getOrderPrice();
+            totalPrice += orderItem.getOrderPrice() * orderItem.getOrderCount();
 
             orderItemRepository.save(orderItem);
             order.getOrderItems().add(orderItem);
@@ -149,5 +149,19 @@ public class OrderService {
 
         order.setDelivery(delivery);
 
+    }
+
+    public boolean validateTotalPriceByOrderId(Long orderId, int totalPrice) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다"));
+
+        return order.getOrderTotalPrice() == totalPrice;
+    }
+
+    public boolean validateTotalPriceByMerchantId(String merchantId, int totalPrice) {
+        Order order = orderRepository.findByMerchantId(merchantId)
+            .orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다"));
+
+        return order.getOrderTotalPrice() == totalPrice;
     }
 }
