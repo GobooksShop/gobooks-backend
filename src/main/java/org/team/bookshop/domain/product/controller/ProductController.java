@@ -85,11 +85,18 @@ public class ProductController {
 //    return ResponseEntity.ok(productResponses);
 //  }
 
-  // 특정 카테고리 조회 - paging (queryDSL 사용)
+  // 카테고리별 상품 조회 - paging (queryDSL 사용)
   @GetMapping("/category/{categoryId}/paged")
   public Page<ProductDto> getProductsByCategoryPaged(@PathVariable Long categoryId,
       Pageable pageable) {
     return productService.getProductsByCategoryId(categoryId, pageable);
+  }
+
+  // 카테고리별 상품 조회
+  @GetMapping("/category/{categoryId}")
+  public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable Long categoryId) {
+    List<ProductDto> products = productService.getProductsByCategoryId(categoryId);
+    return ResponseEntity.ok(products);
   }
 }
 

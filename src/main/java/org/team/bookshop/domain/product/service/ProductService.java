@@ -102,8 +102,16 @@ public class ProductService {
 //        return products.map(ProductResponse::new);
 //    }
 
-  // 카테고리별 조회 paging, querydsl
+  // 카테고리별 상품 조회 paging, querydsl
   public Page<ProductDto> getProductsByCategoryId(Long categoryId, Pageable pageable) {
     return productRepository.findByCategoryIds(categoryId, pageable);
+  }
+
+  // 카테고리별 상품 조회
+  public List<ProductDto> getProductsByCategoryId(Long categoryId) {
+    List<Product> products = productRepository.findByCategoryIds(categoryId);
+    return products.stream()
+        .map(ProductDto::new)
+        .collect(Collectors.toList());
   }
 }

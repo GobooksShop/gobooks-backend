@@ -69,4 +69,25 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     // PageImpl 생성 및 반환
     return new PageImpl<>(productDtoList, pageable, countQuery.fetchCount());
   }
+
+  @Override
+  public List<Product> findByCategoryIds(Long categoryId) {
+    QProduct product = QProduct.product;
+    QBookCategory bookCategory = QBookCategory.bookCategory;
+    QCategory category = QCategory.category;
+
+    JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+
+    // 카테고리 계층 쿼리 (기존 쿼리와 동일)
+    BooleanExpression isChildCategory = category.id.eq(categoryId);
+    isChildCategory = isChildCategory.or(category.parent.id.eq(categoryId));
+
+    return queryFactory
+        .selectFrom(product)
+        .join(product.bookCategories, bookCategory)
+        .join(bookCategory.category, category)
+        .where(isChildCategory)
+        .distinct()
+        .fetch();
+  }
 }
