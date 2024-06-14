@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.product.entity.Product;
@@ -40,22 +39,6 @@ public class AddProductRequest {
 
   @NotNull(message = "Category IDs are required")
   private List<Long> categoryIds;
-
-
-  public AddProductRequest(Product product) {
-    this.title = product.getTitle();
-    this.author = product.getAuthor();
-    this.isbn = product.getIsbn();
-    this.content = product.getContent();
-    this.fixedPrice = product.getFixedPrice();
-    this.publicationYear = product.getPublicationYear();
-    this.status = product.getStatus();
-    this.stockQuantity = product.getStockQuantity();
-    this.pictureUrl = product.getPictureUrl();
-    this.categoryIds = product.getBookCategories().stream()
-        .map(bookCategory -> bookCategory.getCategory().getId())
-        .collect(Collectors.toList());
-  }
 
   public Product toEntity() {
     return Product.builder()

@@ -29,4 +29,5 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
         .leftJoin(category.parent, parentCategory)
         .fetch();
   }
+
 }

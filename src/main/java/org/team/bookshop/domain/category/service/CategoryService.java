@@ -28,32 +28,6 @@ public class CategoryService {
     this.categoryRepository = categoryRepository;
   }
 
-  public List<CategoryResponseDto> getRootCategories() {
-    List<Object[]> categories = categoryRepository.findRootCategory();
-    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
-    List<CategoryResponseDto> rootCategories = new ArrayList<>();
-
-    for (Object[] category : categories) {
-      Long id = ((Number) category[0]).longValue();
-      String name = (String) category[1];
-      Long parentId = category[2] != null ? ((Number) category[2]).longValue() : null;
-
-      CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
-      categoryMap.put(id, categoryDto);
-
-      if (parentId == null) {
-        rootCategories.add(categoryDto);
-      } else {
-        CategoryResponseDto parentCategory = categoryMap.get(parentId);
-        if (parentCategory != null) {
-          parentCategory.getChildren().add(categoryDto);
-        }
-      }
-    }
-
-    return rootCategories;
-  }
-
   // READ
   // 하위 계층을 모두 조회
   public CategoryResponseDto getCategoryWithChildren(Long parentId) {
@@ -87,6 +61,79 @@ public class CategoryService {
     return parent.getChildren().stream()
         .map(CategoryChildrenResponseDto::fromEntity)
         .collect(Collectors.toList());
+  }
+
+  // root 카테고리부터 조회
+  public List<CategoryResponseDto> getRootCategories() {
+    List<Object[]> categories = categoryRepository.findRootCategory();
+    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+    List<CategoryResponseDto> rootCategories = new ArrayList<>();
+
+    for (Object[] category : categories) {
+      Long id = ((Number) category[0]).longValue();
+      String name = (String) category[1];
+      Long parentId = category[2] != null ? ((Number) category[2]).longValue() : null;
+
+      CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
+      categoryMap.put(id, categoryDto);
+
+      if (parentId == null) {
+        rootCategories.add(categoryDto);
+      } else {
+        CategoryResponseDto parentCategory = categoryMap.get(parentId);
+        if (parentCategory != null) {
+          parentCategory.getChildren().add(categoryDto);
+        }
+      }
+    }
+
+    return rootCategories;
+  }
+
+  // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
+  public List<CategoryResponseDto> getCategoryHierarchy() {
+    List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
+    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+    List<CategoryResponseDto> rootCategories = new ArrayList<>();
+
+    for (CategoryDto categoryDto : categories) {
+      Long id = categoryDto.getId();
+      String name = categoryDto.getName();
+      Long parentId = categoryDto.getParentId();
+
+      CategoryResponseDto categoryResponseDto = new CategoryResponseDto(id, name);
+      categoryMap.put(id, categoryResponseDto);
+
+      if (parentId == null) {
+        rootCategories.add(categoryResponseDto);
+      } else {
+        CategoryResponseDto parentCategory = categoryMap.get(parentId);
+        if (parentCategory != null) {
+          parentCategory.getChildren().add(categoryResponseDto);
+        }
+      }
+    }
+
+    return rootCategories;
+  }
+
+  // BreadCrumb 조회
+  public List<CategoryDto> getBreadcrumbs(Long categoryId) {
+    List<Object[]> result = categoryRepository.findCategoryPath(categoryId);
+    if (result.isEmpty()) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+
+    List<CategoryDto> breadcrumbs = result.stream()
+        .map(objects -> new CategoryDto(
+            ((Number) objects[0]).longValue(),
+            (String) objects[1],
+            objects[2] != null ? ((Number) objects[2]).longValue() : null
+        ))
+        .collect(Collectors.toList());
+
+    Collections.reverse(breadcrumbs);
+    return breadcrumbs;
   }
 
   // CREATE
@@ -145,6 +192,7 @@ public class CategoryService {
     return CategoryResponseDto.fromEntity(categoryRepository.save(category));
   }
 
+  // object->entity 변경
   private Category convertToCategoryEntity(Object[] data) {
     Long id = (Long) data[0];
     String name = (String) data[1];
@@ -181,51 +229,5 @@ public class CategoryService {
         .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
 
     categoryRepository.delete(category);
-  }
-
-  // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
-  public List<CategoryResponseDto> getCategoryHierarchy() {
-    List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
-    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
-    List<CategoryResponseDto> rootCategories = new ArrayList<>();
-
-    for (CategoryDto categoryDto : categories) {
-      Long id = categoryDto.getId();
-      String name = categoryDto.getName();
-      Long parentId = categoryDto.getParentId();
-
-      CategoryResponseDto categoryResponseDto = new CategoryResponseDto(id, name);
-      categoryMap.put(id, categoryResponseDto);
-
-      if (parentId == null) {
-        rootCategories.add(categoryResponseDto);
-      } else {
-        CategoryResponseDto parentCategory = categoryMap.get(parentId);
-        if (parentCategory != null) {
-          parentCategory.getChildren().add(categoryResponseDto);
-        }
-      }
-    }
-
-    return rootCategories;
-  }
-
-  // BreadCrumb
-  public List<CategoryDto> getBreadcrumbs(Long categoryId) {
-    List<Object[]> result = categoryRepository.findCategoryPath(categoryId);
-    if (result.isEmpty()) {
-      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
-    }
-
-    List<CategoryDto> breadcrumbs = result.stream()
-        .map(objects -> new CategoryDto(
-            ((Number) objects[0]).longValue(),
-            (String) objects[1],
-            objects[2] != null ? ((Number) objects[2]).longValue() : null
-        ))
-        .collect(Collectors.toList());
-
-    Collections.reverse(breadcrumbs);
-    return breadcrumbs;
   }
 }

@@ -44,22 +44,4 @@ public class Category extends BaseEntity {
   @JsonManagedReference
   private List<Category> children = new ArrayList<>();
 
-  public void addChild(Category child) {
-    children.add(child);
-    child.setParent(this);
-  }
-
-  public void removeChild(Category child) {
-    children.remove(child);
-    child.setParent(null);
-  }
-
-  // 상품 추가 시, 해당 카테고리의 상위 카테고리에도 추가되는 메서드
-  public void addParentCategories() {
-    Category current = this;
-    while (current.getParent() != null) {
-      current.getParent().getBookCategories().addAll(this.getBookCategories());
-      current = current.getParent();
-    }
-  }
 }
