@@ -45,8 +45,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                            .requestMatchers(HttpMethod.GET,"/").permitAll()
-                            .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll() //preflight 요청을 처리하기위해 사용
+                            .requestMatchers(HttpMethod.GET, "/").permitAll()
+                            .requestMatchers(HttpMethod.OPTIONS, "/**")
+                            .permitAll() //preflight 요청을 처리하기위해 사용
                             .requestMatchers("/api/auth/**").permitAll()
 //                            .requestMatchers(HttpMethod.POST,"/api/users/**").permitAll()
 //                            .requestMatchers(HttpMethod.GET,"/api/categories/**").permitAll()
@@ -55,12 +56,13 @@ public class SecurityConfig {
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
                             .requestMatchers("/api/admin/**").permitAll()
+                            .requestMatchers("/login/oauth2/**").permitAll()
                             .anyRequest().authenticated()
                 )
-//                .oauth2Login(oauth2Login ->
-//                    oauth2Login
-//                        .successHandler(customAuthSuccessHandler)
-//                )
+                .oauth2Login(oauth2Login ->
+                    oauth2Login
+                        .successHandler(customAuthSuccessHandler)
+                )
                 .logout(logout -> logout
                     .logoutUrl("/logout")
                     .logoutSuccessHandler(customAuthSuccessHandler)

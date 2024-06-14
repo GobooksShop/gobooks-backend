@@ -7,7 +7,7 @@ spring:
             client-id: 796020689593-3eujab8a22ippd49mt2g6knf3gue3f10.apps.googleusercontent.com
             client-secret: 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
             scope: email, profile
-            redirect-uri: http://localhost:8080/api/oauth/login/google
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
 
           naver:
             client-id: rEYXDiOq3pN6eTmXTZuc

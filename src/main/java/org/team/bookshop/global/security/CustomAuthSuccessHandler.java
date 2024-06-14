@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -25,55 +24,83 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
 
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
-    private final String DEFAULT_REDIRECT_URL = "http://localhost:3000";
+    private final String DEFAULT_REDIRECT_URL = "http://localhost:3000/oauth2/redirect";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication)
-        throws ServletException, IOException {
+        Authentication authentication) throws ServletException, IOException {
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
-        User user = findOrCreateUser(attributes);
-        String jwtToken = jwtTokenizer.generateAccessToken(user);
+        String provider = oauthToken.getAuthorizedClientRegistrationId(); // 제공자 ID 가져오기
 
-        Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, jwtToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(request.isSecure());
-        cookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        User user = findOrCreateUser(provider, attributes);
 
-        response.setStatus(HttpServletResponse.SC_OK);
+        String accessToken = jwtTokenizer.generateAccessToken(user);
+        String refreshToken = jwtTokenizer.generateRefreshToken(user);
+        Cookie refreshTokenCookie = jwtTokenizer.setRefreshTokenToCookies(refreshToken);
+        response.addCookie(refreshTokenCookie);
+
+        Cookie accessTokenCookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, accessToken);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
+        accessTokenCookie.setPath("/");
+        response.addCookie(accessTokenCookie);
+
         response.sendRedirect(DEFAULT_REDIRECT_URL);
-        response.getWriter().write("Login successful");
     }
+
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication)
-        throws IOException {
+        Authentication authentication) throws IOException {
         Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, null);
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
-        cookie.setMaxAge(0); // Set the max age to 0 to delete the cookie
+        cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        response.setStatus(HttpServletResponse.SC_OK);
         response.sendRedirect(DEFAULT_REDIRECT_URL);
-        response.getWriter().write("Logout successful");
     }
 
-    private User findOrCreateUser(Map<String, Object> attributes) {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-        if (response == null) {
-            throw new IllegalArgumentException("Response map is missing in the attributes");
-        }
+    private User findOrCreateUser(String provider, Map<String, Object> attributes) {
+        final String providerId;
+        final String email;
+        final String name;
+        final String nickname;
 
-        String providerId = (String) response.get("id");
-        String email = (String) response.get("email");
-        String name = (String) response.get("name");
-        String nickname = (String) response.get("nickname");
+        switch (provider) {
+            case "google":
+                providerId = (String) attributes.get("sub");
+                email = (String) attributes.get("email");
+                name = (String) attributes.get("name");
+                nickname = name; // Google은 nickname 속성을 따로 제공하지 않음
+                break;
+
+            case "kakao":
+                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get(
+                    "kakao_account");
+                providerId = String.valueOf(attributes.get("id"));
+                email = (String) kakaoAccount.get("email");
+                Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+                name = (String) profile.get("nickname");
+                nickname = name; // Kakao는 nickname을 profile 내에서 제공
+                break;
+
+            case "naver":
+                Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+                if (response == null) {
+                    throw new IllegalArgumentException("Response map is missing in the attributes");
+                }
+                providerId = (String) response.get("id");
+                email = (String) response.get("email");
+                name = (String) response.get("name");
+                nickname = (String) response.get("nickname");
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown provider: " + provider);
+        }
 
         return userRepository.findByProviderId(providerId).orElseGet(() -> {
             User newUser = new User();
