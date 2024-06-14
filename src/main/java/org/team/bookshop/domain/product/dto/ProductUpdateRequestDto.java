@@ -10,7 +10,8 @@ import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
 @Setter
-public class UpdateProductRequest {
+public class ProductUpdateRequestDto {
+
   @NotBlank(message = "Title is required")
   private String title;
 

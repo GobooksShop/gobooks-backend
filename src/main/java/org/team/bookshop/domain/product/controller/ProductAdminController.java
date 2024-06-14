@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.team.bookshop.domain.product.dto.AddProductRequest;
-import org.team.bookshop.domain.product.dto.ProductResponse;
+import org.team.bookshop.domain.product.dto.ProductCreateRequestDto;
+import org.team.bookshop.domain.product.dto.ProductResponseDto;
+import org.team.bookshop.domain.product.dto.ProductUpdateRequestDto;
 import org.team.bookshop.domain.product.dto.SimpleProductResponseDto;
-import org.team.bookshop.domain.product.dto.UpdateProductRequest;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.service.ProductService;
 
@@ -28,17 +28,17 @@ public class ProductAdminController {
   // CREATE
   @PostMapping
   public ResponseEntity<SimpleProductResponseDto> createProduct(
-      @RequestBody @Valid AddProductRequest request) {
+      @RequestBody @Valid ProductCreateRequestDto request) {
     SimpleProductResponseDto savedProduct = productService.createProduct(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
   }
 
   // UPDATE
   @PutMapping("/{id}")
-  public ResponseEntity<ProductResponse> updateProduct(@PathVariable long id,
-      @Valid @RequestBody UpdateProductRequest request) {
+  public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable long id,
+      @Valid @RequestBody ProductUpdateRequestDto request) {
     Product updatedProduct = productService.updateProduct(id, request);
-    ProductResponse response = new ProductResponse(updatedProduct);
+    ProductResponseDto response = new ProductResponseDto(updatedProduct);
     return ResponseEntity.ok(response);
   }
 

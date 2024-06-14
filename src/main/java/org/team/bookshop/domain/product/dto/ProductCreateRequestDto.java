@@ -10,7 +10,7 @@ import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
 @NoArgsConstructor
-public class AddProductRequest {
+public class ProductCreateRequestDto {
 
   @NotBlank(message = "Title is required")
   private String title;

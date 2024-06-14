@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.product.dto.ProductDto;
-import org.team.bookshop.domain.product.dto.ProductResponse;
+import org.team.bookshop.domain.product.dto.ProductResponseDto;
 import org.team.bookshop.domain.product.service.ProductService;
 
 @RestController
@@ -36,15 +36,15 @@ public class ProductPublicController {
 
   // 특정 상품 조회
   @GetMapping("/{id}")
-  public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
-    ProductResponse product = productService.getProduct(id);
+  public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long id) {
+    ProductResponseDto product = productService.getProduct(id);
     return ResponseEntity.ok(product);
   }
 
   // 모든 상품 조회
   @GetMapping
-  public ResponseEntity<List<ProductResponse>> getAllProducts() {
-    List<ProductResponse> products = productService.getAllProducts();
+  public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+    List<ProductResponseDto> products = productService.getAllProducts();
     return ResponseEntity.ok(products);
   }
 

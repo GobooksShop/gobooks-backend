@@ -16,11 +16,11 @@ import org.team.bookshop.domain.category.entity.BookCategoryId;
 import org.team.bookshop.domain.category.entity.Category;
 import org.team.bookshop.domain.category.repository.BookCategoryRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
-import org.team.bookshop.domain.product.dto.AddProductRequest;
+import org.team.bookshop.domain.product.dto.ProductCreateRequestDto;
 import org.team.bookshop.domain.product.dto.ProductDto;
-import org.team.bookshop.domain.product.dto.ProductResponse;
+import org.team.bookshop.domain.product.dto.ProductResponseDto;
+import org.team.bookshop.domain.product.dto.ProductUpdateRequestDto;
 import org.team.bookshop.domain.product.dto.SimpleProductResponseDto;
-import org.team.bookshop.domain.product.dto.UpdateProductRequest;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
 import org.team.bookshop.global.error.exception.EntityNotFoundException;
@@ -36,7 +36,7 @@ public class ProductService {
 
   // CREATE
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public SimpleProductResponseDto createProduct(AddProductRequest requestDto) {
+  public SimpleProductResponseDto createProduct(ProductCreateRequestDto requestDto) {
     // 1. 상품 생성
     Product product = productRepository.save(requestDto.toEntity());
 
@@ -86,16 +86,16 @@ public class ProductService {
 
   // READ
   // 모든 상품 조회
-  public List<ProductResponse> getAllProducts() {
+  public List<ProductResponseDto> getAllProducts() {
     return productRepository.findAll().stream()
-        .map(ProductResponse::new)
+        .map(ProductResponseDto::new)
         .collect(Collectors.toList());
   }
 
   // 특정 상품 조회
-  public ProductResponse getProduct(long id) {
+  public ProductResponseDto getProduct(long id) {
     return productRepository.findById(id)
-        .map(ProductResponse::new)
+        .map(ProductResponseDto::new)
         .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
   }
 
@@ -114,7 +114,7 @@ public class ProductService {
 
   // UPDATE
   @Transactional
-  public Product updateProduct(long id, UpdateProductRequest request) {
+  public Product updateProduct(long id, ProductUpdateRequestDto request) {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
     product.update(

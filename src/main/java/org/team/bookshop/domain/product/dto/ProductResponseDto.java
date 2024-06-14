@@ -10,7 +10,7 @@ import org.team.bookshop.domain.category.dto.SimpleCategoryResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
-public class ProductResponse {
+public class ProductResponseDto {
 
   private final Long id;
   private final String title;
@@ -27,7 +27,7 @@ public class ProductResponse {
   @JsonIgnoreProperties("bookCategories")
   private List<SimpleCategoryResponseDto> categories;
 
-  public ProductResponse(Product product) {
+  public ProductResponseDto(Product product) {
     this.id = product.getId();
     this.title = product.getTitle();
     this.author = product.getAuthor();
@@ -43,8 +43,8 @@ public class ProductResponse {
         .collect(Collectors.toList());
   }
 
-  public static ProductResponse fromEntity(Product product) {
-    ProductResponse dto = new ProductResponse(product);
+  public static ProductResponseDto fromEntity(Product product) {
+    ProductResponseDto dto = new ProductResponseDto(product);
 
     dto.categories = product.getBookCategories().stream()
         .map(bookCategory -> new SimpleCategoryResponseDto(bookCategory.getCategory()))
