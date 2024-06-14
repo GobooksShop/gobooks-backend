@@ -7,8 +7,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -91,10 +89,5 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         .where(isChildCategory)
         .distinct()
         .fetch();
-  }
-
-  @Override
-  public Optional<Product> findByIdWithEntityGraph(Long id, Map<String, Object> hints) {
-    return Optional.ofNullable(entityManager.find(Product.class, id, hints));
   }
 }

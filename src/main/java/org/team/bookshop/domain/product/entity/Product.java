@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -64,7 +65,7 @@ public class Product extends BaseEntity {
 
   private int stockQuantity;
 
-  @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonIgnoreProperties("product")
   private Set<BookCategory> bookCategories = new HashSet<>();
 
@@ -110,10 +111,8 @@ public class Product extends BaseEntity {
     stockQuantity += quantity;
   }
 
-
   public void addBookCategory(BookCategory bookCategory) {
     bookCategories.add(bookCategory);
     bookCategory.setProduct(this); // 양방향 관계 설정
   }
-
 }

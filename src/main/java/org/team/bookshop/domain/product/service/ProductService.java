@@ -10,6 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.team.bookshop.domain.category.entity.BookCategory;
+import org.team.bookshop.domain.category.entity.BookCategoryId;
+import org.team.bookshop.domain.category.entity.Category;
+import org.team.bookshop.domain.category.repository.BookCategoryRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.domain.product.dto.AddProductRequest;
 import org.team.bookshop.domain.product.dto.ProductDto;
@@ -27,18 +31,54 @@ public class ProductService {
 
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
+  private final BookCategoryRepository bookCategoryRepository;
 
   // CREATE
   public SimpleProductResponseDto createProduct(AddProductRequest requestDto) {
+
     // 1. 상품 생성
     Product product = productRepository.save(requestDto.toEntity());
 
     // 2. 카테고리 ID 리스트에서 중복 제거
     Set<Long> uniqueCategoryIds = new HashSet<>(requestDto.getCategoryIds());
 
+    // 3. 각 카테고리 ID에 대해 부모 카테고리까지 매핑
+    for (Long categoryId : uniqueCategoryIds) {
+      mapParentCategoriesByPath(product, categoryId);
+    }
+
+    productRepository.save(product); // 변경된 Product 엔티티 다시 저장
+
     return new SimpleProductResponseDto(product);
+
   }
 
+  private void mapParentCategoriesByPath(Product product, Long categoryId) {
+
+    List<Object[]> categoryPath = categoryRepository.findCategoryPath(categoryId);
+
+    for (Object[] categoryInfo : categoryPath) {
+      Long id = ((Number) categoryInfo[0]).longValue();
+      String name = (String) categoryInfo[1];
+      Long parentId = (categoryInfo[2] != null) ? ((Number) categoryInfo[2]).longValue() : null;
+
+      Category category = new Category();
+      category.setId(id);
+      category.setName(name);
+//      if (parentId != null) {
+//        category.setParent(new Category(parentId));
+//      }
+
+      BookCategory bookCategory = new BookCategory(
+          new BookCategoryId(product.getId(), category.getId()),
+          product,
+          category
+      );
+      bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
+
+      product.addBookCategory(bookCategory);
+    }
+  }
 
   // READ
   // 모든 상품 조회
