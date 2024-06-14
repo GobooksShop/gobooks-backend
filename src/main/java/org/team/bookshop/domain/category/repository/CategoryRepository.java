@@ -1,6 +1,7 @@
 package org.team.bookshop.domain.category.repository;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,14 +9,6 @@ import org.team.bookshop.domain.category.entity.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long>,
     CategoryRepositoryCustom {
-
-  boolean existsByParentId(Long id);
-//
-//    @Query("SELECT DISTINCT p FROM Product p " +
-//        "JOIN FETCH p.bookCategories bc " +
-//        "JOIN FETCH bc.category c " +
-//        "WHERE c.id = :categoryId")
-//    List<Product> findByCategoryId(@Param("categoryId") Long categoryId);
 
   @Query(value = "WITH RECURSIVE Category_Hierarchy(id, name, parent_id) AS (" +
       "SELECT id, name, parent_id " +
@@ -39,16 +32,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       "SELECT * FROM Category_Hierarchy", nativeQuery = true)
   List<Object[]> findRootCategory();
 
-//    @Query("SELECT c FROM Category c "
-//        + "WHERE c.parent.id = :parentId")
-//    List<Category> findByParentId(@Param("parentId") Long parentId);
-
-//  @Query("SELECT c FROM Category c "
-//      + "WHERE c.id = :categoryId "
-//      + "OR c.parent.id = :categoryId "
-//      + "OR c.parent.parent.id = :categoryId")
-//  List<Category> findAllSubcategories(@Param("categoryId") Long categoryId);
-
   @Query(value = """
       WITH RECURSIVE category_path (id, name, parent_id) AS (
         SELECT id, name, parent_id
@@ -63,6 +46,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       """, nativeQuery = true)
   List<Object[]> findCategoryPath(@Param("categoryId") Long categoryId);
 
-  @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent WHERE c.id IN :categoryIds")
-  List<Category> findByIdIn(@Param("categoryIds") List<Long> categoryIds);
+  @EntityGraph(attributePaths = "bookCategories")
+  List<Category> findAllById(Iterable<Long> ids);
 }

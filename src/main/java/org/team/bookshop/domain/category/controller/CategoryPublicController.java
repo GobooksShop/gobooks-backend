@@ -13,11 +13,11 @@ import org.team.bookshop.domain.category.service.CategoryService;
 
 @RestController
 @RequestMapping("/api")
-public class CategoryViewController {
+public class CategoryPublicController {
 
   private final CategoryService categoryService;
 
-  public CategoryViewController(CategoryService categoryService) {
+  public CategoryPublicController(CategoryService categoryService) {
     this.categoryService = categoryService;
   }
 
