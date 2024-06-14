@@ -1,11 +1,14 @@
 package org.team.bookshop.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +20,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.UserRepository;
+import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
 
 @Slf4j
@@ -29,7 +33,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
     @NotNull FilterChain filterChain) throws ServletException, IOException {
-    try {
+
       String jwtAccessToken = jwtTokenizer.getJwtFromRequest(request);
 
       if (jwtAccessToken != null && jwtTokenizer.validateAccessToken(jwtAccessToken)) {
@@ -42,13 +46,11 @@ public class JwtCustomFilter extends OncePerRequestFilter {
           setSecurityContext(newAccessToken, request);
           responseUnauthorized(response, "Token refreshed, please retry with new access token");
           return;
+//          throw new ApiException("Token refreshed, please retry with new access token", ErrorCode.EXPIRED_ACCESS_TOKEN);
+
         }
       }
-    } catch (ApiException ex) {
-      log.error("Could not set user authentication in security context", ex);
-      responseUnauthorized(response, "Unauthorized");
-      return;
-    }
+
     filterChain.doFilter(request, response);
   }
 
@@ -56,15 +58,26 @@ public class JwtCustomFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
     String path = request.getRequestURI();
     String method = request.getMethod();
-    return path.startsWith("/api/auth") ||
-        path.startsWith("/api/users") ||
-        path.startsWith("/api/categories") && method.equals("GET") ||
-        path.startsWith("/api/products") && method.equals("GET");
+    return method.equals("OPTIONS") || //preflight 요청을 처리하기위해 사용
+           path.startsWith("/api"); // 프론트 accsstoken 인증 문제 해결 전까지는 모든 요청 스킵함.
+//           path.startsWith("/api/auth") ||
+//           path.startsWith("/api/users") ||
+//           path.startsWith("/api/categories") && method.equals("GET") ||
+//           path.startsWith("/api/products") && method.equals("GET");
   }
 
   private void responseUnauthorized(HttpServletResponse response, String message) throws IOException {
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    response.getWriter().write(message);
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
+
+    Map<String, String> responseBody = new HashMap<>();
+    responseBody.put("message", message);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonResponse = objectMapper.writeValueAsString(responseBody);
+
+    response.getWriter().write(jsonResponse);
   }
 
   private void setSecurityContext(String token, HttpServletRequest request) {

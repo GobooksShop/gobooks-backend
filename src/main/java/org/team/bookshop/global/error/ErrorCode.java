@@ -36,7 +36,8 @@ public enum ErrorCode {
   SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
   AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR),
   BANDED_TOKEN(403, "S003", "Token is Baned", LogLevel.ERROR),
-  INVALID_REFRESH_TOKEN(401, "S004", "Invalid refresh token", LogLevel.ERROR)
+  INVALID_REFRESH_TOKEN(401, "S004", "Invalid refresh token", LogLevel.ERROR),
+  EXPIRED_ACCESS_TOKEN(401, "S005", "Token refreshed, please retry with new access token", LogLevel.ERROR);
   ;
 
   private final String code;

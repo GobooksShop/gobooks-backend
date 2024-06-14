@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                             .requestMatchers(HttpMethod.GET,"/").permitAll()
+                            .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll() //preflight 요청을 처리하기위해 사용
                             .requestMatchers("/api/auth/**").permitAll()
 //                            .requestMatchers(HttpMethod.POST,"/api/users/**").permitAll()
 //                            .requestMatchers(HttpMethod.GET,"/api/categories/**").permitAll()
@@ -54,8 +55,8 @@ public class SecurityConfig {
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
                             .requestMatchers("/api/admin/**").permitAll()
-                            .anyRequest().authenticated()
-//                            .anyRequest().permitAll() // jwt 완성 전까지는 다 접근 가능하게 임시로 세팅
+//                            .anyRequest().authenticated()
+                            .anyRequest().permitAll() // 인증 문제 해결 전까지는 다 접근 가능하게 임시로 세팅
                 )
 //                .oauth2Login(oauth2Login ->
 //                    oauth2Login
@@ -90,6 +91,7 @@ public class SecurityConfig {
         configuration.addAllowedMethod("PUT");
         configuration.addAllowedMethod("DELETE");
         configuration.addAllowedMethod("FETCH");
+        configuration.addAllowedMethod("OPTIONS"); //preflight 요청을 처리하기위해 사용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
