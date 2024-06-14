@@ -1,6 +1,8 @@
 package org.team.bookshop.domain.product.service;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,8 +21,6 @@ import org.team.bookshop.domain.product.dto.ProductResponse;
 import org.team.bookshop.domain.product.dto.UpdateProductRequest;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
-import org.team.bookshop.global.error.ErrorCode;
-import org.team.bookshop.global.error.exception.ApiException;
 import org.team.bookshop.global.error.exception.EntityNotFoundException;
 
 @RequiredArgsConstructor
@@ -31,26 +31,29 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
 
-  //대량일때는 성능이슈
   @Transactional
   public AddProductRequest createProduct(AddProductRequest requestDto) {
     Product product = productRepository.save(requestDto.toEntity());
 
-    Set<BookCategory> bookCategories = requestDto.getCategoryIds().stream()
-        .map(categoryId -> {
-          Category category = categoryRepository.findById(categoryId)
-              .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-          BookCategory bookCategory = new BookCategory(
-              new BookCategoryId(product.getId(), category.getId()),
-              product,
-              category
-          );
-
-          product.getBookCategories().add(bookCategory);
-
-          return bookCategory;
-        })
+    Set<Long> categoryIds = requestDto.getCategoryIds().stream()
+        .distinct()
+        .filter(categoryId -> !categoryRepository.existsByParentId(categoryId)) // 최하위만 추출
         .collect(Collectors.toSet());
+
+    List<Category> categories = categoryRepository.findByIdIn(new ArrayList<>(categoryIds));
+
+    Set<BookCategory> bookCategories = new HashSet<>();
+    for (Category category : categories) {
+      BookCategory bookCategory = new BookCategory(
+          new BookCategoryId(product.getId(), category.getId()),
+          product,
+          category
+      );
+      bookCategories.add(bookCategory);
+    }
+
+    product.getBookCategories().addAll(bookCategories);
+    productRepository.saveAndFlush(product);
 
     return new AddProductRequest(product);
   }

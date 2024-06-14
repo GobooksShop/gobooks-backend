@@ -9,7 +9,7 @@ import org.team.bookshop.domain.category.entity.Category;
 public interface CategoryRepository extends JpaRepository<Category, Long>,
     CategoryRepositoryCustom {
 
-//    boolean existsByParentId(Long id);
+  boolean existsByParentId(Long id);
 //
 //    @Query("SELECT DISTINCT p FROM Product p " +
 //        "JOIN FETCH p.bookCategories bc " +
@@ -43,11 +43,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
 //        + "WHERE c.parent.id = :parentId")
 //    List<Category> findByParentId(@Param("parentId") Long parentId);
 
-  @Query("SELECT c FROM Category c "
-      + "WHERE c.id = :categoryId "
-      + "OR c.parent.id = :categoryId "
-      + "OR c.parent.parent.id = :categoryId")
-  List<Category> findAllSubcategories(@Param("categoryId") Long categoryId);
+//  @Query("SELECT c FROM Category c "
+//      + "WHERE c.id = :categoryId "
+//      + "OR c.parent.id = :categoryId "
+//      + "OR c.parent.parent.id = :categoryId")
+//  List<Category> findAllSubcategories(@Param("categoryId") Long categoryId);
 
   @Query(value = """
       WITH RECURSIVE category_path (id, name, parent_id) AS (
@@ -62,4 +62,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       SELECT * FROM category_path;
       """, nativeQuery = true)
   List<Object[]> findCategoryPath(@Param("categoryId") Long categoryId);
+
+  @Query("SELECT c FROM Category c LEFT JOIN FETCH c.parent WHERE c.id IN :categoryIds")
+  List<Category> findByIdIn(@Param("categoryIds") List<Long> categoryIds);
 }
