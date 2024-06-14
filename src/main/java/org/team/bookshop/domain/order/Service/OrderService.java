@@ -72,7 +72,7 @@ public class OrderService {
             if(orderItemRequests.get(i).getPrice() != products.get(i).getFixedPrice())
                 throw new ApiException(ErrorCode.INVALID_PRODUCT_PRICE_INFO);
 
-            // 2. orderId기준으로 검증하기
+            // 2. orderItemId기준으로 검증하기
             if(!orderItemRequests.get(i).getProductId().equals(products.get(i).getId()))
                 throw new ApiException(ErrorCode.NO_EXISTING_BOOK);
 
@@ -170,7 +170,7 @@ public class OrderService {
 
     @Transactional
     public void setOrderAddress(Long orderId, OrderAddressCreate orderAddressCreate) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
         Address address = orderAddressCreate.toEntity();
         Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1L);
@@ -185,14 +185,14 @@ public class OrderService {
 
     public boolean validateTotalPriceByOrderId(Long orderId, int totalPrice) {
         Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다"));
+            .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
         return order.getOrderTotalPrice() == totalPrice;
     }
 
     public boolean validateTotalPriceByMerchantId(String merchantId, int totalPrice) {
         Order order = orderRepository.findByMerchantId(merchantId)
-            .orElseThrow(() -> new IllegalStateException("해당하는 주문이 존재하지 않습니다"));
+            .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
         return order.getOrderTotalPrice() == totalPrice;
     }
