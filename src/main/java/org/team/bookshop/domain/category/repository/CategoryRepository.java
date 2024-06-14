@@ -45,5 +45,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       """, nativeQuery = true)
   List<Object[]> findCategoryPath(@Param("categoryId") Long categoryId);
 
+  List<Category> findAllById(Iterable<Long> ids);
 
+  boolean existsByIdAndChildrenIsEmpty(Long categoryId);
 }

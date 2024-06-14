@@ -35,6 +35,25 @@ public class ProductService {
 
   // CREATE
   public SimpleProductResponseDto createProduct(AddProductRequest requestDto) {
+//    // 1. 상품 생성
+//    Product product = productRepository.save(requestDto.toEntity());
+//
+//    // 2. 카테고리 ID 리스트에서 중복 제거
+//    Set<Long> uniqueCategoryIds = new HashSet<>(requestDto.getCategoryIds());
+//
+//    // 3. 카테고리 경로 조회
+//    List<Category> categories = categoryRepository.findAllById(
+//        uniqueCategoryIds);
+//
+//    // 4. BookCategory 매핑 (엔티티 매핑)
+//    for (Category category : categories) {
+//      BookCategory bookCategory = new BookCategory(
+//          new BookCategoryId(product.getId(), category.getId()),
+//          product,
+//          category
+//      );
+//      bookCategoryRepository.save(bookCategory);
+//    }
 
     // 1. 상품 생성
     Product product = productRepository.save(requestDto.toEntity());
@@ -42,43 +61,88 @@ public class ProductService {
     // 2. 카테고리 ID 리스트에서 중복 제거
     Set<Long> uniqueCategoryIds = new HashSet<>(requestDto.getCategoryIds());
 
-    // 3. 각 카테고리 ID에 대해 부모 카테고리까지 매핑
-    for (Long categoryId : uniqueCategoryIds) {
-      mapParentCategoriesByPath(product, categoryId);
-    }
+    // 3. 최하위 카테고리 ID 추출
+    Set<Long> lowestCategoryIds = findLowestCategoryIds(uniqueCategoryIds);
 
-    productRepository.save(product); // 변경된 Product 엔티티 다시 저장
-
-    return new SimpleProductResponseDto(product);
-
-  }
-
-  private void mapParentCategoriesByPath(Product product, Long categoryId) {
-
-    List<Object[]> categoryPath = categoryRepository.findCategoryPath(categoryId);
-
-    for (Object[] categoryInfo : categoryPath) {
-      Long id = ((Number) categoryInfo[0]).longValue();
-      String name = (String) categoryInfo[1];
-      Long parentId = (categoryInfo[2] != null) ? ((Number) categoryInfo[2]).longValue() : null;
-
-      Category category = new Category();
-      category.setId(id);
-      category.setName(name);
-//      if (parentId != null) {
-//        category.setParent(new Category(parentId));
-//      }
+    // 4. BookCategory 매핑
+    for (Long categoryId : lowestCategoryIds) {
+      Category category = categoryRepository.findById(categoryId)
+          .orElseThrow(
+              () -> new EntityNotFoundException("Category not found with id: " + categoryId));
 
       BookCategory bookCategory = new BookCategory(
-          new BookCategoryId(product.getId(), category.getId()),
+          new BookCategoryId(product.getId(), categoryId),
           product,
           category
       );
-      bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
-
-      product.addBookCategory(bookCategory);
+      product.addBookCategory(bookCategory); // Product 엔티티에 직접 추가
     }
+
+    return new SimpleProductResponseDto(product);
   }
+
+
+  // 최하위 카테고리 ID 찾기
+  private Set<Long> findLowestCategoryIds(Set<Long> categoryIds) {
+    Set<Long> lowestCategoryIds = new HashSet<>();
+    for (Long categoryId : categoryIds) {
+      if (isLowestCategory(categoryId)) {
+        lowestCategoryIds.add(categoryId);
+      }
+    }
+    return lowestCategoryIds;
+  }
+
+  // 최하위 카테고리 여부 판단
+  private boolean isLowestCategory(Long categoryId) {
+    return categoryRepository.existsByIdAndChildrenIsEmpty(categoryId);
+  }
+
+//  public SimpleProductResponseDto createProduct(AddProductRequest requestDto) {
+//
+//    // 1. 상품 생성
+//    Product product = productRepository.save(requestDto.toEntity());
+//
+//    // 2. 카테고리 ID 리스트에서 중복 제거
+//    Set<Long> uniqueCategoryIds = new HashSet<>(requestDto.getCategoryIds());
+//
+//    // 3. 각 카테고리 ID에 대해 부모 카테고리까지 매핑
+//    for (Long categoryId : uniqueCategoryIds) {
+//      mapParentCategoriesByPath(product, categoryId);
+//    }
+//
+//    productRepository.save(product); // 변경된 Product 엔티티 다시 저장
+//
+//    return new SimpleProductResponseDto(product);
+//
+//  }
+//
+//  private void mapParentCategoriesByPath(Product product, Long categoryId) {
+//
+//    List<Object[]> categoryPath = categoryRepository.findCategoryPath(categoryId);
+//
+//    for (Object[] categoryInfo : categoryPath) {
+//      Long id = ((Number) categoryInfo[0]).longValue();
+//      String name = (String) categoryInfo[1];
+//      Long parentId = (categoryInfo[2] != null) ? ((Number) categoryInfo[2]).longValue() : null;
+//
+//      Category category = new Category();
+//      category.setId(id);
+//      category.setName(name);
+////      if (parentId != null) {
+////        category.setParent(new Category(parentId));
+////      }
+//
+//      BookCategory bookCategory = new BookCategory(
+//          new BookCategoryId(product.getId(), category.getId()),
+//          product,
+//          category
+//      );
+//      bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
+//
+//      product.addBookCategory(bookCategory);
+//    }
+//  }
 
   // READ
   // 모든 상품 조회
