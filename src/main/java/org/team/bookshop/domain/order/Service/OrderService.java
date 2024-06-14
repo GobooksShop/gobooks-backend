@@ -52,9 +52,7 @@ public class OrderService {
         Order order = Order.createOrder();
 
         // User
-        // 후에 cookie를 통해 userID를 받아오는 부분을 추가해야 함
-        //User user = userRepository.findById(1L).orElseThrow(() -> new IllegalStateException("해당하는 회원이 없습니다."));
-
+        // 후에 cookie를 통해 userID를 받아오는 부분을 추가해야 함c
 
         List<OrderItemRequest> orderItemRequests = orderCreateRequest.getOrderItemRequests()
             .stream().sorted(Comparator.comparing(OrderItemRequest::getProductId))
@@ -66,13 +64,18 @@ public class OrderService {
         // 해당하는 id 상품 조회
         List<Product> products = productRepository.findByProductIds(productIds);
 
+
         //// 검증과정
+        // 0. 올바른 productId들이 입력되었는 지 여부 검증
+        if(products.size() != orderItemRequests.size())
+            throw new ApiException(ErrorCode.NO_EXISTING_BOOK);
+
         for(int i=0; i<products.size(); i++) {
             // 1. 상품 가격이 올바른지 검증하기
             if(orderItemRequests.get(i).getPrice() != products.get(i).getFixedPrice())
                 throw new ApiException(ErrorCode.INVALID_PRODUCT_PRICE_INFO);
 
-            // 2. orderItemId기준으로 검증하기
+            // 2. 넘겨진 productId가 실제 존재하는 지 검증하기
             if(!orderItemRequests.get(i).getProductId().equals(products.get(i).getId()))
                 throw new ApiException(ErrorCode.NO_EXISTING_BOOK);
 
