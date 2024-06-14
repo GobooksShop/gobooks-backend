@@ -14,13 +14,14 @@ import java.util.stream.Collectors;
 @Data
 public class OrderCreateRequest {
 
-
-    List<OrderItemRequest> orderItemRequests;
+    private String merchantId;
+    private List<OrderItemRequest> orderItemRequests;
 
     public OrderCreateRequest() {
     }
 
-    public OrderCreateRequest(List<OrderItemRequest> orderItemRequests) {
+    public OrderCreateRequest(String merchantId, List<OrderItemRequest> orderItemRequests) {
+        this.merchantId = merchantId;
         this.orderItemRequests = orderItemRequests;
     }
 
