@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.domain.category.entity.BookCategoryId;
@@ -34,6 +35,7 @@ public class ProductService {
   private final BookCategoryRepository bookCategoryRepository;
 
   // CREATE
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public SimpleProductResponseDto createProduct(AddProductRequest requestDto) {
     // 1. 상품 생성
     Product product = productRepository.save(requestDto.toEntity());
@@ -55,6 +57,7 @@ public class ProductService {
       bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
       product.addBookCategory(bookCategory); // Product 엔티티에 추가
     }
+    productRepository.save(product);
 
     return new SimpleProductResponseDto(product);
   }
@@ -127,6 +130,7 @@ public class ProductService {
   }
 
   // DELETE
+  @Transactional
   public void deleteProduct(long id) {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("not found: " + id));

@@ -1,6 +1,7 @@
 package org.team.bookshop.domain.category.repository;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,7 +46,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       """, nativeQuery = true)
   List<Object[]> findCategoryPath(@Param("categoryId") Long categoryId);
 
+  @EntityGraph(attributePaths = "bookCategories")
   List<Category> findAllById(Iterable<Long> ids);
-
-  boolean existsByIdAndChildrenIsEmpty(Long categoryId);
 }
