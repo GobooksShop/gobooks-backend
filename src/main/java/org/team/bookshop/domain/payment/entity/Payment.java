@@ -10,19 +10,26 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.payment.enums.PaymentMethod;
 import org.team.bookshop.domain.payment.enums.PaymentStatus;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Payment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "payment_id")
   private Long id;
+
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
