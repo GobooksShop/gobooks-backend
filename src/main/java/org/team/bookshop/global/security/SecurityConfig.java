@@ -55,8 +55,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
                             .requestMatchers("/api/admin/**").permitAll()
-//                            .anyRequest().authenticated()
-                            .anyRequest().permitAll() // 인증 문제 해결 전까지는 다 접근 가능하게 임시로 세팅
+                            .anyRequest().authenticated()
                 )
 //                .oauth2Login(oauth2Login ->
 //                    oauth2Login
@@ -85,13 +84,12 @@ public class SecurityConfig {
 
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedHeader("*");
-
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");
         configuration.addAllowedMethod("PUT");
         configuration.addAllowedMethod("DELETE");
-        configuration.addAllowedMethod("FETCH");
         configuration.addAllowedMethod("OPTIONS"); //preflight 요청을 처리하기위해 사용
+        configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

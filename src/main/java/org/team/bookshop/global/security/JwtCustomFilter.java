@@ -42,12 +42,9 @@ public class JwtCustomFilter extends OncePerRequestFilter {
         String refreshToken = jwtTokenizer.getRefreshTokenFromCookies(request);
         if (refreshToken != null && jwtTokenizer.validateRefreshToken(refreshToken)) {
           String newAccessToken = jwtTokenizer.updateAccessToken(refreshToken);
-          response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
           setSecurityContext(newAccessToken, request);
-          responseUnauthorized(response, "Token refreshed, please retry with new access token");
+          responseUnauthorized(response, "Token refreshed, please retry with new access token", newAccessToken);
           return;
-//          throw new ApiException("Token refreshed, please retry with new access token", ErrorCode.EXPIRED_ACCESS_TOKEN);
-
         }
       }
 
@@ -59,20 +56,34 @@ public class JwtCustomFilter extends OncePerRequestFilter {
     String path = request.getRequestURI();
     String method = request.getMethod();
     return method.equals("OPTIONS") || //preflight 요청을 처리하기위해 사용
-           path.startsWith("/api"); // 프론트 accsstoken 인증 문제 해결 전까지는 모든 요청 스킵함.
-//           path.startsWith("/api/auth") ||
-//           path.startsWith("/api/users") ||
+           path.startsWith("/api/auth") ||
+           path.startsWith("/api/users") ||
 //           path.startsWith("/api/categories") && method.equals("GET") ||
-//           path.startsWith("/api/products") && method.equals("GET");
+           path.startsWith("/api/products") && method.equals("GET");
   }
 
-  private void responseUnauthorized(HttpServletResponse response, String message) throws IOException {
+  private void responseUnauthorized(HttpServletResponse response, String message, String newAccessToken) throws IOException {
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setContentType("application/json");
     response.setCharacterEncoding("UTF-8");
+    /** accessToken 위변조 또는 만료시
+     *  401에러를 프론트에 보낼때
+     *  반드시 4가지 값을 보내야
+     *  Access-Control-Allow-Origin,
+     *  Access-Control-Allow-Credentials,
+     *  Access-Control-Allow-Methods,
+     *  Access-Control-Expose-Headers
+     *  reactJS axios Interceptors 안에서 error 핸들링 할 수 있음.
+     */
+    response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    response.setHeader("Access-Control-Allow-Credentials", "true");
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    response.setHeader("Access-Control-Expose-Headers", "Authorization");
+    response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
 
     Map<String, String> responseBody = new HashMap<>();
     responseBody.put("message", message);
+    responseBody.put("status", "401");
 
     ObjectMapper objectMapper = new ObjectMapper();
     String jsonResponse = objectMapper.writeValueAsString(responseBody);
