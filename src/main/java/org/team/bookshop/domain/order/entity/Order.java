@@ -20,7 +20,9 @@ import org.team.bookshop.global.util.BaseEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-@Table(name="orders")
+@Table(name="orders", indexes = {
+    @Index(name = "idx__unique__merchantId", columnList = "merchantId", unique = true)
+})
 public class Order extends BaseEntity {
 
   @Id
@@ -52,6 +54,12 @@ public class Order extends BaseEntity {
 
   public static Order createOrder() {
       return new Order();
+  }
+
+  public static Order notExistingOrder() {
+    Order order = new Order();
+    order.merchantId = "xxx";
+    return order;
   }
 
   public OrderCreateResponse toOrderCreateResponse() {

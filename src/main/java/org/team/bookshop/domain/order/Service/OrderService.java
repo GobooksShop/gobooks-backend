@@ -43,11 +43,22 @@ public class OrderService {
 
 
     public Order findById(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("해당하는 회원이 없습니다."));
+        return orderRepository.findById(orderId).orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_BOOK));
     }
 
     @Transactional
     public Long save(OrderCreateRequest orderCreateRequest) {
+
+        // 입력된 merchantId에 해당하는 order가 이미 존재한다면, 그 order의 id를 반환한다.
+        Order orderFoundByMerchantId = orderRepository.findByMerchantId(orderCreateRequest.getMerchantId())
+            .orElseGet(
+                Order::notExistingOrder);
+
+        if(!orderFoundByMerchantId.getMerchantId().equals("xxx")) {
+            return orderFoundByMerchantId.getId();
+        }
+
+
         // 주문 생성 요청을 바탕으로 Order 엔티티를 만드는 과정
         Order order = Order.createOrder();
 
@@ -89,8 +100,6 @@ public class OrderService {
         // 주문 생성 요청을 바탕으로 OrderItems 엔티티를 만드는 과정
         List<OrderItem> orderItems = orderCreateRequest.toOrderItems();
 
-
-
         int totalCount = 0;
         int totalPrice = 0;
 
@@ -114,7 +123,7 @@ public class OrderService {
         order.setOrderTotalAmount(totalCount);
         order.setOrderTotalPrice(totalPrice);
 
-        order.setMerchantId(UUID.randomUUID().toString());
+        order.setMerchantId(orderCreateRequest.getMerchantId());
 
         order.setOrderStatus(OrderStatus.ACCEPTED);
         order.setOrderDateTime(LocalDateTime.now());

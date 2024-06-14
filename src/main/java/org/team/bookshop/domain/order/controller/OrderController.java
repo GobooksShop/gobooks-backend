@@ -28,7 +28,6 @@ public class OrderController {
     public ResponseEntity<OrderCreateResponse> createOrder(
             @RequestBody OrderCreateRequest orderCreateRequest) {
         Long savedOrderId = orderService.save(orderCreateRequest);
-        System.out.println("savedOrderId = " + savedOrderId);
         OrderCreateResponse orderCreateResponse = orderService.findByIdForCreateResponse(savedOrderId).toOrderCreateResponse();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderCreateResponse);
