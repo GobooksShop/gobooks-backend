@@ -2,14 +2,10 @@ package org.team.bookshop.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +46,6 @@ public class UserController {
         return ResponseEntity.ok(userPostDto);
     }
 
-    //수정후 다시 정보 받아서 수정화면 그대로 띄우는 걸로 생각했는데 어떻게 생각하시는지!
     @PutMapping("/{id}")
     public ResponseEntity<UserPostDto> updateUser(@PathVariable Long id,
         @RequestBody UserPostDto UserPostDto) {

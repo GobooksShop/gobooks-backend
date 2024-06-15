@@ -33,6 +33,7 @@ public class UserService {
     private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
 
+
     @Transactional(readOnly = false)
     public void saveUser(UserJoinDto userJoinDto) throws ApiException {
         if (userRepository.findByEmail(userJoinDto.getEmail()).isPresent()) {
