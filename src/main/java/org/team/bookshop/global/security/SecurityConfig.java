@@ -58,7 +58,7 @@ public class SecurityConfig {
                       .requestMatchers("/api/admin/**").permitAll()
                       .requestMatchers("/login/oauth2/**").permitAll()
                       .requestMatchers("/api/cart/**").permitAll()
-                      .requestMatchers("/api/order/**").permitAll()
+                      .requestMatchers("/api/orders/**").permitAll()
                       .requestMatchers("/api/payment/**").permitAll()
                       .anyRequest().authenticated()
 
