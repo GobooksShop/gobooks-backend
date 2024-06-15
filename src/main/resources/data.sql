@@ -15,7 +15,8 @@ INSERT INTO products (title, author, isbn, content, fixed_price, publication_yea
                       stock_quantity, picture_url)
 VALUES ('스프링 부트 3 백엔드 개발자 되기 : 자바 편', '신선영', '9791191905717',
         '실력을 갖춘 개발자로 성장하려면 시작이 중요하다. 그래서 이 책은 무엇부터 익혀야 하는지 막막한 입문자에게 백엔드 개발의 필수 지식을 학습 로드맵 중심으로 설명한다. 이어서 스프링 부트 3 개발에 꼭 필요한 4대장인 JPA ORM, OAuth2 인증, AWS 배포, CI/CD를 최신 트렌드에 맞게 그리고 실무에 유용하게 알려준다. 모든 장 끝에는 연습문제가 수록되어 있어 배운 내용을 점검할 수 있다. 이번 2판에는 스프링 부트 프로젝트 진행을 위해 꼭 알아야 하는 SQL 기초와 실습, 스프링 시큐리티 업데이트, 블로그 댓글 기능 등을 추가하여 더욱 좋은 책으로 만들었다.',
-        32000, '2024-04-05', 'AVAILABLE', 100, 'https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791191905717.jpg'),
+        32000, '2024-04-05', 'AVAILABLE', 100,
+        'https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791191905717.jpg'),
        ('리액트훅 인 액션', '존 라슨 (지은이),오현석 (옮긴이)', '9791189909611',
         '여러 리액트 컴포넌트 사이에 기능 재사용과 손쉬운 공유를 위한 목적으로 만들어진 자바스크립트 함수인 리액트 훅(React Hook)을 사용하면 컴포넌트를 더 작은 함수로 나눌 수 있고, 상태와 부수 효과를 관리할 수 있으며, 클래스를 사용하지 않고도 리액트의 기능을 활용할 수 있다. 게다가 컴포넌트의 계층 구조를 재배열하지 않고도 이 모든 이점을 얻을 수 있다.',
         30000, '2024-03-29', 'AVAILABLE', 200, null),
@@ -248,3 +249,75 @@ VALUES (1, 5),
        (31, 8),
        (32, 9);
 
+
+
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed,
+                   marketing_agreed, email_verified, last_login)
+VALUES ('Tester1', 'tester1@test.com', '$2b$12$ExampleHash', 'tester1', '010-0000-0001', 1, 0, true,
+        false, true, NOW()),
+       ('Tester2', 'tester2@test.com', '$2b$12$ExampleHash', 'tester2', '010-0000-0002', 1, 0, true,
+        false, true, NOW()),
+       ('Tester3', 'tester3@test.com', '$2b$12$ExampleHash', 'tester3', '010-0000-0003', 1, 0, true,
+        false, true, NOW()),
+       ('Tester4', 'tester4@test.com', '$2b$12$ExampleHash', 'tester4', '010-0000-0004', 1, 0, true,
+        false, true, NOW()),
+       ('Tester5', 'tester5@test.com', '$2b$12$ExampleHash', 'tester5', '010-0000-0005', 1, 0, true,
+        false, true, NOW()),
+       ('Tester6', 'tester6@test.com', '$2b$12$ExampleHash', 'tester6', '010-0000-0006', 1, 0, true,
+        false, true, NOW()),
+       ('Tester7', 'tester7@test.com', '$2b$12$ExampleHash', 'tester7', '010-0000-0007', 1, 0, true,
+        false, true, NOW()),
+       ('Tester8', 'tester8@test.com', '$2b$12$ExampleHash', 'tester8', '010-0000-0008', 1, 0, true,
+        false, true, NOW()),
+       ('Tester9', 'tester9@test.com', '$2b$12$ExampleHash', 'tester9', '010-0000-0009', 1, 0, true,
+        false, true, NOW()),
+       ('Tester10', 'tester10@test.com', '$2b$12$ExampleHash', 'tester10', '010-0000-0010', 1, 0,
+        true, false, true, NOW());
+
+INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number)
+VALUES (1, 'READY', '2023-06-01', 1234567891),
+       (2, 'STARTED', '2023-06-01', 1234567892),
+       (3, 'COMPLETED', '2023-06-01', 1234567893),
+       (4, 'CANCELED', '2023-06-01', 1234567894),
+       (5, 'READY', '2023-06-01', 1234567895),
+       (6, 'READY', '2023-06-01', 1234567896),
+       (7, 'READY', '2023-06-01', 1234567897),
+       (8, 'READY', '2023-06-01', 1234567898),
+       (9, 'READY', '2023-06-01', 1234567899),
+       (10, 'READY', '2023-06-01', 1234567890);
+
+INSERT INTO address (address_id, user_id, delivery_id, label, is_primary, zipcode, address1,
+                     address2, recipient_name, recipient_phone)
+VALUES (1, 1, 1, 'Home 1', TRUE, '10001', '123 Example St, Apt 1', 'City, State, 1', 'Recipient 1',
+        '010-0000-0001'),
+       (2, 2, 2, 'Home 2', FALSE, '10002', '123 Example St, Apt 2', 'City, State, 2', 'Recipient 2',
+        '010-0000-0002'),
+       (3, 3, 3, 'Home 3', FALSE, '10003', '123 Example St, Apt 3', 'City, State, 3', 'Recipient 3',
+        '010-0000-0003'),
+       (4, 4, 4, 'Home 4', FALSE, '10004', '123 Example St, Apt 4', 'City, State, 4', 'Recipient 4',
+        '010-0000-0004'),
+       (5, 5, 5, 'Home 5', FALSE, '10005', '123 Example St, Apt 5', 'City, State, 5', 'Recipient 5',
+        '010-0000-0005'),
+       (6, 6, 6, 'Home 6', FALSE, '10006', '123 Example St, Apt 6', 'City, State, 6', 'Recipient 6',
+        '010-0000-0006'),
+       (7, 7, 7, 'Home 7', FALSE, '10007', '123 Example St, Apt 7', 'City, State, 7', 'Recipient 7',
+        '010-0000-0007'),
+       (8, 8, 8, 'Home 8', FALSE, '10008', '123 Example St, Apt 8', 'City, State, 8', 'Recipient 8',
+        '010-0000-0008'),
+       (9, 9, 9, 'Home 9', FALSE, '10009', '123 Example St, Apt 9', 'City, State, 9', 'Recipient 9',
+        '010-0000-0009'),
+       (10, 10, 10, 'Home 10', FALSE, '10010', '123 Example St, Apt 10', 'City, State, 10',
+        'Recipient 10', '010-0000-0010');
+--
+INSERT INTO orders (merchant_id, ORDER_DATE_TIME, ORDER_STATUS, user_id, delivery_id,
+                    ORDER_TOTAL_PRICE, ORDER_TOTAL_AMOUNT)
+VALUES ('MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 1, 5000, 3),
+       ('MID1002', '2023-06-02T15:00:00', 'DELIVERED', 2, 2, 6000, 2),
+       ('MID1003', '2023-06-03T16:30:00', 'CANCELED', 3, 3, 7000, 5),
+       ('MID1004', '2023-06-04T17:00:00', 'ACCEPTED', 4, 4, 8000, 1),
+       ('MID1005', '2023-06-05T18:30:00', 'PAYED', 5, 5, 3000, 4),
+       ('MID1006', '2023-06-06T19:00:00', 'PAYED', 6, 6, 4000, 3),
+       ('MID1007', '2023-06-07T20:30:00', 'PAYED', 7, 7, 2000, 2),
+       ('MID1008', '2023-06-08T21:00:00', 'PAYED', 8, 8, 5000, 5),
+       ('MID1009', '2023-06-09T22:30:00', 'PAYED', 9, 9, 4500, 6),
+       ('MID1010', '2023-06-10T23:00:00', 'PAYED', 10, 10, 3500, 1);
