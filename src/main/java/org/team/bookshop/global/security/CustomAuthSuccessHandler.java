@@ -24,7 +24,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
 
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
-    private final String DEFAULT_REDIRECT_URL = "http://localhost:3000/oauth2/redirect";
+    private final String DEFAULT_REDIRECT_URL = "http://localhost:3000/login/oauth2/redirect";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

@@ -8,9 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.team.bookshop.domain.order.entity.Delivery;
+import org.team.bookshop.domain.order.repository.DeliveryRepository;
+import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.dto.UserPostDto;
+import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.repository.AddressRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
@@ -24,7 +29,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final AddressRepository addressRepository;
+    private final DeliveryRepository deliveryRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = false)
     public void saveUser(UserJoinDto userJoinDto) throws ApiException {
@@ -68,7 +75,20 @@ public class UserService {
 
     @Transactional(readOnly = false)
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Address> addresses = addressRepository.findByUserId(id);
+
+        for (Address address : addresses) {
+            Delivery delivery = deliveryRepository.findByAddressId(address.getId());
+
+            orderRepository.deleteByDeliveryId(delivery.getId());
+            deliveryRepository.deleteByAddressId(address.getId());
+        }
+
+        addressRepository.deleteByUserId(id);
+        userRepository.delete(user);
     }
 
 
