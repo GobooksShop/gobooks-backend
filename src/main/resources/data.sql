@@ -309,7 +309,7 @@ VALUES (1, 1, 1, 'Home 1', TRUE, '10001', '123 Example St, Apt 1', 'City, State,
        (10, 10, 10, 'Home 10', FALSE, '10010', '123 Example St, Apt 10', 'City, State, 10',
         'Recipient 10', '010-0000-0010');
 --
-INSERT INTO orders (merchant_id, ORDER_DATE_TIME, ORDER_STATUS, user_id, delivery_id,
+INSERT INTO orders (merchant_Uid, ORDER_DATE_TIME, ORDER_STATUS, user_id, delivery_id,
                     ORDER_TOTAL_PRICE, ORDER_TOTAL_AMOUNT)
 VALUES ('MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 1, 5000, 3),
        ('MID1002', '2023-06-02T15:00:00', 'DELIVERED', 2, 2, 6000, 2),
