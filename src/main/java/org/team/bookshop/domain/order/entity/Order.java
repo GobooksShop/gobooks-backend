@@ -21,7 +21,7 @@ import org.team.bookshop.global.util.BaseEntity;
 @Getter
 @Setter
 @Table(name="orders", indexes = {
-    @Index(name = "idx__unique__merchantId", columnList = "merchantId", unique = true)
+    @Index(name = "idx__unique__merchantUid", columnList = "merchantUid", unique = true)
 })
 public class Order extends BaseEntity {
 
@@ -31,7 +31,7 @@ public class Order extends BaseEntity {
   private Long id;
 
   @Column(unique = true)
-  private String merchantId;
+  private String merchantUid;
 
   private LocalDateTime orderDateTime;
 
@@ -58,22 +58,22 @@ public class Order extends BaseEntity {
 
   public static Order notExistingOrder() {
     Order order = new Order();
-    order.merchantId = "xxx";
+    order.merchantUid = "xxx";
     return order;
   }
 
   public OrderCreateResponse toOrderCreateResponse() {
     return new OrderCreateResponse(
             id,
-            merchantId,
-            new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
+            merchantUid,
+            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
             orderStatus,
             orderTotalPrice);
   }
 
   public OrderUpdateResponse toOrderUpdateResponse() {
     return new OrderUpdateResponse(id,
-            new OrderItemResponses(orderItems.stream().map(oi -> oi.toOrderItemResponse()).collect(Collectors.toList())),
+            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
             orderStatus,
             delivery.toOrderDeliveryResponse());
   }
