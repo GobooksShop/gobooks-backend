@@ -40,6 +40,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final DeliveryRepository deliveryRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
 
     public Order findById(Long orderId) {
@@ -63,7 +64,10 @@ public class OrderService {
         Order order = Order.createOrder();
 
         // User
-        // 후에 cookie를 통해 userID를 받아오는 부분을 추가해야 함c
+        User user = userRepository.findById(orderCreateRequest.getUserId())
+            .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_USER));
+        
+        order.setUser(user);
 
         List<OrderItemRequest> orderItemRequests = orderCreateRequest.getOrderItemRequests()
             .stream().sorted(Comparator.comparing(OrderItemRequest::getProductId))

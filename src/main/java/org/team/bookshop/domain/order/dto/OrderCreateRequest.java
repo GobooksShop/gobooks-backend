@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class OrderCreateRequest {
 
     private String merchantUid;
+    private Long userId;
     private List<OrderItemRequest> orderItemRequests;
 
     public OrderCreateRequest() {
