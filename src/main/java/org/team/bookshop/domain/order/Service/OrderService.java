@@ -50,12 +50,12 @@ public class OrderService {
     public Long save(OrderCreateRequest orderCreateRequest) {
 
         // 입력된 merchantId에 해당하는 order가 이미 존재한다면, 그 order의 id를 반환한다.
-        Order orderFoundByMerchantId = orderRepository.findByMerchantId(orderCreateRequest.getMerchantId())
+        Order orderFoundByMerchantUid = orderRepository.findByMerchantUid(orderCreateRequest.getMerchantUid())
             .orElseGet(
                 Order::notExistingOrder);
 
-        if(!orderFoundByMerchantId.getMerchantId().equals("xxx")) {
-            return orderFoundByMerchantId.getId();
+        if(!orderFoundByMerchantUid.getMerchantUid().equals("xxx")) {
+            return orderFoundByMerchantUid.getId();
         }
 
 
@@ -123,7 +123,7 @@ public class OrderService {
         order.setOrderTotalAmount(totalCount);
         order.setOrderTotalPrice(totalPrice);
 
-        order.setMerchantId(orderCreateRequest.getMerchantId());
+        order.setMerchantUid("gbs" + orderCreateRequest.getMerchantUid());
 
         order.setOrderStatus(OrderStatus.ACCEPTED);
         order.setOrderDateTime(LocalDateTime.now());
@@ -202,8 +202,8 @@ public class OrderService {
         return order.getOrderTotalPrice() == totalPrice;
     }
 
-    public boolean validateTotalPriceByMerchantId(String merchantId, int totalPrice) {
-        Order order = orderRepository.findByMerchantId(merchantId)
+    public boolean validateTotalPriceByMerchantId(String merchantUid, int totalPrice) {
+        Order order = orderRepository.findByMerchantUid(merchantUid)
             .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
         return order.getOrderTotalPrice() == totalPrice;

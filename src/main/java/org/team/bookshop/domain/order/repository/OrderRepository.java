@@ -22,5 +22,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
           "where o.id = :orderId")
   Order findWithOrderItems(@Param("orderId") long orderId);
 
-  Optional<Order> findByMerchantId(String merchantId);
+  Optional<Order> findByMerchantUid(String merchantId);
 }
