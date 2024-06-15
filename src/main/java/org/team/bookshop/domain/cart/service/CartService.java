@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.cart.dto.RequestVarifyCart;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
@@ -18,6 +19,7 @@ public class CartService {
 
   private final ProductRepository productRepository;
 
+  @Transactional
   public void validateCart(List<RequestVarifyCart> requestVarifyCart) {
 
     Collections.sort(requestVarifyCart);
