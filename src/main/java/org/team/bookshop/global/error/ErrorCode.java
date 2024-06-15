@@ -18,7 +18,7 @@ public enum ErrorCode {
 
   //USER
   EMAIL_ALREADY_REGISTERED(400, "U001", "Email already registered", LogLevel.ERROR),
-
+  NO_EXISTING_USER(400, "U002", "User doesn't exists", LogLevel.ERROR),
   //BOOK
 
   //CATEGORY
