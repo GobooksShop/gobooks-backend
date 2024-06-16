@@ -1,14 +1,88 @@
+-- 비밀번호는 모두 동일하게 설정됨
+SET @password = '$2b$12$VUGN6yHZ8aaI2sgL4gKHguWAis/xH9oGF5JwT9.HG6Olt9X0I5NJK';
+
 -- 관리자 유저 추가
-INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed,
-                   marketing_agreed, email_verified, last_login)
-VALUES ('관리자', 'admin@test.com', '$2b$12$VUGN6yHZ8aaI2sgL4gKHguWAis/xH9oGF5JwT9.HG6Olt9X0I5NJK',
-        'admin', '010-1234-5678', 0, 0, true, false, true, NOW());
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed,marketing_agreed, email_verified, last_login, created_at)
+VALUES ('관리자', 'admin@test.com', @password,'admin', '010-1234-5678', 0, 0, true, false, true, NOW(), NOW());
 
 -- 테스트 유저 추가
-INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed,
-                   marketing_agreed, email_verified, last_login)
-VALUES ('테스터', 'test@test.com', '$2b$12$VUGN6yHZ8aaI2sgL4gKHguWAis/xH9oGF5JwT9.HG6Olt9X0I5NJK',
-        'test', '010-9876-5432', 1, 0, true, false, true, NOW());
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed,marketing_agreed, email_verified, last_login, created_at)
+VALUES ('테스터', 'test@test.com', @password,'test', '010-9876-5432', 1, 0, true, false, true, NOW(), NOW());
+
+-- ACTIVE 상태 유저 30명 생성
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed, marketing_agreed, email_verified, last_login, created_at)
+VALUES ('테스터1', 'test1_active@test.com', @password, 'test1', '010-1111-1111', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터2', 'test2_active@test.com', @password, 'test2', '010-1111-1112', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터3', 'test3_active@test.com', @password, 'test3', '010-1111-1113', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터4', 'test4_active@test.com', @password, 'test4', '010-1111-1114', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터5', 'test5_active@test.com', @password, 'test5', '010-1111-1115', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터6', 'test6_active@test.com', @password, 'test6', '010-1111-1116', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터7', 'test7_active@test.com', @password, 'test7', '010-1111-1117', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터8', 'test8_active@test.com', @password, 'test8', '010-1111-1118', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터9', 'test9_active@test.com', @password, 'test9', '010-1111-1119', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터10', 'test10_active@test.com', @password, 'test10', '010-1111-1120', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터11', 'test11_active@test.com', @password, 'test11', '010-1111-1121', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터12', 'test12_active@test.com', @password, 'test12', '010-1111-1122', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터13', 'test13_active@test.com', @password, 'test13', '010-1111-1123', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터14', 'test14_active@test.com', @password, 'test14', '010-1111-1124', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터15', 'test15_active@test.com', @password, 'test15', '010-1111-1125', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터16', 'test16_active@test.com', @password, 'test16', '010-1111-1126', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터17', 'test17_active@test.com', @password, 'test17', '010-1111-1127', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터18', 'test18_active@test.com', @password, 'test18', '010-1111-1128', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터19', 'test19_active@test.com', @password, 'test19', '010-1111-1129', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터20', 'test20_active@test.com', @password, 'test20', '010-1111-1130', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터21', 'test21_active@test.com', @password, 'test21', '010-1111-1131', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터22', 'test22_active@test.com', @password, 'test22', '010-1111-1132', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터23', 'test23_active@test.com', @password, 'test23', '010-1111-1133', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터24', 'test24_active@test.com', @password, 'test24', '010-1111-1134', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터25', 'test25_active@test.com', @password, 'test25', '010-1111-1135', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터26', 'test26_active@test.com', @password, 'test26', '010-1111-1136', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터27', 'test27_active@test.com', @password, 'test27', '010-1111-1137', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터28', 'test28_active@test.com', @password, 'test28', '010-1111-1138', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터29', 'test29_active@test.com', @password, 'test29', '010-1111-1139', 1, 0, true, false, true, NOW(), NOW()),
+        ('테스터30', 'test30_active@test.com', @password, 'test30', '010-1111-1140', 1, 0, true, false, true, NOW(), NOW());
+
+-- SUSPENDED 상태 유저 10명 생성
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed, marketing_agreed, email_verified, last_login, created_at)
+VALUES ('테스터31', 'test1_suspended@test.com', @password, 'test31', '010-2222-1111', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터32', 'test2_suspended@test.com', @password, 'test32', '010-2222-1112', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터33', 'test3_suspended@test.com', @password, 'test33', '010-2222-1113', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터34', 'test4_suspended@test.com', @password, 'test34', '010-2222-1114', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터35', 'test5_suspended@test.com', @password, 'test35', '010-2222-1115', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터36', 'test6_suspended@test.com', @password, 'test36', '010-2222-1116', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터37', 'test7_suspended@test.com', @password, 'test37', '010-2222-1117', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터38', 'test8_suspended@test.com', @password, 'test38', '010-2222-1118', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터39', 'test9_suspended@test.com', @password, 'test39', '010-2222-1119', 1, 1, true, false, true, NOW(), NOW()),
+       ('테스터40', 'test10_suspended@test.com', @password, 'test40', '010-2222-1120', 1, 1, true, false, true, NOW(), NOW());
+
+-- BANNED 상태 유저 5명 생성
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed, marketing_agreed, email_verified, last_login, created_at)
+VALUES ('테스터41', 'test1_banned@test.com', @password, 'test41', '010-3333-1111', 1, 2, true, false, true, NOW(), NOW()),
+       ('테스터42', 'test2_banned@test.com', @password, 'test42', '010-3333-1112', 1, 2, true, false, true, NOW(), NOW()),
+       ('테스터43', 'test3_banned@test.com', @password, 'test43', '010-3333-1113', 1, 2, true, false, true, NOW(), NOW()),
+       ('테스터44', 'test4_banned@test.com', @password, 'test44', '010-3333-1114', 1, 2, true, false, true, NOW(), NOW()),
+       ('테스터45', 'test5_banned@test.com', @password, 'test45', '010-3333-1115', 1, 2, true, false, true, NOW(), NOW());
+-- DORMANT 상태 유저 10명 생성
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed, marketing_agreed, email_verified, last_login, created_at)
+VALUES ('테스터46', 'test1_dormant@test.com', @password, 'test46', '010-4444-1111', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터47', 'test2_dormant@test.com', @password, 'test47', '010-4444-1112', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터48', 'test3_dormant@test.com', @password, 'test48', '010-4444-1113', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터49', 'test4_dormant@test.com', @password, 'test49', '010-4444-1114', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터50', 'test5_dormant@test.com', @password, 'test50', '010-4444-1115', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터51', 'test6_dormant@test.com', @password, 'test51', '010-4444-1116', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터52', 'test7_dormant@test.com', @password, 'test52', '010-4444-1117', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터53', 'test8_dormant@test.com', @password, 'test53', '010-4444-1118', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터54', 'test9_dormant@test.com', @password, 'test54', '010-4444-1119', 1, 3, true, false, true, NOW(), NOW()),
+       ('테스터55', 'test10_dormant@test.com', @password, 'test55', '010-4444-1120', 1, 3, true, false, true, NOW(), NOW());
+
+-- CANCELED 상태 유저 6명 생성
+INSERT INTO users (name, email, password, nickname, phone, role, status, terms_agreed, marketing_agreed, email_verified, last_login, created_at, deleted_at)
+VALUES ('테스터56', 'test1_canceled@test.com', @password, 'test56', '010-5555-1111', 1, 4, true, false, true, NOW(), NOW(), NOW()),
+       ('테스터57', 'test2_canceled@test.com', @password, 'test57', '010-5555-1112', 1, 4, true, false, true, NOW(), NOW(), NOW()),
+       ('테스터58', 'test3_canceled@test.com', @password, 'test58', '010-5555-1113', 1, 4, true, false, true, NOW(), NOW(), NOW()),
+       ('테스터59', 'test4_canceled@test.com', @password, 'test59', '010-5555-1114', 1, 4, true, false, true, NOW(), NOW(), NOW()),
+       ('테스터60', 'test5_canceled@test.com', @password, 'test60', '010-5555-1115', 1, 4, true, false, true, NOW(), NOW(), NOW()),
+       ('테스터61', 'test6_canceled@test.com', @password, 'test61', '010-5555-1116', 1, 4, true, false, true, NOW(), NOW(), NOW());
 
 -- Product 테스트 값 추가
 INSERT INTO products (title, author, isbn, content, fixed_price, publication_year, status,
