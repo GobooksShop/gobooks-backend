@@ -1,29 +1,34 @@
 package org.team.bookshop.domain.order.dto;
 
+import java.util.List;
+import lombok.Builder;
 import lombok.Data;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 
-import java.util.List;
-
 @Data
+@Builder
 public class OrderResponse {
 
-    private Long orderId;
-    private List<OrderItemResponse> orderItemResponses;
-    private OrderStatus orderStatus;
-    private OrderAddressResponse orderAddressResponse;
-    private int orderTotalPrice;
-    private int orderTotalAmount;
+  private Long orderId;
+  private String mechantUid;
+  private List<OrderItemResponse> orderItemResponses;
+  private OrderStatus orderStatus;
+  private OrderAddressResponse orderAddressResponse;
+  private int orderTotalPrice;
+  private int orderTotalAmount;
 
-    public OrderResponse() {
-    }
+  public OrderResponse() {
+  }
 
-    public OrderResponse(Long orderId, List<OrderItemResponse> orderItemResponses, OrderStatus orderStatus, OrderAddressResponse orderAddressResponse, int orderTotalPrice, int orderTotalAmount) {
-        this.orderId = orderId;
-        this.orderItemResponses = orderItemResponses;
-        this.orderStatus = orderStatus;
-        this.orderAddressResponse = orderAddressResponse;
-        this.orderTotalPrice = orderTotalPrice;
-        this.orderTotalAmount = orderTotalAmount;
-    }
+  public OrderResponse(Long orderId, String merchantUid, List<OrderItemResponse> orderItemResponses,
+      OrderStatus orderStatus, OrderAddressResponse orderAddressResponse, int orderTotalPrice,
+      int orderTotalAmount) {
+    this.orderId = orderId;
+    this.mechantUid = merchantUid;
+    this.orderItemResponses = orderItemResponses;
+    this.orderStatus = orderStatus;
+    this.orderAddressResponse = orderAddressResponse;
+    this.orderTotalPrice = orderTotalPrice;
+    this.orderTotalAmount = orderTotalAmount;
+  }
 }
