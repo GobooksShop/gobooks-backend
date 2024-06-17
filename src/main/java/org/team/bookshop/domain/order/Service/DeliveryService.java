@@ -38,14 +38,15 @@ public class DeliveryService {
     Address noExistAddress = new Address();
 
     Address address = addressRepository.findByUserAndLabel(user, label).orElse(noExistAddress);
+    // 해당 user의 특정 label에 해당하는 address가 존재하지 않는다면
     if (address.equals(noExistAddress)) {
       Address transferedAddress = createDeliveryRequest.toAddressEntity();
       addressRepository.save(transferedAddress);
-    } {
+      transferedAddress.setUser(user);
+    } else {
       address.update(createDeliveryRequest.getOrderAddressUpdate());
+      address.setUser(user);
     }
-
-    address.setUser(user);
 
     Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1234L);
     delivery.setAddress(address);
