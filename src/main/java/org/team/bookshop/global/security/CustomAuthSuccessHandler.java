@@ -6,6 +6,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -40,8 +42,8 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
 
         String accessToken = jwtTokenizer.generateAccessToken(user);
         String refreshToken = jwtTokenizer.generateRefreshToken(user);
-        Cookie refreshTokenCookie = jwtTokenizer.setRefreshTokenToCookies(refreshToken);
-        response.addCookie(refreshTokenCookie);
+
+        response.addCookie(jwtTokenizer.setRefreshTokenToCookies(refreshToken));
 
         TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
                 .accessToken(accessToken)
