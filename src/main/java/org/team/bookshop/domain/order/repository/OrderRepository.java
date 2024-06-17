@@ -23,12 +23,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   Order findWithOrderItems(@Param("orderId") long orderId);
 
   @Query("select o from Order o " +
-      "join fetch o.orderItems oi " +
       "join fetch o.delivery d " +
       "join fetch d.address " +
-      "join fetch oi.product " +
       "where o.merchantUid = :merchantUid")
   Optional<Order> findByMerchantUid(String merchantUid);
+
 
   void deleteByDeliveryId(Long deliveryId);
 }

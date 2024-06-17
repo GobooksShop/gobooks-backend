@@ -33,10 +33,10 @@ import org.team.bookshop.global.response.ApiResponse;
 @RequiredArgsConstructor
 public class PaymentController {
 
-  @Value("${PORTONE_REST_KEY}")
+//  @Value("${PORTONE_REST_KEY}")
   private String REST_API_KEY;
 
-  @Value("${PORTONE_SECRET_KEY}")
+//  @Value("${PORTONE_SECRET_KEY}")
   private String REST_KEY;
 
   private IamportClient iamportClient;
@@ -106,14 +106,14 @@ public class PaymentController {
         .orderAddressUpdate(requestCompletePayment.getOrderAddressUpdate())
         .build());
 
-    IamportResponse<Payment> paymentIamportResponse = iamportClient.paymentByImpUid(
-        requestCompletePayment.getImpUid());
-
-    if (paymentIamportResponse.getResponse().getAmount().intValue()
-        == orderResponse.getOrderTotalAmount()) {
-      //payment db에 저장.
-    }
-    log.info("imp_uid: {} ", paymentIamportResponse.getResponse().getMerchantUid());
+//    IamportResponse<Payment> paymentIamportResponse = iamportClient.paymentByImpUid(
+//        requestCompletePayment.getImpUid());
+//
+//    if (paymentIamportResponse.getResponse().getAmount().intValue()
+//        == orderResponse.getOrderTotalAmount()) {
+//      //payment db에 저장.
+//    }
+//    log.info("imp_uid: {} ", paymentIamportResponse.getResponse().getMerchantUid());
     return ResponseEntity.ok(ApiResponse.success());
   }
 }
