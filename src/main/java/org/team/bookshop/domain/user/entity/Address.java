@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
 import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.global.util.BaseEntity;
 
@@ -21,7 +22,7 @@ import org.team.bookshop.global.util.BaseEntity;
 @Entity
 @NoArgsConstructor
 @Table(name="address", indexes = {
-    @Index(name = "idx__user__label", columnList = "user label")
+    @Index(name = "idx__user__label", columnList = "user_id, label")
 })
 public class Address extends BaseEntity {
 
@@ -46,4 +47,14 @@ public class Address extends BaseEntity {
     private String recipientName;
     private String recipientPhone;
 
+
+    public void update(OrderAddressUpdate orderAddressUpdate) {
+        label = orderAddressUpdate.getLabel();
+        isPrimary = false;
+        zipcode = orderAddressUpdate.getZipcode();
+        address1 = orderAddressUpdate.getAddress1();
+        address2 = orderAddressUpdate.getAddress2();
+        recipientName = orderAddressUpdate.getRecipientName();
+        recipientPhone = orderAddressUpdate.getRecipientPhone();
+    }
 }

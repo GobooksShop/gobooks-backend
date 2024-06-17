@@ -1,9 +1,12 @@
 package org.team.bookshop.domain.order.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
+import org.team.bookshop.domain.user.entity.Address;
 
 @Data
+@Builder
 public class CreateDeliveryRequest {
 
   @NotBlank(message = "merchantUid 빈 값일 수 없습니다.")
@@ -14,13 +17,8 @@ public class CreateDeliveryRequest {
 
   private OrderAddressUpdate orderAddressUpdate;
 
-  public CreateDeliveryRequest(String merchantUid, Long userId,
-      OrderAddressUpdate orderAddressUpdate) {
-    this.merchantUid = merchantUid;
-    this.userId = userId;
-    this.orderAddressUpdate = orderAddressUpdate;
+  public Address toAddressEntity() {
+    return orderAddressUpdate.toEntity();
   }
 
-  public CreateDeliveryRequest() {
-  }
 }
