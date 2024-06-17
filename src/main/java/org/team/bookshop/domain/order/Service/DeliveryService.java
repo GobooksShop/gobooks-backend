@@ -1,7 +1,6 @@
 package org.team.bookshop.domain.order.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import org.team.bookshop.global.error.exception.ApiException;
 @Service
 @RequiredArgsConstructor
 public class DeliveryService {
+
   private final DeliveryRepository deliveryRepository;
   private final OrderRepository orderRepository;
   private final AddressRepository addressRepository;
@@ -38,19 +38,17 @@ public class DeliveryService {
     Address noExistAddress = new Address();
 
     Address address = addressRepository.findByUserAndLabel(user, label).orElse(noExistAddress);
+    Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1234L);
     // 해당 user의 특정 label에 해당하는 address가 존재하지 않는다면
     if (address.equals(noExistAddress)) {
       Address transferedAddress = createDeliveryRequest.toAddressEntity();
-      addressRepository.save(transferedAddress);
       transferedAddress.setUser(user);
+      delivery.setAddress(transferedAddress);
     } else {
       address.update(createDeliveryRequest.getOrderAddressUpdate());
       address.setUser(user);
+      delivery.setAddress(address);
     }
-
-    Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1234L);
-    delivery.setAddress(address);
-
     Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
