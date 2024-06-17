@@ -13,6 +13,7 @@ import org.team.bookshop.domain.order.dto.OrderAddressCreate;
 import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
 import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderItemRequest;
+import org.team.bookshop.domain.order.dto.OrderResponse;
 import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
@@ -143,12 +144,12 @@ public class OrderService {
   }
 
   @Transactional
-  public Long update(OrderUpdateRequest orderUpdateRequest) {
-    Long orderId = orderUpdateRequest.getOrderId();
+  public OrderResponse update(OrderUpdateRequest orderUpdateRequest) {
+    String merchantUid = orderUpdateRequest.getMerchantUid();
 
     OrderAddressUpdate orderAddressUpdate = orderUpdateRequest.getOrderAddressUpdate();
 
-    Order order = orderRepository.findById(orderId)
+    Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
     Delivery delivery = order.getDelivery();
     Address address = delivery.getAddress();
@@ -159,8 +160,13 @@ public class OrderService {
     address.setAddress2(orderAddressUpdate.getAddress2());
     address.setRecipientName(orderAddressUpdate.getRecipientName());
     address.setRecipientPhone(orderAddressUpdate.getRecipientPhone());
-
-    return orderId;
+    return OrderResponse.builder()
+        .orderId(order.getId())
+        .orderStatus(OrderStatus.PAYED)
+        .mechantUid(order.getMerchantUid())
+        .orderTotalAmount(order.getOrderTotalPrice())
+        .orderTotalPrice(order.getOrderTotalPrice())
+        .build();
   }
 
   @Transactional
