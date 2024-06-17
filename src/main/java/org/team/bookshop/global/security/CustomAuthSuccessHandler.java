@@ -1,10 +1,13 @@
 package org.team.bookshop.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,6 +15,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.team.bookshop.domain.user.dto.TokenResponseDto;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.entity.UserRole;
 import org.team.bookshop.domain.user.repository.UserRepository;
@@ -24,6 +28,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
 
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
     private final String DEFAULT_REDIRECT_URL = "http://localhost:3000/login/oauth2/redirect";
 
     @Override
@@ -31,22 +36,33 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         Authentication authentication) throws ServletException, IOException {
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
-        String provider = oauthToken.getAuthorizedClientRegistrationId(); // 제공자 ID 가져오기
+        String provider = oauthToken.getAuthorizedClientRegistrationId();
 
         User user = findOrCreateUser(provider, attributes);
 
         String accessToken = jwtTokenizer.generateAccessToken(user);
         String refreshToken = jwtTokenizer.generateRefreshToken(user);
-        Cookie refreshTokenCookie = jwtTokenizer.setRefreshTokenToCookies(refreshToken);
-        response.addCookie(refreshTokenCookie);
 
-        Cookie accessTokenCookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, accessToken);
-        accessTokenCookie.setHttpOnly(false);
-        accessTokenCookie.setMaxAge(JwtConfig.JWT_COOKIE_MAX_AGE);
-        accessTokenCookie.setPath("/");
-        response.addCookie(accessTokenCookie);
+        response.addCookie(jwtTokenizer.setRefreshTokenToCookies(refreshToken));
 
-        response.sendRedirect(DEFAULT_REDIRECT_URL);
+        TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
+                .accessToken(accessToken)
+                .userId(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().getRoleName())
+                .build();
+
+        // JSON 데이터를 HTML 페이지에 포함시켜 부모 창으로 메시지를 보냅니다
+        String json = objectMapper.writeValueAsString(tokenResponseDto);
+        String html = "<html><body><script>" +
+                "window.opener.postMessage(" + json + ", '*');" +
+                "window.close();" +
+                "</script></body></html>";
+
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(html);
     }
 
 

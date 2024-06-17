@@ -9,19 +9,26 @@ import org.team.bookshop.domain.product.entity.Product;
 @NoArgsConstructor
 public class ProductDto {
 
-  private Long id;
-  private String title;
-  private String author;
-  private int fixedPrice;
-  private String pictureUrl;
+    private Long id;
+    private String title;
+    private String author;
+    private int fixedPrice;
+    private String pictureUrl;
 
-  @QueryProjection
-  public ProductDto(Product product) {
-    this.id = product.getId();
-    this.title = product.getTitle();
-    this.author = product.getAuthor();
-    this.fixedPrice = product.getFixedPrice();
-    this.pictureUrl = product.getPictureUrl();
-  }
+    @QueryProjection
+    public ProductDto(Product product) {
+        this.id = product.getId();
+        this.title = product.getTitle();
+        this.author = product.getAuthor();
+        this.fixedPrice = product.getFixedPrice();
+        this.pictureUrl = product.getPictureUrl();
+    }
 
+    public ProductDto(ProductDto productDto) {
+        this.id = productDto.getId();
+        this.title = productDto.getTitle();
+        this.author = productDto.getAuthor();
+        this.fixedPrice = productDto.getFixedPrice();
+        this.pictureUrl = productDto.getPictureUrl();
+    }
 }
