@@ -21,7 +21,7 @@ import org.team.bookshop.global.util.BaseEntity;
 @Entity
 @NoArgsConstructor
 @Table(name="address", indexes = {
-    @Index(name = "idx__label", columnList = "label")
+    @Index(name = "idx__user__label", columnList = "user label")
 })
 public class Address extends BaseEntity {
 
