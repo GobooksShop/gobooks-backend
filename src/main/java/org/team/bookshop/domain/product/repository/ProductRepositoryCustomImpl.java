@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.team.bookshop.domain.category.entity.QBookCategory;
 import org.team.bookshop.domain.category.entity.QCategory;
+import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.domain.product.dto.ProductDto;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.entity.QProduct;
@@ -24,6 +26,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
   private final JPAQueryFactory queryFactory;
   private final EntityManager entityManager;
+  private final CategoryRepository categoryRepository;
 
   @Override
   public Page<ProductDto> findByCategoryIds(Long categoryId, Pageable pageable) {
@@ -33,31 +36,36 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
-    // 카테고리 계층 쿼리 (기존 쿼리와 동일)
-    BooleanExpression isChildCategory = category.id.eq(categoryId);
-    isChildCategory = isChildCategory.or(category.parent.id.eq(categoryId));
+    // 1. 재귀 쿼리를 통해 하위 카테고리 ID 목록 가져오기
+    List<Object[]> categoryHierarchy = categoryRepository.findByIdWithChildren(categoryId);
+    List<Long> categoryIds = categoryHierarchy.stream()
+        .map(data -> ((Number) data[0]).longValue())
+        .collect(Collectors.toList());
 
-    // 동적 정렬 적용
+    // 2. 하위 카테고리 ID 목록을 포함하는 조건 생성
+    BooleanExpression isChildCategory = category.id.in(categoryIds);
+
+    // 3. 동적 정렬 적용 (기존 로직 유지)
     OrderSpecifier<?> orderSpecifier = pageable.getSort().stream()
-        .filter(order -> order.getProperty().equals("createdAt")) // 정렬 가능한 컬럼 제한
+        .filter(order -> order.getProperty().equals("createdAt"))
         .findFirst()
         .map(order -> new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
             product.createdAt))
-        .orElse(new OrderSpecifier<>(Order.DESC, product.createdAt)); // 기본 정렬 설정
+        .orElse(new OrderSpecifier<>(Order.DESC, product.createdAt));
 
-    // 페이징 쿼리 및 전체 개수 조회 쿼리
+    // 4. 페이징 쿼리 및 전체 개수 조회 쿼리 (개선된 조건 적용)
     JPAQuery<Product> countQuery = queryFactory
         .selectFrom(product)
-        .join(product.bookCategories, bookCategory)
-        .join(bookCategory.category, category)
+        .join(product.bookCategories, bookCategory).fetchJoin()
+        .join(bookCategory.category, category).fetchJoin()
         .where(isChildCategory);
     JPAQuery<Product> contentQuery = queryFactory
         .selectFrom(product)
-        .join(product.bookCategories, bookCategory)
-        .join(bookCategory.category, category)
+        .join(product.bookCategories, bookCategory).fetchJoin()
+        .join(bookCategory.category, category).fetchJoin()
         .where(isChildCategory)
         .distinct()
-        .orderBy(orderSpecifier) // 동적 정렬 적용
+        .orderBy(orderSpecifier)
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());
 

@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -101,6 +102,12 @@ public class ProductService {
 
   // 카테고리별 상품 조회 paging, querydsl
   public Page<ProductDto> getProductsByCategoryId(Long categoryId, Pageable pageable) {
+    int pageSize = pageable.getPageSize();
+    if (pageSize <= 0 || pageSize > 100) { // 페이지 크기 범위 제한 (예: 1~100)
+      pageSize = 12; // 기본 페이지 크기 설정
+      pageable = PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
+    }
+
     return productRepository.findByCategoryIds(categoryId, pageable);
   }
 

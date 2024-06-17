@@ -13,6 +13,7 @@ public class ProductDto {
   private String title;
   private String author;
   private int fixedPrice;
+  private String pictureUrl;
 
   @QueryProjection
   public ProductDto(Product product) {
@@ -20,6 +21,7 @@ public class ProductDto {
     this.title = product.getTitle();
     this.author = product.getAuthor();
     this.fixedPrice = product.getFixedPrice();
+    this.pictureUrl = product.getPictureUrl();
   }
 
 }
