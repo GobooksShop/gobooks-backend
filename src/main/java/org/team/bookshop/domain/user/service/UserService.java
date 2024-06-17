@@ -3,8 +3,11 @@ package org.team.bookshop.domain.user.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +16,13 @@ import org.team.bookshop.domain.order.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.dto.UserPostDto;
+import org.team.bookshop.domain.user.dto.UserResponseDto;
+import org.team.bookshop.domain.user.dto.UserSearchDto;
+import org.team.bookshop.domain.user.dto.UserStatusResponseDto;
 import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.entity.UserStatus;
+import org.team.bookshop.domain.user.entity.UserStatusCount;
 import org.team.bookshop.domain.user.repository.AddressRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.error.ErrorCode;
@@ -32,6 +40,7 @@ public class UserService {
     private final AddressRepository addressRepository;
     private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
+
 
     @Transactional(readOnly = false)
     public void saveUser(UserJoinDto userJoinDto) throws ApiException {
@@ -107,5 +116,42 @@ public class UserService {
 
         userRepository.save(user);
         return UserPostDto.toDto(user);
+    }
+
+    public UserStatusResponseDto getUserStatus() {
+        List<UserStatusCount> statusCounts = userRepository.countByStatusGrouped();
+        long total = 0;
+        long active = 0;
+        long suspended = 0;
+        long banned = 0;
+        long dormant = 0;
+        long canceled = 0;
+
+        for (UserStatusCount statusCount : statusCounts) {
+            UserStatus status = statusCount.getStatus();
+            long count = statusCount.getCount();
+            total += count;
+            switch (status) {
+                case ACTIVE:
+                    active = count;
+                    break;
+                case SUSPENDED:
+                    suspended = count;
+                    break;
+                case BANNED:
+                    banned = count;
+                    break;
+                case DORMANT:
+                    dormant = count;
+                    break;
+                case CANCELED:
+                    canceled = count;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return new UserStatusResponseDto(total, active, suspended, banned, dormant, canceled);
     }
 }
