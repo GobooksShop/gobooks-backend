@@ -38,6 +38,7 @@ public class OrderAddressUpdate {
 
     public Address toEntity(){
         Address address = new Address();
+        address.setLabel(label);
         address.setZipcode(zipcode);
         address.setAddress1(address1);
         address.setAddress2(address2);
