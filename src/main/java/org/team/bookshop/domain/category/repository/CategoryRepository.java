@@ -1,23 +1,51 @@
 package org.team.bookshop.domain.category.repository;
 
 import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.team.bookshop.domain.category.entity.Category;
-import org.team.bookshop.domain.product.entity.Product;
 
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long>,
+    CategoryRepositoryCustom {
 
-  boolean existsByParentId(Long id);
+  @Query(value = "WITH RECURSIVE Category_Hierarchy(id, name, parent_id) AS (" +
+      "SELECT id, name, parent_id " +
+      "FROM Category " +
+      "WHERE id = :categoryId " +  // 시작 카테고리 ID 지정
+      "UNION ALL " +
+      "SELECT c.id, c.name, c.parent_id " +
+      "FROM Category c " +
+      "JOIN Category_Hierarchy ch ON c.parent_id = ch.id) " +
+      "SELECT * FROM Category_Hierarchy", nativeQuery = true)
+  List<Object[]> findByIdWithChildren(@Param("categoryId") Long categoryId);
 
-  @Query("SELECT DISTINCT p FROM Product p " +
-      "JOIN FETCH p.bookCategories bc " +
-      "JOIN FETCH bc.category c " +
-      "WHERE c.id = :categoryId")
-  List<Product> findByCategoryId(@Param("categoryId") Long categoryId);
+  @Query(value = "WITH RECURSIVE Category_Hierarchy(id, name, parent_id, level) AS (" +
+      "SELECT id, name, parent_id, 1 AS level " +
+      "FROM Category " +
+      "WHERE parent_id IS NULL " +
+      "UNION ALL " +
+      "SELECT c.id, c.name, c.parent_id, ch.level + 1 " +
+      "FROM Category c " +
+      "JOIN Category_Hierarchy ch ON c.parent_id = ch.id) " +
+      "SELECT * FROM Category_Hierarchy", nativeQuery = true)
+  List<Object[]> findRootCategory();
 
-  @Query("SELECT c FROM Category c LEFT JOIN FETCH c.children WHERE c.id = :parentId")
-  Optional<Category> findByIdWithChildren(@Param("parentId") Long parentId);
+  @Query(value = """
+      WITH RECURSIVE category_path (id, name, parent_id) AS (
+        SELECT id, name, parent_id
+        FROM category
+        WHERE id = :categoryId
+        UNION ALL
+        SELECT c.id, c.name, c.parent_id
+        FROM category c
+        INNER JOIN category_path cp ON cp.parent_id = c.id
+      )
+      SELECT * FROM category_path;
+      """, nativeQuery = true)
+  List<Object[]> findCategoryPath(@Param("categoryId") Long categoryId);
+
+  @EntityGraph(attributePaths = "bookCategories")
+  List<Category> findAllById(Iterable<Long> ids);
 }

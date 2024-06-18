@@ -29,7 +29,8 @@ public class Delivery extends BaseEntity {
   private LocalDate deliveryComp;
   private Long trackingNumber;
 
-  @OneToOne(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "address_id")
   private Address address;
 
   public static Delivery createDelivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {

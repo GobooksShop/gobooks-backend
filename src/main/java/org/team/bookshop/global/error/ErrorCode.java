@@ -18,22 +18,27 @@ public enum ErrorCode {
 
   //USER
   EMAIL_ALREADY_REGISTERED(400, "U001", "Email already registered", LogLevel.ERROR),
-
+  NO_EXISTING_USER(400, "U002", "User doesn't exists", LogLevel.ERROR),
   //BOOK
 
   //CATEGORY
-  SELF_LOOP_CATEGORY_PATH(400, "C009", "The category path should not have self-loops",
-      LogLevel.ERROR),
-  CATEGORY_HAS_CHILDREN(400, "C010", "Cannot delete a category that has children", LogLevel.ERROR),
-  NO_PRODUCTS_IN_CATEGORY(404, "C012", "No Products in Category", LogLevel.ERROR),
+  INVALID_PARENT_CATEGORY(400, "C009", "Invalid Parent Category", LogLevel.ERROR),
 
   //ORDER
+  NOT_ENOUGH_STOCK_QUANTITY(400, "O001", "Stock Quantity of Product is not enough", LogLevel.ERROR),
+  NO_EXISTING_BOOK(404, "O002", "Book with entered id doesn't exist", LogLevel.ERROR),
+  INVALID_PRODUCT_PRICE_INFO(400, "O003", "Entered Price doesn't match", LogLevel.ERROR),
+  NO_EXISTING_ORDER(404, "O004", "Order with entered id doesn't exist", LogLevel.ERROR),
 
   //PAYMENT
-
-  //Scure
+  PORTONE_BAD_REQUEST(400, "C011", "Bad Request", LogLevel.ERROR),
+  //Secure
   SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
-  AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR);;
+  AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR),
+  BANDED_TOKEN(403, "S003", "Token is Baned", LogLevel.ERROR),
+  INVALID_REFRESH_TOKEN(401, "S004", "Invalid refresh token", LogLevel.ERROR),
+  EXPIRED_ACCESS_TOKEN(401, "S005", "Token refreshed, please retry with new access token",
+      LogLevel.ERROR);;
 
   private final String code;
   private final String message;

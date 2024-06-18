@@ -2,6 +2,7 @@ package org.team.bookshop.domain.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import org.team.bookshop.domain.category.dto.SimpleCategoryResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
-public class ProductResponse {
+public class ProductResponseDto {
 
   private final Long id;
   private final String title;
@@ -20,12 +21,13 @@ public class ProductResponse {
   private final LocalDate publicationYear;
   private final Product.Status status;
   private final String pictureUrl;
+  private final LocalDateTime createdAt;
 
 
   @JsonIgnoreProperties("bookCategories")
   private List<SimpleCategoryResponseDto> categories;
 
-  public ProductResponse(Product product) {
+  public ProductResponseDto(Product product) {
     this.id = product.getId();
     this.title = product.getTitle();
     this.author = product.getAuthor();
@@ -35,11 +37,14 @@ public class ProductResponse {
     this.publicationYear = product.getPublicationYear();
     this.status = product.getStatus();
     this.pictureUrl = product.getPictureUrl();
-
+    this.createdAt = product.getCreatedAt();
+    this.categories = product.getBookCategories().stream()
+        .map(bookCategory -> new SimpleCategoryResponseDto(bookCategory.getCategory()))
+        .collect(Collectors.toList());
   }
 
-  public static ProductResponse fromEntity(Product product) {
-    ProductResponse dto = new ProductResponse(product);
+  public static ProductResponseDto fromEntity(Product product) {
+    ProductResponseDto dto = new ProductResponseDto(product);
 
     dto.categories = product.getBookCategories().stream()
         .map(bookCategory -> new SimpleCategoryResponseDto(bookCategory.getCategory()))

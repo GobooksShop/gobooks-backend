@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class TokenResponseDto {
 
     private String accessToken;
+    private Long userId;
     private String name;
     private String email;
     private String role;

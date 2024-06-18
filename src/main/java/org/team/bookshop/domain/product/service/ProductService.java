@@ -1,25 +1,34 @@
 package org.team.bookshop.domain.product.service;
 
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.domain.category.entity.BookCategoryId;
 import org.team.bookshop.domain.category.entity.Category;
+import org.team.bookshop.domain.category.repository.BookCategoryRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
-import org.team.bookshop.domain.product.dto.AddProductRequest;
-import org.team.bookshop.domain.product.dto.ProductResponse;
-import org.team.bookshop.domain.product.dto.UpdateProductRequest;
+import org.team.bookshop.domain.product.dto.ProductDto;
+import org.team.bookshop.domain.product.dto.ProductResponseDto;
+import org.team.bookshop.domain.product.dto.ProductSaveRequestDto;
+import org.team.bookshop.domain.product.dto.SimpleProductResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
-import org.team.bookshop.global.error.ErrorCode;
-import org.team.bookshop.global.error.exception.ApiException;
 import org.team.bookshop.global.error.exception.EntityNotFoundException;
 
 @RequiredArgsConstructor
@@ -27,97 +36,160 @@ import org.team.bookshop.global.error.exception.EntityNotFoundException;
 @Transactional(readOnly = true)
 public class ProductService {
 
-  private final ProductRepository productRepository;
-  private final CategoryRepository categoryRepository;
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadDir;
 
-  //대량일때는 성능이슈
-  @Transactional
-  public AddProductRequest createProduct(AddProductRequest requestDto) {
-    Product product = productRepository.save(requestDto.toEntity());
 
-    Set<BookCategory> bookCategories = requestDto.getCategoryIds().stream()
-        .map(categoryId -> {
-          Category category = categoryRepository.findById(categoryId)
-              .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-          BookCategory bookCategory = new BookCategory(
-              new BookCategoryId(product.getId(), category.getId()),
-              product,
-              category
-          );
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final BookCategoryRepository bookCategoryRepository;
 
-          product.getBookCategories().add(bookCategory);
+    // CREATE & UPDATE
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public SimpleProductResponseDto saveOrUpdateProduct(ProductSaveRequestDto request,
+        MultipartFile pictureFile) throws IOException {
 
-          return bookCategory;
-        })
-        .collect(Collectors.toSet());
+        Product product;
+        // 업데이트 로직
+        if (request.getId() != null) {
+            product = productRepository.findById(request.getId())
+                .orElseThrow(
+                    () -> new EntityNotFoundException("Product not found: " + request.getId()));
+            product.update(
+                request.getTitle(),
+                request.getAuthor(),
+                request.getIsbn(),
+                request.getContent(),
+                request.getFixedPrice(),
+                request.getPublicationYear(),
+                request.getStatus()
+            );
+        } else {
+            product = request.toEntity();
+        }
 
-    return new AddProductRequest(product);
-  }
+        if (pictureFile != null && !pictureFile.isEmpty()) {
+            String pictureUrl = savePictureFile(pictureFile);
+            product.setPictureUrl(pictureUrl);
+        }
 
-  public List<ProductResponse> findAll() {
-    return productRepository.findAll().stream()
-        .map(ProductResponse::new)
-        .collect(Collectors.toList());
-  }
+        // 1. 상품 생성
+        product = productRepository.save(product);
 
-  public ProductResponse findById(long id) {
-    return productRepository.findById(id)
-        .map(ProductResponse::new)
-        .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
-  }
+        // 2. 카테고리 ID 리스트에서 중복 제거
+        Set<Long> uniqueCategoryIds = new HashSet<>(request.getCategoryIds());
 
-  public void delete(long id) {
-    Product product = productRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
-    productRepository.delete(product);
-  }
+        // 3. 자식 카테고리 ID 추출 (입력값 중 부모-자식 관계인 id가 있을 경우 부모 id를 제외)
+        Set<Long> childCategoryIds = filterChildCategoryIds(uniqueCategoryIds);
 
-  @Transactional
-  public Product update(long id, UpdateProductRequest request) {
-    Product product = productRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
-    product.update(
-        request.getTitle(),
-        request.getAuthor(),
-        request.getIsbn(),
-        request.getContent(),
-        request.getFixedPrice(),
-        request.getPublicationYear(),
-        request.getStatus()
+        // 4. BookCategory 매핑 (엔티티 매핑)
+        List<Category> categories = categoryRepository.findAllById(childCategoryIds);
+        clearBookCategories(product); // 기존 BookCategory 엔티티 삭제
+        for (Category category : categories) {
+            BookCategory bookCategory = new BookCategory(
+                new BookCategoryId(product.getId(), category.getId()), product, category
+            );
+            bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
+            product.addBookCategory(bookCategory); // Product 엔티티에 추가
+        }
+        productRepository.save(product);
 
-    );
-    return product;
-  }
-
-  // 특정 카테고리의 상품 리스트 조회
-  public List<ProductResponse> getProductsByCategoryId(Long categoryId) {
-    if (categoryId == null || categoryId <= 0) {
-      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+        return new SimpleProductResponseDto(product);
     }
 
-    List<Product> productsFromCategory = categoryRepository.findByCategoryId(categoryId);
+    private String savePictureFile(MultipartFile pictureFile) throws IOException {
+        if (pictureFile == null || pictureFile.isEmpty()) {
+            return null;
+        }
 
-    List<Product> products = productsFromCategory.stream()
-        .flatMap(category -> category.getBookCategories().stream())
-        .map(BookCategory::getProduct)
-        .distinct()
-        .collect(Collectors.toList());
+        Path directory = Paths.get(uploadDir);
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
+        }
 
-    return products.stream()
-        .map(ProductResponse::fromEntity)
-        .collect(Collectors.toList());
-  }
+        String originalFileName = pictureFile.getOriginalFilename();
+        assert originalFileName != null;
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String uuidFileName = UUID.randomUUID() + fileExtension;
+        Path filePath = directory.resolve(uuidFileName);
 
-  // 상품 리스트 페이징 조회
-  public Page<ProductResponse> getProductsByCategoryId(Long categoryId, Pageable pageable) {
-    if (categoryId == null || categoryId <= 0) {
-      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
-    }
-    Page<Product> productPage = productRepository.findByCategory(categoryId, pageable);
-    if (productPage.isEmpty()) {
-      throw new ApiException(ErrorCode.NO_PRODUCTS_IN_CATEGORY);
+        Files.write(filePath, pictureFile.getBytes());
+
+        return uuidFileName;
     }
 
-    return productPage.map(ProductResponse::fromEntity);
-  }
+    // 부모-자식 관계 필터링 메서드 (자식 카테고리 ID만 남김)
+    private Set<Long> filterChildCategoryIds(Set<Long> categoryIds) {
+        Set<Long> parentCategoryIds = new HashSet<>();
+        for (Long categoryId : categoryIds) {
+            List<Object[]> categoryPath = categoryRepository.findCategoryPath(categoryId);
+
+            // 마지막 요소 제외하고 부모 카테고리 ID 추출
+            for (int i = 0; i < categoryPath.size() - 1; i++) {
+                Long parentId =
+                    (categoryPath.get(i)[2] != null) ? ((Number) categoryPath.get(i)[2]).longValue()
+                        : null;
+                if (parentId != null) {
+                    parentCategoryIds.add(parentId);
+                }
+            }
+        }
+
+        // 자식 카테고리 ID 필터링
+        return categoryIds.stream()
+            .filter(categoryId -> !parentCategoryIds.contains(categoryId))
+            .collect(Collectors.toSet());
+    }
+
+    private void clearBookCategories(Product product) {
+        Set<BookCategory> bookCategories = product.getBookCategories();
+        for (BookCategory bookCategory : bookCategories) {
+            bookCategory.setProduct(null);
+            bookCategory.setCategory(null);
+            bookCategoryRepository.delete(bookCategory);
+        }
+        bookCategories.clear();
+    }
+
+    // READ
+    // 모든 상품 조회
+    public List<ProductResponseDto> getAllProducts() {
+        return productRepository.findAll().stream()
+            .map(ProductResponseDto::new)
+            .collect(Collectors.toList());
+    }
+
+    // 특정 상품 조회
+    public ProductResponseDto getProduct(long id) {
+        return productRepository.findById(id)
+            .map(ProductResponseDto::new)
+            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
+    }
+
+    // 카테고리별 상품 조회 paging, querydsl
+    public Page<ProductDto> getProductsByCategoryId(Long categoryId, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        if (pageSize <= 0 || pageSize > 100) { // 페이지 크기 범위 제한 (예: 1~100)
+            pageSize = 12; // 기본 페이지 크기 설정
+            pageable = PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
+        }
+        return productRepository.findByCategoryIds(categoryId, pageable)
+            .map(ProductDto::new);
+    }
+
+    // 카테고리별 상품 조회
+    public List<ProductDto> getProductsByCategoryId(Long categoryId) {
+        List<Product> products = productRepository.findByCategoryIds(categoryId);
+        return products.stream()
+            .map(ProductDto::new)
+            .collect(Collectors.toList());
+    }
+
+    // DELETE
+    @Transactional
+    public void deleteProduct(long id) {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
+        productRepository.delete(product);
+    }
 }

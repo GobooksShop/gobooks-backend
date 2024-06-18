@@ -1,19 +1,21 @@
 package org.team.bookshop.domain.order.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import org.team.bookshop.domain.user.entity.Address;
 
 @Data
+@Builder
 public class OrderUpdateRequest {
-    private Long orderId;
 
-    private OrderAddressUpdate orderAddressUpdate;
+  private String merchantUid;
 
-    public OrderUpdateRequest() {
-    }
+  private OrderAddressUpdate orderAddressUpdate;
 
-    public OrderUpdateRequest(Long orderId, OrderAddressUpdate orderAddressUpdate) {
-        this.orderId = orderId;
-        this.orderAddressUpdate = orderAddressUpdate;
-    }
+  public OrderUpdateRequest() {
+  }
+
+  public OrderUpdateRequest(String merchantUid, OrderAddressUpdate orderAddressUpdate) {
+    this.merchantUid = merchantUid;
+    this.orderAddressUpdate = orderAddressUpdate;
+  }
 }

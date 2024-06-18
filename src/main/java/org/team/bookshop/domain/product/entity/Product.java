@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,21 +14,25 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.team.bookshop.domain.category.entity.BookCategory;
+import org.team.bookshop.global.util.BaseEntity;
 
 @Entity
 @Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Product {
+@AllArgsConstructor
+public class Product extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +61,11 @@ public class Product {
   @Column(nullable = false)
   private Status status;
 
+  private final LocalDateTime createdAt = LocalDateTime.now();
+
   private int stockQuantity;
 
-  @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonIgnoreProperties("product")
   private Set<BookCategory> bookCategories = new HashSet<>();
 
@@ -104,14 +111,8 @@ public class Product {
     stockQuantity += quantity;
   }
 
-
   public void addBookCategory(BookCategory bookCategory) {
     bookCategories.add(bookCategory);
-    bookCategory.setProduct(this);
-  }
-
-  public void removeBookCategory(BookCategory bookCategory) {
-    bookCategories.remove(bookCategory);
-    bookCategory.setProduct(null);
+    bookCategory.setProduct(this); // 양방향 관계 설정
   }
 }

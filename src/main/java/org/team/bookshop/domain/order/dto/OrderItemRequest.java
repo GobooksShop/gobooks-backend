@@ -12,7 +12,7 @@ import org.team.bookshop.domain.product.entity.Product;
 public class OrderItemRequest {
     private Long productId;
     private int orderCount;
-    private int orderPrice;
+    private int price;
 
     public OrderItemRequest() {
     }
@@ -20,15 +20,15 @@ public class OrderItemRequest {
     public OrderItemRequest(Long productId, int orderCount, int orderPrice) {
         this.productId = productId;
         this.orderCount = orderCount;
-        this.orderPrice = orderPrice;
+        this.price = orderPrice;
     }
 
     public OrderItem toEntity() {
-        OrderItem orderItem = OrderItem.createOrderItem(orderCount, orderPrice);
+        OrderItem orderItem = OrderItem.createOrderItem(orderCount, price);
         return orderItem;
     }
 
     public OrderItem toOrderItemEntity() {
-        return OrderItem.createOrderItem(orderCount, orderPrice);
+        return OrderItem.createOrderItem(orderCount, price);
     }
 }

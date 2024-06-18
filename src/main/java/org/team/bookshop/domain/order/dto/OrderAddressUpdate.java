@@ -8,6 +8,9 @@ import org.team.bookshop.domain.user.entity.Address;
 @Data
 public class OrderAddressUpdate {
 
+    @NotBlank(message = "라벨은 빈 값일 수 없습니다.")
+    private String label;
+
     @NotBlank(message = "우편번호는 빈 값일 수 없습니다.")
     private String zipcode;
 
@@ -35,6 +38,7 @@ public class OrderAddressUpdate {
 
     public Address toEntity(){
         Address address = new Address();
+        address.setLabel(label);
         address.setZipcode(zipcode);
         address.setAddress1(address1);
         address.setAddress2(address2);

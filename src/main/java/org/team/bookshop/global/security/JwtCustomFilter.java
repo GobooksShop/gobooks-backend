@@ -1,99 +1,110 @@
 package org.team.bookshop.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.team.bookshop.domain.user.entity.User;
-import org.team.bookshop.domain.user.repository.TokenRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
-import org.team.bookshop.domain.user.service.UserService;
-import org.team.bookshop.global.config.JwtConfig;
-import org.team.bookshop.global.error.exception.ApiException;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {
 
-  private final UserRepository userRepository;
-  private final JwtTokenizer jwtTokenizer;
-  private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
+    private final JwtTokenizer jwtTokenizer;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-    FilterChain filterChain) throws ServletException, IOException {
-    try {
-      String jwtAccessToken = getJwtFromRequest(request);
 
-      if (jwtAccessToken != null && !isTokenBlacklisted(jwtAccessToken) && jwtTokenizer.validateToken(jwtAccessToken)) {
-        handleValidToken(jwtAccessToken, request);
-      } else {
-        String refreshToken = getRefreshTokenFromCookies(request.getCookies());
+    @Override
+    protected void doFilterInternal(@NotNull HttpServletRequest request,
+        @NotNull HttpServletResponse response,
+        @NotNull FilterChain filterChain) throws ServletException, IOException {
 
-        if (refreshToken != null && !isTokenBlacklisted(refreshToken) && !jwtTokenizer.isExpired(refreshToken)) {
-          String newAccessToken = jwtTokenizer.refreshAccessToken(refreshToken);
-          response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
-          handleValidToken(newAccessToken, request);
+        String jwtAccessToken = jwtTokenizer.getJwtFromRequest(request);
+
+        if (jwtAccessToken != null && jwtTokenizer.validateAccessToken(jwtAccessToken)) {
+            setSecurityContext(jwtAccessToken, request);
+        } else {
+            String refreshToken = jwtTokenizer.getRefreshTokenFromCookies(request);
+            if (refreshToken != null && jwtTokenizer.validateRefreshToken(refreshToken)) {
+                String newAccessToken = jwtTokenizer.updateAccessToken(refreshToken);
+                setSecurityContext(newAccessToken, request);
+                responseUnauthorized(response,
+                    "Token refreshed, please retry with new access token", newAccessToken);
+                return;
+            }
         }
-      }
-    } catch (ApiException ex) {
-      log.error("Could not set user authentication in security context", ex);
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.getWriter().write("Unauthorized");
-      return;
+
+        filterChain.doFilter(request, response);
     }
 
-    filterChain.doFilter(request, response);
-  }
-
-  private String getJwtFromRequest(HttpServletRequest request) {
-    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      return authorizationHeader.substring(7);
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+        return method.equals("OPTIONS") || //preflight 요청을 처리하기위해 사용
+            path.startsWith("/api/auth") ||
+            path.startsWith("/api/users") ||
+//           path.startsWith("/api/categories") && method.equals("GET") ||
+            path.startsWith("/api/products") && method.equals("GET") ||
+            path.startsWith("/image");
     }
-    return null;
-  }
 
-  private String getRefreshTokenFromCookies(Cookie[] cookies) {
-    if (cookies == null) {
-      return null;
+    private void responseUnauthorized(HttpServletResponse response, String message,
+        String newAccessToken) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        /** accessToken 위변조 또는 만료시
+         *  401에러를 프론트에 보낼때
+         *  반드시 4가지 값을 보내야
+         *  Access-Control-Allow-Origin,
+         *  Access-Control-Allow-Credentials,
+         *  Access-Control-Allow-Methods,
+         *  Access-Control-Expose-Headers
+         *  reactJS axios Interceptors 안에서 error 핸들링 할 수 있음.
+         */
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", message);
+        responseBody.put("status", "401");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(responseBody);
+
+        response.getWriter().write(jsonResponse);
     }
-    return Arrays.stream(cookies)
-        .filter(cookie -> JwtConfig.REFRESH_JWT_COOKIE_NAME.equals(cookie.getName()))
-        .map(Cookie::getValue)
-        .findFirst()
-        .orElse(null);
-  }
 
-  private boolean isTokenBlacklisted(String token) {
-    return tokenRepository.findByToken(token).isPresent();
-  }
-
-  private void handleValidToken(String token, HttpServletRequest request) {
-    Long userId = Long.valueOf(jwtTokenizer.getUserId(token));
-    User user = userRepository.findById(userId).orElse(null);
-
-    if (user != null) {
-      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-          user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole())));
-      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    private void setSecurityContext(String token, HttpServletRequest request) {
+        Long userId = Long.valueOf(jwtTokenizer.getUserId(token));
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRoleName())));
+            authenticationToken.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
     }
-  }
+
 }
 

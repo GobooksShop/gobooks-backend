@@ -8,9 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.team.bookshop.domain.order.entity.Delivery;
+import org.team.bookshop.domain.order.repository.DeliveryRepository;
+import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.dto.UserPostDto;
+import org.team.bookshop.domain.user.dto.UserResponseDto;
+import org.team.bookshop.domain.user.dto.UserStatusResponseDto;
+import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.entity.UserStatus;
+import org.team.bookshop.domain.user.entity.UserStatusCount;
+import org.team.bookshop.domain.user.repository.AddressRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
@@ -24,6 +33,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AddressRepository addressRepository;
+    private final DeliveryRepository deliveryRepository;
+    private final OrderRepository orderRepository;
 
 
     @Transactional(readOnly = false)
@@ -39,12 +51,10 @@ public class UserService {
     }
 
 
-    public UserPostDto getUserById(Long id) {
+    public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        UserPostDto userPostDto = new UserPostDto();
-        return userPostDto.toDto(user);
+        return UserResponseDto.fromEntity(user);
     }
 
     public User getUserByEmail(String email) {
@@ -68,12 +78,25 @@ public class UserService {
 
     @Transactional(readOnly = false)
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Address> addresses = addressRepository.findByUserId(id);
+
+        for (Address address : addresses) {
+            Delivery delivery = deliveryRepository.findByAddressId(address.getId());
+
+            orderRepository.deleteByDeliveryId(delivery.getId());
+            deliveryRepository.deleteByAddressId(address.getId());
+        }
+
+        addressRepository.deleteByUserId(id);
+        userRepository.delete(user);
     }
 
 
     @Transactional(readOnly = false)
-    public UserPostDto updateUser(Long id, UserPostDto UserPostDto) {
+    public UserResponseDto updateUser(Long id, UserPostDto UserPostDto) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -83,9 +106,47 @@ public class UserService {
         user.setName(UserPostDto.getName());
         user.setPhone(UserPostDto.getPhone());
         user.setMarketingAgreed(UserPostDto.getMarketingAgreed());
-        user.setEmailVerified(UserPostDto.getEmailVerified());
+        user.setEmailVerified(true);
+        user.setTermsAgreed(true);
 
         userRepository.save(user);
-        return UserPostDto.toDto(user);
+        return UserResponseDto.fromEntity(user);
+    }
+
+    public UserStatusResponseDto getUserStatus() {
+        List<UserStatusCount> statusCounts = userRepository.countByStatusGrouped();
+        long total = 0;
+        long active = 0;
+        long suspended = 0;
+        long banned = 0;
+        long dormant = 0;
+        long canceled = 0;
+
+        for (UserStatusCount statusCount : statusCounts) {
+            UserStatus status = statusCount.getStatus();
+            long count = statusCount.getCount();
+            total += count;
+            switch (status) {
+                case ACTIVE:
+                    active = count;
+                    break;
+                case SUSPENDED:
+                    suspended = count;
+                    break;
+                case BANNED:
+                    banned = count;
+                    break;
+                case DORMANT:
+                    dormant = count;
+                    break;
+                case CANCELED:
+                    canceled = count;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return new UserStatusResponseDto(total, active, suspended, banned, dormant, canceled);
     }
 }

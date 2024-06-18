@@ -7,17 +7,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.category.dto.CategoryChildrenResponseDto;
+import org.team.bookshop.domain.category.dto.CategoryDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
 import org.team.bookshop.domain.category.service.CategoryService;
 
 @RestController
 @RequestMapping("/api")
-public class CategoryViewController {
+public class CategoryPublicController {
 
   private final CategoryService categoryService;
 
-  public CategoryViewController(CategoryService categoryService) {
+  public CategoryPublicController(CategoryService categoryService) {
     this.categoryService = categoryService;
+  }
+
+  @GetMapping("/categories")
+  public ResponseEntity<List<CategoryResponseDto>> getRootCategories() {
+    List<CategoryResponseDto> rootCategories = categoryService.getRootCategories();
+    return ResponseEntity.ok(rootCategories);
+  }
+
+  @GetMapping("/categories/hierarchy")
+  public ResponseEntity<List<CategoryResponseDto>> getCategoryHierarchy() {
+    List<CategoryResponseDto> categoryHierarchy = categoryService.getCategoryHierarchy();
+    return ResponseEntity.ok(categoryHierarchy);
   }
 
   // READ
@@ -36,5 +49,12 @@ public class CategoryViewController {
     List<CategoryChildrenResponseDto> children = categoryService.getCategoryWithDirectChildren(
         categoryId);
     return ResponseEntity.ok(children);
+  }
+
+  // BreadCrumb
+  @GetMapping("/categories/{categoryId}/breadcrumbs")
+  public ResponseEntity<List<CategoryDto>> getBreadcrumbs(@PathVariable Long categoryId) {
+    List<CategoryDto> breadcrumbs = categoryService.getBreadcrumbs(categoryId);
+    return ResponseEntity.ok(breadcrumbs);
   }
 }

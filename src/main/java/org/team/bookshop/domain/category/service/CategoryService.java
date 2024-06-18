@@ -1,11 +1,16 @@
 package org.team.bookshop.domain.category.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.category.dto.CategoryChildrenResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
+import org.team.bookshop.domain.category.dto.CategoryDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryUpdateRequestDto;
 import org.team.bookshop.domain.category.entity.Category;
@@ -26,17 +31,26 @@ public class CategoryService {
   // READ
   // 하위 계층을 모두 조회
   public CategoryResponseDto getCategoryWithChildren(Long parentId) {
-    Category parent = categoryRepository.findByIdWithChildren(parentId)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+    List<Object[]> categoryHierarchy = categoryRepository.findByIdWithChildren(parentId);
 
-    List<Category> children = parent.getChildren();
+    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
 
-    CategoryResponseDto parentDto = CategoryResponseDto.fromEntity(parent);
-    parentDto.setChildren(children.stream()
-        .map(CategoryResponseDto::fromEntity)
-        .collect(Collectors.toList()));
+    for (Object[] categoryData : categoryHierarchy) {
+      Long id = ((Number) categoryData[0]).longValue();
+      String name = (String) categoryData[1];
+      Long parentCategoryId =
+          categoryData[2] != null ? ((Number) categoryData[2]).longValue() : null;
 
-    return parentDto;
+      CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
+      categoryMap.put(id, categoryDto);
+
+      if (parentCategoryId != null) {
+        CategoryResponseDto parentDto = categoryMap.get(parentCategoryId);
+        parentDto.getChildren().add(categoryDto);
+      }
+    }
+
+    return categoryMap.get(parentId);
   }
 
   // 바로 아래 depth만 조회
@@ -47,6 +61,79 @@ public class CategoryService {
     return parent.getChildren().stream()
         .map(CategoryChildrenResponseDto::fromEntity)
         .collect(Collectors.toList());
+  }
+
+  // root 카테고리부터 조회
+  public List<CategoryResponseDto> getRootCategories() {
+    List<Object[]> categories = categoryRepository.findRootCategory();
+    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+    List<CategoryResponseDto> rootCategories = new ArrayList<>();
+
+    for (Object[] category : categories) {
+      Long id = ((Number) category[0]).longValue();
+      String name = (String) category[1];
+      Long parentId = category[2] != null ? ((Number) category[2]).longValue() : null;
+
+      CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
+      categoryMap.put(id, categoryDto);
+
+      if (parentId == null) {
+        rootCategories.add(categoryDto);
+      } else {
+        CategoryResponseDto parentCategory = categoryMap.get(parentId);
+        if (parentCategory != null) {
+          parentCategory.getChildren().add(categoryDto);
+        }
+      }
+    }
+
+    return rootCategories;
+  }
+
+  // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
+  public List<CategoryResponseDto> getCategoryHierarchy() {
+    List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
+    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
+    List<CategoryResponseDto> rootCategories = new ArrayList<>();
+
+    for (CategoryDto categoryDto : categories) {
+      Long id = categoryDto.getId();
+      String name = categoryDto.getName();
+      Long parentId = categoryDto.getParentId();
+
+      CategoryResponseDto categoryResponseDto = new CategoryResponseDto(id, name);
+      categoryMap.put(id, categoryResponseDto);
+
+      if (parentId == null) {
+        rootCategories.add(categoryResponseDto);
+      } else {
+        CategoryResponseDto parentCategory = categoryMap.get(parentId);
+        if (parentCategory != null) {
+          parentCategory.getChildren().add(categoryResponseDto);
+        }
+      }
+    }
+
+    return rootCategories;
+  }
+
+  // BreadCrumb 조회
+  public List<CategoryDto> getBreadcrumbs(Long categoryId) {
+    List<Object[]> result = categoryRepository.findCategoryPath(categoryId);
+    if (result.isEmpty()) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+
+    List<CategoryDto> breadcrumbs = result.stream()
+        .map(objects -> new CategoryDto(
+            ((Number) objects[0]).longValue(),
+            (String) objects[1],
+            objects[2] != null ? ((Number) objects[2]).longValue() : null
+        ))
+        .collect(Collectors.toList());
+
+    Collections.reverse(breadcrumbs);
+    return breadcrumbs;
   }
 
   // CREATE
@@ -70,84 +157,77 @@ public class CategoryService {
 
   // UPDATE
   public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto updateRequestDto) {
-    Category category = categoryRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+    // 1. Category 엔티티 조회
+    List<Object[]> categoryData = categoryRepository.findByIdWithChildren(id);
+    if (categoryData.isEmpty()) {
+      throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+    }
+
+    // 2. 조회된 데이터를 Category 엔티티로 변환
+    Category category = convertToCategoryEntity(categoryData.get(0));
+
+    // 3. 이름 업데이트
     category.setName(updateRequestDto.getName());
+
+    // 4. parentId 업데이트: null 체크 후 부모 카테고리 설정
+    if (updateRequestDto.getParentId() != null) {
+      List<Object[]> parentCategoryData = categoryRepository.findByIdWithChildren(
+          updateRequestDto.getParentId());
+      if (parentCategoryData.isEmpty()) {
+        throw new ApiException(ErrorCode.ENTITY_NOT_FOUND);
+      }
+
+      Category parentCategory = convertToCategoryEntity(parentCategoryData.get(0));
+
+      if (isChildCategory(category, parentCategory)) {
+        throw new ApiException(ErrorCode.INVALID_PARENT_CATEGORY);
+      }
+
+      category.setParent(parentCategory);
+    } else {
+      category.setParent(null);
+    }
+
+    // 5. 변경 사항 저장
     return CategoryResponseDto.fromEntity(categoryRepository.save(category));
+  }
+
+  // object->entity 변경
+  private Category convertToCategoryEntity(Object[] data) {
+    Long id = (Long) data[0];
+    String name = (String) data[1];
+    Long parentId = (Long) data[2];
+
+    Category category = new Category();
+    category.setId(id);
+    category.setName(name);
+
+    if (parentId != null) {
+      Category parent = new Category();
+      parent.setId(parentId);
+      category.setParent(parent);
+    }
+
+    return category;
+  }
+
+  // 순환 참조 방지 로직
+  private boolean isChildCategory(Category category, Category potentialParent) {
+    Category current = potentialParent;
+    while (current != null) {
+      if (current.getId().equals(category.getId())) {
+        return true;
+      }
+      current = current.getParent();
+    }
+    return false;
   }
 
   // DELETE
   public void deleteCategory(Long id) {
     Category category = categoryRepository.findById(id)
         .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-    if (!categoryRepository.existsByParentId(id)) {
-      if (category.getParent() != null) {
-        category.getParent().removeChild(category);
-      }
-      categoryRepository.deleteById(id);
-    } else {
-      throw new ApiException(ErrorCode.CATEGORY_HAS_CHILDREN);
-    }
-  }
 
-
-  /* 클로저테이블 고려
-  // CREATE
-  public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto) {
-    Category category = new Category();
-    category.setName(requestDto.getName());
-
-    if (requestDto.getParentId() != null) {
-      Category parentCategory = categoryRepository.findById(requestDto.getParentId())
-          .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-      category.setParent(parentCategory);
-    }
-    Category savedCategory = categoryRepository.save(category);
-    updateCategoryPath(savedCategory);
-
-    return CategoryResponseDto.builder()
-        .id(savedCategory.getId())
-        .name(savedCategory.getName())
-        .build();
-  }
-
-  // READ
-  public List<CategoryResponseDto> getChildren(Long categoryId) {
-    List<Category> children = categoryRepository.findChildren(categoryId);
-    return children.stream()
-        .map(child -> CategoryResponseDto.builder()
-            .id(child.getId())
-            .name(child.getName())
-            .build())
-        .collect(Collectors.toList());
-  }
-
-
-  // UPDATE
-  @Transactional
-  public CategoryResponseDto updateCategory(Long categoryId,
-      CategoryUpdateRequestDto categoryUpdateRequestDto) {
-    Category category = categoryRepository.findById(categoryId)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-    category.setName(categoryUpdateRequestDto.getName());
-    Optional<Category> parent = categoryRepository.findParent(categoryId);
-    Category parentCategory = parent.orElse(null);
-    Category updatedCategory = categoryRepository.save(category);
-    return CategoryResponseDto.fromEntity(updatedCategory, getChildren(categoryId), parentCategory);
-  }
-
-  // DELETE
-  @Transactional
-  public void deleteCategory(Long categoryId) {
-    Category category = categoryRepository.findById(categoryId)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-    deletePaths(category);
     categoryRepository.delete(category);
   }
-
-  public void deletePaths(Category category) {
-    List<CategoryPath> paths = categoryPathRepository.findByChildren(category);
-    categoryPathRepository.deleteAll(paths);
-  }
-  */
 }
