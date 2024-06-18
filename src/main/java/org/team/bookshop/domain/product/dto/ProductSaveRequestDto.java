@@ -6,11 +6,15 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
 @NoArgsConstructor
-public class ProductCreateRequestDto {
+public class ProductSaveRequestDto {
+
+    @Setter
+    private Long id;
 
     @NotBlank(message = "Title is required")
     private String title;

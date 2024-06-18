@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +23,9 @@ import org.team.bookshop.domain.category.entity.BookCategoryId;
 import org.team.bookshop.domain.category.entity.Category;
 import org.team.bookshop.domain.category.repository.BookCategoryRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
-import org.team.bookshop.domain.product.dto.ProductCreateRequestDto;
 import org.team.bookshop.domain.product.dto.ProductDto;
 import org.team.bookshop.domain.product.dto.ProductResponseDto;
-import org.team.bookshop.domain.product.dto.ProductUpdateRequestDto;
+import org.team.bookshop.domain.product.dto.ProductSaveRequestDto;
 import org.team.bookshop.domain.product.dto.SimpleProductResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
@@ -44,31 +44,50 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
 
-    // CREATE
+    // CREATE & UPDATE
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SimpleProductResponseDto createProduct(ProductCreateRequestDto requestDto,
+    public SimpleProductResponseDto saveOrUpdateProduct(ProductSaveRequestDto request,
         MultipartFile pictureFile) throws IOException {
 
-        String pictureUrl = savePictureFile(pictureFile);
-        Product product = requestDto.toEntity();
-        product.setPictureUrl(pictureUrl);
+        Product product;
+        // 업데이트 로직
+        if (request.getId() != null) {
+            product = productRepository.findById(request.getId())
+                .orElseThrow(
+                    () -> new EntityNotFoundException("Product not found: " + request.getId()));
+            product.update(
+                request.getTitle(),
+                request.getAuthor(),
+                request.getIsbn(),
+                request.getContent(),
+                request.getFixedPrice(),
+                request.getPublicationYear(),
+                request.getStatus()
+            );
+        } else {
+            product = request.toEntity();
+        }
+
+        if (pictureFile != null && !pictureFile.isEmpty()) {
+            String pictureUrl = savePictureFile(pictureFile);
+            product.setPictureUrl(pictureUrl);
+        }
 
         // 1. 상품 생성
         product = productRepository.save(product);
 
         // 2. 카테고리 ID 리스트에서 중복 제거
-        Set<Long> uniqueCategoryIds = new HashSet<>(requestDto.getCategoryIds());
+        Set<Long> uniqueCategoryIds = new HashSet<>(request.getCategoryIds());
 
         // 3. 자식 카테고리 ID 추출 (입력값 중 부모-자식 관계인 id가 있을 경우 부모 id를 제외)
         Set<Long> childCategoryIds = filterChildCategoryIds(uniqueCategoryIds);
 
         // 4. BookCategory 매핑 (엔티티 매핑)
         List<Category> categories = categoryRepository.findAllById(childCategoryIds);
+        clearBookCategories(product); // 기존 BookCategory 엔티티 삭제
         for (Category category : categories) {
             BookCategory bookCategory = new BookCategory(
-                new BookCategoryId(product.getId(), category.getId()),
-                product,
-                category
+                new BookCategoryId(product.getId(), category.getId()), product, category
             );
             bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
             product.addBookCategory(bookCategory); // Product 엔티티에 추가
@@ -88,12 +107,15 @@ public class ProductService {
             Files.createDirectories(directory);
         }
 
-        String fileName = System.currentTimeMillis() + "_" + pictureFile.getOriginalFilename();
-        Path filePath = directory.resolve(fileName);
+        String originalFileName = pictureFile.getOriginalFilename();
+        assert originalFileName != null;
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String uuidFileName = UUID.randomUUID() + fileExtension;
+        Path filePath = directory.resolve(uuidFileName);
 
         Files.write(filePath, pictureFile.getBytes());
 
-        return "/Users/chany/Desktop/image/" + fileName;
+        return uuidFileName;
     }
 
     // 부모-자식 관계 필터링 메서드 (자식 카테고리 ID만 남김)
@@ -117,6 +139,16 @@ public class ProductService {
         return categoryIds.stream()
             .filter(categoryId -> !parentCategoryIds.contains(categoryId))
             .collect(Collectors.toSet());
+    }
+
+    private void clearBookCategories(Product product) {
+        Set<BookCategory> bookCategories = product.getBookCategories();
+        for (BookCategory bookCategory : bookCategories) {
+            bookCategory.setProduct(null);
+            bookCategory.setCategory(null);
+            bookCategoryRepository.delete(bookCategory);
+        }
+        bookCategories.clear();
     }
 
     // READ
@@ -151,23 +183,6 @@ public class ProductService {
         return products.stream()
             .map(ProductDto::new)
             .collect(Collectors.toList());
-    }
-
-    // UPDATE
-    @Transactional
-    public Product updateProduct(long id, ProductUpdateRequestDto request) {
-        Product product = productRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
-        product.update(
-            request.getTitle(),
-            request.getAuthor(),
-            request.getIsbn(),
-            request.getContent(),
-            request.getFixedPrice(),
-            request.getPublicationYear(),
-            request.getStatus()
-        );
-        return product;
     }
 
     // DELETE
