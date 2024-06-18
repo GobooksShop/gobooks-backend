@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.UserRepository;
+import org.team.bookshop.global.config.WebConfig;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
     private final JwtTokenizer jwtTokenizer;
-
+    private final WebConfig webConfig;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
@@ -59,7 +60,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
         return method.equals("OPTIONS") || //preflight 요청을 처리하기위해 사용
             path.startsWith("/api/auth") ||
             path.startsWith("/api/users") ||
-//           path.startsWith("/api/categories") && method.equals("GET") ||
+            path.startsWith("/api/categories") && method.equals("GET") ||
             path.startsWith("/api/products") && method.equals("GET") ||
             path.startsWith("/image");
     }
@@ -78,7 +79,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
          *  Access-Control-Expose-Headers
          *  reactJS axios Interceptors 안에서 error 핸들링 할 수 있음.
          */
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Origin", webConfig.getBaseUrl());
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.setHeader("Access-Control-Expose-Headers", "Authorization");

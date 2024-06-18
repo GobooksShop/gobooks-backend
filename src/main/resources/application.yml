@@ -42,12 +42,9 @@ spring:
         format_sql: true
     show-sql: true
     defer-datasource-initialization: true  #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
-
   h2:
     console:
       enabled: true # /h2-console 설정
-#    datasource:
-#      url: jdbc:h2:mem:testdb
 
 logging:
   discord:
@@ -57,7 +54,8 @@ logging:
     org.springframework.context: DEBUG
     org.hibernate.sql: debug
     org.hibernate.orm.jdbc.bind: trace
-
+app:
+  base-url: "http://localhost:3000"
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: dev
@@ -77,7 +75,7 @@ spring:
       mode: always
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
@@ -94,9 +92,41 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 springdoc:
   swagger-ui:
-    enabled:
+    enabled:true
+app:
+  base-url: "http://localhost:3000"
+---
+spring.config.import: classpath:application-db.yml
+spring.config.activate.on-profile: prod
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 5000
+      maximum-pool-size: 5
+      keepalive-time: 30000
+      validation-timeout: 1000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${database.username}
+    password: ${database.password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    defer-datasource-initialization: true #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
 
+logging:
+  discord:
+    webhook-uri-prod: ${DISCORD_WEBHOOK_PROD_URL}
+  # hibernate에 바인딩된 값을 콘솔에서 보기위한 설정
+  level:
+    org.springframework.context: ERROR
 
+app:
+  base-url: "http://www.gobookstore.shop"
 
 
 

@@ -22,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
+import org.team.bookshop.global.config.WebConfig;
 import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
 @Configuration
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
+    private final WebConfig webConfig;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -75,7 +77,7 @@ public class SecurityConfig {
                     .invalidateHttpSession(true)
                     .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )
-                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer),
+                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer, webConfig),
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
@@ -90,7 +92,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
 
-        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin(webConfig.getBaseUrl());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");

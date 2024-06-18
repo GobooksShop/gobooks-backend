@@ -20,6 +20,7 @@ import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.entity.UserRole;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
+import org.team.bookshop.global.config.WebConfig;
 
 @Component
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-    private final String DEFAULT_REDIRECT_URL = "http://localhost:3000/login/oauth2/redirect";
+    private final WebConfig webConfig;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -76,7 +77,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        response.sendRedirect(DEFAULT_REDIRECT_URL);
+        response.sendRedirect(webConfig.getBaseUrl());
     }
 
     private User findOrCreateUser(String provider, Map<String, Object> attributes) {
