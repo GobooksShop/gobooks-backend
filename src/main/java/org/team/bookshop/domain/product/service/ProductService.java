@@ -1,17 +1,22 @@
 package org.team.bookshop.domain.product.service;
 
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.domain.category.entity.BookCategoryId;
 import org.team.bookshop.domain.category.entity.Category;
@@ -31,15 +36,25 @@ import org.team.bookshop.global.error.exception.EntityNotFoundException;
 @Transactional(readOnly = true)
 public class ProductService {
 
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadDir;
+
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
 
     // CREATE
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SimpleProductResponseDto createProduct(ProductCreateRequestDto requestDto) {
+    public SimpleProductResponseDto createProduct(ProductCreateRequestDto requestDto,
+        MultipartFile pictureFile) throws IOException {
+
+        String pictureUrl = savePictureFile(pictureFile);
+        Product product = requestDto.toEntity();
+        product.setPictureUrl(pictureUrl);
+
         // 1. 상품 생성
-        Product product = productRepository.save(requestDto.toEntity());
+        product = productRepository.save(product);
 
         // 2. 카테고리 ID 리스트에서 중복 제거
         Set<Long> uniqueCategoryIds = new HashSet<>(requestDto.getCategoryIds());
@@ -61,6 +76,24 @@ public class ProductService {
         productRepository.save(product);
 
         return new SimpleProductResponseDto(product);
+    }
+
+    private String savePictureFile(MultipartFile pictureFile) throws IOException {
+        if (pictureFile == null || pictureFile.isEmpty()) {
+            return null;
+        }
+
+        Path directory = Paths.get(uploadDir);
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + pictureFile.getOriginalFilename();
+        Path filePath = directory.resolve(fileName);
+
+        Files.write(filePath, pictureFile.getBytes());
+
+        return "/Users/chany/Desktop/image/" + fileName;
     }
 
     // 부모-자식 관계 필터링 메서드 (자식 카테고리 ID만 남김)
