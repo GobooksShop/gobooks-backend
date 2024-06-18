@@ -12,18 +12,20 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.order.Service.OrderService;
+import org.team.bookshop.domain.order.dto.OrderCreateRequest;
+import org.team.bookshop.domain.order.dto.OrderItemResponse;
 import org.team.bookshop.domain.order.dto.OrderResponse;
 import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.payment.dto.RequestCompletePayment;
 import org.team.bookshop.domain.payment.dto.RequestPrevPayment;
 import org.team.bookshop.domain.payment.dto.ResponsePrevPayment;
+import org.team.bookshop.domain.payment.service.PaymentService;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.response.ApiResponse;
 
@@ -33,15 +35,17 @@ import org.team.bookshop.global.response.ApiResponse;
 @RequiredArgsConstructor
 public class PaymentController {
 
-//  @Value("${PORTONE_REST_KEY}")
+  //  @Value("${PORTONE_REST_KEY}")
   private String REST_API_KEY;
 
-//  @Value("${PORTONE_SECRET_KEY}")
+  //  @Value("${PORTONE_SECRET_KEY}")
   private String REST_KEY;
 
   private IamportClient iamportClient;
 
   private final OrderService orderService;
+
+  private final PaymentService paymentService;
 
   @PostConstruct
   public void init() {
@@ -106,13 +110,16 @@ public class PaymentController {
         .orderAddressUpdate(requestCompletePayment.getOrderAddressUpdate())
         .build());
 
-//    IamportResponse<Payment> paymentIamportResponse = iamportClient.paymentByImpUid(
-//        requestCompletePayment.getImpUid());
-//
-//    if (paymentIamportResponse.getResponse().getAmount().intValue()
-//        == orderResponse.getOrderTotalAmount()) {
-//      //payment db에 저장.
-//    }
+    IamportResponse<Payment> paymentIamportResponse = iamportClient.paymentByImpUid(
+        requestCompletePayment.getImpUid());
+
+    if (paymentIamportResponse.getResponse().getAmount().intValue()
+        == orderResponse.getOrderTotalAmount()) {
+      //payment db에 저장.
+      OrderCreateRequest orderCreateRequest = new OrderCreateRequest();
+      OrderItemResponse orderItemResponse = paymentService.complatePayment(orderCreateRequest);
+      return ResponseEntity.ok(ApiResponse.<OrderItemResponse>success(orderItemResponse));
+    }
 //    log.info("imp_uid: {} ", paymentIamportResponse.getResponse().getMerchantUid());
     return ResponseEntity.ok(ApiResponse.success());
   }

@@ -18,12 +18,14 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@BatchSize(size = 100)
 public class Category extends BaseEntity {
 
   @Id
