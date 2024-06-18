@@ -203,7 +203,6 @@ public class OrderService {
 
     Address address = orderAddressCreate.toEntity();
     Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1L);
-    address.setDelivery(delivery);
     delivery.setAddress(address);
 
     deliveryRepository.save(delivery);
