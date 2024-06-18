@@ -64,6 +64,7 @@ public class UserPostDto {
         setPassword(user.getPassword());
         setNickname(user.getNickname());
         setName(user.getName());
+        setPhone(user.getPhone());
         setMarketingAgreed(user.isMarketingAgreed());
         return this;
     }

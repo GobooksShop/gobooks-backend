@@ -10,7 +10,6 @@ import org.team.bookshop.domain.product.entity.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
 
-  @Query("select p from Product p where p.id in :productIds order by p.id")
-  List<Product> findByProductIds(@Param("productIds") List<Long> productIds);
-
+    @Query("select p from Product p where p.id in :productIds order by p.id")
+    List<Product> findByProductIds(@Param("productIds") List<Long> productIds);
 }

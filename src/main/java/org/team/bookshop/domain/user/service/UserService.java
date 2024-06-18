@@ -3,11 +3,8 @@ package org.team.bookshop.domain.user.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +14,6 @@ import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.dto.UserPostDto;
 import org.team.bookshop.domain.user.dto.UserResponseDto;
-import org.team.bookshop.domain.user.dto.UserSearchDto;
 import org.team.bookshop.domain.user.dto.UserStatusResponseDto;
 import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
@@ -55,12 +51,10 @@ public class UserService {
     }
 
 
-    public UserPostDto getUserById(Long id) {
+    public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        UserPostDto userPostDto = new UserPostDto();
-        return userPostDto.toDto(user);
+        return UserResponseDto.fromEntity(user);
     }
 
     public User getUserByEmail(String email) {
@@ -102,7 +96,7 @@ public class UserService {
 
 
     @Transactional(readOnly = false)
-    public UserPostDto updateUser(Long id, UserPostDto UserPostDto) {
+    public UserResponseDto updateUser(Long id, UserPostDto UserPostDto) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -112,10 +106,11 @@ public class UserService {
         user.setName(UserPostDto.getName());
         user.setPhone(UserPostDto.getPhone());
         user.setMarketingAgreed(UserPostDto.getMarketingAgreed());
-        user.setEmailVerified(UserPostDto.getEmailVerified());
+        user.setEmailVerified(true);
+        user.setTermsAgreed(true);
 
         userRepository.save(user);
-        return UserPostDto.toDto(user);
+        return UserResponseDto.fromEntity(user);
     }
 
     public UserStatusResponseDto getUserStatus() {

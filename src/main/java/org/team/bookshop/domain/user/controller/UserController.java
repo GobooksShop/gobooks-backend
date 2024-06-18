@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.dto.UserPostDto;
+import org.team.bookshop.domain.user.dto.UserResponseDto;
 import org.team.bookshop.domain.user.service.UserService;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
@@ -41,16 +42,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserPostDto> getUserById(@PathVariable Long id) {
-        UserPostDto userPostDto = userService.getUserById(id);
-        return ResponseEntity.ok(userPostDto);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto userResponseDto = userService.getUserById(id);
+        return ResponseEntity.ok(userResponseDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserPostDto> updateUser(@PathVariable Long id,
-        @RequestBody UserPostDto UserPostDto) {
-
-        return ResponseEntity.ok(userService.updateUser(id, UserPostDto));
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
+        @RequestBody UserPostDto userPostDto) {
+        UserResponseDto updatedUser = userService.updateUser(id, userPostDto);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
