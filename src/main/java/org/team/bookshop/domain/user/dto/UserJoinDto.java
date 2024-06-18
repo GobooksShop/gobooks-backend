@@ -30,6 +30,10 @@ public class UserJoinDto {
     @Pattern(regexp = "^[a-zA-Z가-힣]{2,}$", message = "이름은 2자리 이상 한글 또는 영문만 입력 가능합니다.")
     private String name;
 
+    @NotBlank(message = "전화번호는 빈 값이 들어올 수 없습니다.")
+    @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", message = "전화번호는 010-1234-5678 형식으로 입력해야 합니다.")
+    private String phone;
+
     private Boolean termsAgreed; // 이용 약관 동의
     private Boolean marketingAgreed; // 선택 약관 동의
     private Boolean emailVerified;  // 이메일 인증 여부
@@ -47,6 +51,7 @@ public class UserJoinDto {
         user.setEmail(this.email);
         user.setPassword(this.password);
         user.setNickname(this.nickname);
+        user.setPhone(this.phone);
         user.setTermsAgreed(this.termsAgreed);
         user.setMarketingAgreed(this.marketingAgreed);
         user.setRole(UserRole.USER);
