@@ -47,8 +47,8 @@ public class Product extends BaseEntity {
   @Column(nullable = false)
   private String isbn;
 
-  @Column(nullable = false)
-  @Lob
+  @Column(nullable = false, columnDefinition = "LONGTEXT")
+//  @Lob
   private String content;
 
   @Column(nullable = false)
