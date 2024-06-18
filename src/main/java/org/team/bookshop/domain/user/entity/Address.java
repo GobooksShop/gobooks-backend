@@ -35,10 +35,6 @@ public class Address extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
-
     private String label;
     private Boolean isPrimary;
     private String zipcode;
