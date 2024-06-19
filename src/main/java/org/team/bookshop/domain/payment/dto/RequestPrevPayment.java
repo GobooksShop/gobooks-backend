@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import org.team.bookshop.domain.payment.entity.Payment;
+import org.team.bookshop.domain.payment.entity.Payments;
 
 @Getter
 @Builder
@@ -20,8 +20,8 @@ public class RequestPrevPayment {
 
   private List<Long> productList;
 
-  public Payment toEntity(RequestPrevPayment requestPrevPayment) {
-    return Payment.builder()
+  public Payments toEntity(RequestPrevPayment requestPrevPayment) {
+    return Payments.builder()
         .build();
   }
 }
