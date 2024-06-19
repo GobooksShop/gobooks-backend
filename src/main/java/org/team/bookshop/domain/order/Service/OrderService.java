@@ -245,9 +245,9 @@ public class OrderService {
     return order.getOrderTotalPrice() == totalPrice;
   }
 
-  public OrderResponse getOrderDetail(Long orderId) {
+  public OrderResponse getOrderDetail(String merchantUid) {
     // 주문 조회하기
-    Order order = orderRepository.findById(orderId)
+    Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
     // 결제 조회하기 by Order
 
