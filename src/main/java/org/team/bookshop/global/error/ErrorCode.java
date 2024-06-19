@@ -32,6 +32,9 @@ public enum ErrorCode {
 
   //PAYMENT
   PORTONE_BAD_REQUEST(400, "C011", "Bad Request", LogLevel.ERROR),
+
+  NO_PAYMENT_INFO_WITH_ORDER(404, "C012", "There is no payment information with entered Order", LogLevel.ERROR),
+
   //Secure
   SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
   AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR),

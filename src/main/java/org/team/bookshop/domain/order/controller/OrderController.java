@@ -15,6 +15,7 @@ import org.team.bookshop.domain.order.Service.OrderService;
 import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderCreateResponse;
 import org.team.bookshop.domain.order.dto.OrderListResponse;
+import org.team.bookshop.domain.order.dto.OrderResponse;
 import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
 import org.team.bookshop.domain.product.repository.ProductRepository;
@@ -66,5 +67,10 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(orderListResponse);
   }
 
+  @GetMapping("/{orderId}")
+  public ResponseEntity<OrderResponse> getOrderDetail(@PathVariable("orderId") Long orderId) {
+    OrderResponse orderDetail = orderService.getOrderDetail(orderId);
+    return ResponseEntity.status(HttpStatus.OK).body(orderDetail);
+  }
 
 }

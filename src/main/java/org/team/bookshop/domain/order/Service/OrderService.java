@@ -26,6 +26,8 @@ import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderItemRepository;
 import org.team.bookshop.domain.order.repository.OrderRepository;
+import org.team.bookshop.domain.payment.entity.Payment;
+import org.team.bookshop.domain.payment.repository.PaymentRepository;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
 import org.team.bookshop.domain.user.entity.Address;
@@ -44,6 +46,7 @@ public class OrderService {
   private final DeliveryRepository deliveryRepository;
   private final ProductRepository productRepository;
   private final UserRepository userRepository;
+  private final PaymentRepository paymentRepository;
 
 
   public Order findById(Long orderId) {
@@ -240,5 +243,30 @@ public class OrderService {
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
     return order.getOrderTotalPrice() == totalPrice;
+  }
+
+  public OrderResponse getOrderDetail(Long orderId) {
+    // 주문 조회하기
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+    // 결제 조회하기 by Order
+
+
+    // OrderResponse만들기
+    Payment payment = paymentRepository.findPaymentByOrder(order)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
+
+    OrderResponse orderResponse = new OrderResponse(
+        order.getId(),
+        order.getMerchantUid(),
+        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList()),
+        order.getOrderStatus(),
+        order.getDelivery().toOrderDeliveryResponse(),
+        order.getOrderTotalPrice(),
+        order.getOrderTotalAmount(),
+        payment.toPaymentResponse()
+    );
+
+    return orderResponse;
   }
 }
