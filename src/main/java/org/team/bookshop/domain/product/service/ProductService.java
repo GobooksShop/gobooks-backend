@@ -25,6 +25,7 @@ import org.team.bookshop.domain.category.repository.BookCategoryRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.domain.product.dto.ProductDto;
 import org.team.bookshop.domain.product.dto.ProductResponseDto;
+import org.team.bookshop.domain.product.dto.ProductResponseMainDto;
 import org.team.bookshop.domain.product.dto.ProductSaveRequestDto;
 import org.team.bookshop.domain.product.dto.SimpleProductResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
@@ -192,5 +193,17 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
         productRepository.delete(product);
+    }
+
+    @Transactional
+    public List<ProductResponseMainDto> getMainProducts() {
+        return productRepository.findRandomProducts(24).stream()
+            .map(product -> new ProductResponseMainDto(
+                product.getId(),
+                product.getTitle(),
+                product.getAuthor(),
+                product.getPictureUrl()
+            ))
+            .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,8 @@
 package org.team.bookshop.domain.product.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.product.dto.ProductDto;
 import org.team.bookshop.domain.product.dto.ProductResponseDto;
+import org.team.bookshop.domain.product.dto.ProductResponseMainDto;
 import org.team.bookshop.domain.product.service.ProductService;
 
 @RestController
@@ -59,6 +62,17 @@ public class ProductPublicController {
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
         List<ProductResponseDto> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/main")
+    public ResponseEntity<Map<String, List<ProductResponseMainDto>>> getMainProducts() {
+        List<ProductResponseMainDto> products = productService.getMainProducts();
+        Map<String, List<ProductResponseMainDto>> response = new HashMap<>();
+        response.put("1", products.subList(0, 6));
+        response.put("2", products.subList(6, 12));
+        response.put("3", products.subList(12, 18));
+        response.put("4", products.subList(18, 24));
+        return ResponseEntity.ok(response);
     }
 
 }
