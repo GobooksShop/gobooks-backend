@@ -160,6 +160,9 @@ VALUES ('스프링 부트 3 백엔드 개발자 되기 : 자바 편', '신선영
        ('알고리즘 문제 해결 전략', 'Steven Skiena', '9781402894919', '효율적인 알고리즘 문제 해결 기법과 실습 예제를 제공합니다.',
         37000, '2026-03-28', 'AVAILABLE', 140, null);
 
+INSERT INTO product_img_detail (product_id, detail_page_url, created_at)
+VALUES (1, 'https://image.yes24.com/momo/TopCate4453/MidCate010/445290174.jpg', NOW());
+
 -- 카테고리 테스트 값 추가
 INSERT INTO category (name, parent_id)
 VALUES
@@ -395,3 +398,4 @@ VALUES ('MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 1, 5000, 3),
        ('MID1008', '2023-06-08T21:00:00', 'PAYED', 8, 8, 5000, 5),
        ('MID1009', '2023-06-09T22:30:00', 'PAYED', 9, 9, 4500, 6),
        ('MID1010', '2023-06-10T23:00:00', 'PAYED', 10, 10, 3500, 1);
+
