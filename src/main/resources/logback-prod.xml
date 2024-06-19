@@ -28,7 +28,7 @@
     </appender>
 
     <!--로그 레벨 지정-->
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="Console"/>
         <appender-ref ref="ASYNC_DISCORD" />
     </root>
