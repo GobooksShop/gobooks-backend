@@ -90,7 +90,7 @@ INSERT INTO products (title, author, isbn, content, fixed_price, publication_yea
 VALUES ('스프링 부트 3 백엔드 개발자 되기 : 자바 편', '신선영', '9791191905717',
         '실력을 갖춘 개발자로 성장하려면 시작이 중요하다. 그래서 이 책은 무엇부터 익혀야 하는지 막막한 입문자에게 백엔드 개발의 필수 지식을 학습 로드맵 중심으로 설명한다. 이어서 스프링 부트 3 개발에 꼭 필요한 4대장인 JPA ORM, OAuth2 인증, AWS 배포, CI/CD를 최신 트렌드에 맞게 그리고 실무에 유용하게 알려준다. 모든 장 끝에는 연습문제가 수록되어 있어 배운 내용을 점검할 수 있다. 이번 2판에는 스프링 부트 프로젝트 진행을 위해 꼭 알아야 하는 SQL 기초와 실습, 스프링 시큐리티 업데이트, 블로그 댓글 기능 등을 추가하여 더욱 좋은 책으로 만들었다.',
         1200, '2024-04-05', 'AVAILABLE', 100,
-        'https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791191905717.jpg', true),
+        null, true),
        ('리액트훅 인 액션', '존 라슨 (지은이),오현석 (옮긴이)', '9791189909611',
         '여러 리액트 컴포넌트 사이에 기능 재사용과 손쉬운 공유를 위한 목적으로 만들어진 자바스크립트 함수인 리액트 훅(React Hook)을 사용하면 컴포넌트를 더 작은 함수로 나눌 수 있고, 상태와 부수 효과를 관리할 수 있으며, 클래스를 사용하지 않고도 리액트의 기능을 활용할 수 있다. 게다가 컴포넌트의 계층 구조를 재배열하지 않고도 이 모든 이점을 얻을 수 있다.',
         30000, '2024-03-29', 'AVAILABLE', 200, null, false),
@@ -161,7 +161,38 @@ VALUES ('스프링 부트 3 백엔드 개발자 되기 : 자바 편', '신선영
         37000, '2026-03-28', 'AVAILABLE', 140, null, false);
 
 INSERT INTO product_img_detail (product_id, detail_page_url, created_at)
-VALUES (1, 'https://image.yes24.com/momo/TopCate4453/MidCate010/445290174.jpg', NOW());
+VALUES (1, 'https://image.yes24.com/momo/TopCate4453/MidCate010/445290174.jpg', NOW()),
+       (2, 'https://image.yes24.com/momo/TopCate4453/MidCate008/445270433.jpg', NOW()),
+       (3, 'https://image.yes24.com/momo/TopCate3855/MidCate005/385447859.jpg', NOW()),
+       (4, 'https://image.yes24.com/momo/TopCate4514/MidCate010/451393281.jpg', NOW()),
+       (5, 'https://image.yes24.com/momo/TopCate4507/MidCate006/450651553.jpg', NOW()),
+       (6, 'https://image.yes24.com/momo/TopCate1256/MidCate006/125553035.jpg', NOW()),
+       (7, 'https://image.yes24.com/momo/TopCate4484/MidCate010/448396482.jpg', NOW()),
+       (8, 'https://image.yes24.com/momo/TopCate4416/MidCate004/441535110.jpg', NOW()),
+       (9, 'https://image.yes24.com/momo/TopCate4469/MidCate002/446815741.jpg', NOW()),
+       (10, 'https://image.yes24.com/momo/TopCate4290/MidCate007/428965595(1).jpg', NOW()),
+       (11, 'https://image.yes24.com/momo/TopCate4505/MidCate003/450423405.jpg', NOW()),
+       (12, 'https://image.yes24.com/momo/TopCate4480/MidCate003/447921421.jpg', NOW()),
+       (13, 'https://image.yes24.com/momo/TopCate4480/MidCate003/447921421.jpg', NOW()),
+       (14, 'https://image.yes24.com/momo/TopCate4477/MidCate010/447696078.jpg', NOW()),
+       (15, 'https://image.yes24.com/momo/TopCate4519/MidCate005/451844651.jpg', NOW()),
+       (16, 'https://image.yes24.com/momo/TopCate3983/MidCate002/398210973.jpg', NOW()),
+       (17, 'https://image.yes24.com/momo/TopCate3983/MidCate002/398210973.jpg', NOW()),
+       (18, 'https://image.yes24.com/momo/TopCate4510/MidCate007/450968307.jpg', NOW()),
+       (19, 'https://image.yes24.com/momo/TopCate4558/MidCate002/455710469.jpg', NOW()),
+       (20, 'https://image.yes24.com/momo/TopCate4523/MidCate007/452260981(1).jpg', NOW()),
+       (21, 'https://image.yes24.com/momo/TopCate810/MidCate010/80994463.jpg', NOW()),
+       (22, 'https://image.yes24.com/momo/TopCate803/MidCate010/80297404.jpg', NOW()),
+       (23, 'https://image.yes24.com/momo/TopCate4491/MidCate005/449043614.jpg', NOW()),
+       (24, 'https://image.yes24.com/momo/TopCate4494/MidCate007/449368942.jpg', NOW()),
+       (25, 'https://image.yes24.com/momo/TopCate185/MidCate01/18406053.jpg', NOW()),
+       (26, 'https://image.yes24.com/momo/TopCate4027/MidCate004/402632676.jpg', NOW()),
+       (27, 'https://image.yes24.com/momo/TopCate3985/MidCate008/398472205.jpg', NOW()),
+       (28, 'https://image.yes24.com/momo/TopCate3296/MidCate006/329553693.jpg', NOW()),
+       (29, 'https://image.yes24.com/momo/TopCate4280/MidCate007/427961301.jpg', NOW()),
+       (30, 'https://image.yes24.com/momo/TopCate3661/MidCate006/366057906(1).jpg', NOW()),
+       (31, 'https://image.yes24.com/momo/TopCate4477/MidCate009/447682124.jpg', NOW()),
+       (32, 'https://image.yes24.com/momo/TopCate4479/MidCate002/447815894.jpg', NOW());
 
 -- 카테고리 테스트 값 추가
 INSERT INTO category (name, parent_id)

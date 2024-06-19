@@ -35,5 +35,8 @@ public class ProductUpdateRequestDto {
 
     private int stockQuantity;
 
+    private boolean discount;
+
     private List<Long> categoryIds;
+
 }
