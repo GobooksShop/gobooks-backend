@@ -10,11 +10,17 @@ import org.team.bookshop.domain.order.enums.OrderStatus;
 public class OrderResponse {
 
   private Long orderId;
-  private String mechantUid;
+
+  private String merchantUid;
+
   private List<OrderItemResponse> orderItemResponses;
+
   private OrderStatus orderStatus;
+
   private OrderAddressResponse orderAddressResponse;
+
   private int orderTotalPrice;
+
   private int orderTotalAmount;
 
   public OrderResponse() {
@@ -24,7 +30,7 @@ public class OrderResponse {
       OrderStatus orderStatus, OrderAddressResponse orderAddressResponse, int orderTotalPrice,
       int orderTotalAmount) {
     this.orderId = orderId;
-    this.mechantUid = merchantUid;
+    this.merchantUid = merchantUid;
     this.orderItemResponses = orderItemResponses;
     this.orderStatus = orderStatus;
     this.orderAddressResponse = orderAddressResponse;

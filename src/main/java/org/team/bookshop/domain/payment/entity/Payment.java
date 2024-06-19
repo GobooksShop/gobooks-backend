@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.order.entity.Order;
+import org.team.bookshop.domain.payment.dto.PaymentResponse;
 
 @Entity
 @Getter
@@ -61,10 +62,14 @@ public class Payment {
   /**
    * 결제 상태.
    */
-  private String status;
+  private String paymentStatus;
   /**
    * 총 가격 금액
    */
   private Long amount;
+
+  public PaymentResponse toPaymentResponse() {
+    return new PaymentResponse(impUid, payMethod, buyerName, buyerEmail, paymentStatus, amount);
+  }
 
 }
