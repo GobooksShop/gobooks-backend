@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import org.team.bookshop.domain.category.dto.SimpleCategoryResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
+import org.team.bookshop.domain.product.entity.Product.Status;
 
 @Getter
 public class ProductResponseDto {
@@ -19,11 +20,11 @@ public class ProductResponseDto {
   private final String content;
   private final int fixedPrice;
   private final LocalDate publicationYear;
-  private final Product.Status status;
+  private final Status status;
   private final String pictureUrl;
   private final LocalDateTime createdAt;
   private final boolean discount;
-
+  private final int stockQuantity = 0;
 
   @JsonIgnoreProperties("bookCategories")
   private List<SimpleCategoryResponseDto> categories;

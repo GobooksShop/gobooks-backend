@@ -23,6 +23,7 @@ public class SimpleProductResponseDto {
   private String pictureUrl;
   private LocalDateTime createdAt;
   private boolean discount;
+  private int stockQuantity;
 
   private List<Long> categoryIds;
 
@@ -38,6 +39,7 @@ public class SimpleProductResponseDto {
     this.pictureUrl = product.getPictureUrl();
     this.createdAt = product.getCreatedAt();
     this.discount = product.isDiscount();
+    this.stockQuantity = product.getStockQuantity();
 
     this.categoryIds = product.getBookCategories().stream()
         .map(bookCategory -> bookCategory.getCategory().getId())
