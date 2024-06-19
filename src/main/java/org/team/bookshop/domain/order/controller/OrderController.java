@@ -67,9 +67,9 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(orderListResponse);
   }
 
-  @GetMapping("/{orderId}")
-  public ResponseEntity<OrderResponse> getOrderDetail(@PathVariable("orderId") Long orderId) {
-    OrderResponse orderDetail = orderService.getOrderDetail(orderId);
+  @GetMapping("/{merchantUid}")
+  public ResponseEntity<OrderResponse> getOrderDetail(@PathVariable("merchantUid") String merchantUid) {
+    OrderResponse orderDetail = orderService.getOrderDetail(merchantUid);
     return ResponseEntity.status(HttpStatus.OK).body(orderDetail);
   }
 
