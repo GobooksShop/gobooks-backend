@@ -26,7 +26,7 @@ import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderItemRepository;
 import org.team.bookshop.domain.order.repository.OrderRepository;
-import org.team.bookshop.domain.payment.entity.Payment;
+import org.team.bookshop.domain.payment.entity.Payments;
 import org.team.bookshop.domain.payment.repository.PaymentRepository;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
@@ -264,7 +264,7 @@ public class OrderService {
 
     // 2. 결제 조회하기 by Order
 
-    Payment payment = paymentRepository.findPaymentByOrder(order)
+    Payments payment = paymentRepository.findPaymentByOrder(order)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
 
     // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
@@ -272,7 +272,8 @@ public class OrderService {
     OrderResponse orderResponse = new OrderResponse(
         order.getId(),
         order.getMerchantUid(),
-        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList()),
+        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse)
+            .collect(Collectors.toList()),
         order.getOrderStatus(),
         order.getDelivery().toOrderDeliveryResponse(),
         order.getOrderTotalPrice(),
@@ -286,10 +287,12 @@ public class OrderService {
   }
 
   public Order findByMerchantUid(String merchantUid) {
-    return orderRepository.findByMerchantUid(merchantUid).orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+    return orderRepository.findByMerchantUid(merchantUid)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
   }
 
   public int getOrderTotalPriceByMerchantUid(String merchantUid) {
-    return orderRepository.findByMerchantUid(merchantUid).orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER)).getOrderTotalPrice();
+    return orderRepository.findByMerchantUid(merchantUid)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER)).getOrderTotalPrice();
   }
 }

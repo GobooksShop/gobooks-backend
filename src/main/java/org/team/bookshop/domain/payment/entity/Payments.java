@@ -6,6 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,9 @@ import org.team.bookshop.domain.payment.dto.PaymentResponse;
 @Getter
 @Builder
 @AllArgsConstructor
+@Table(name = "payment")
 @NoArgsConstructor
-public class Payment {
+public class Payments {
 
   @Id
   @Column(name = "imp_uid")

@@ -3,7 +3,6 @@ package org.team.bookshop.domain.payment.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
 
 @Getter
 public class RequestCompletePayment {
@@ -16,6 +15,5 @@ public class RequestCompletePayment {
   @NotBlank
   private String merchantUid;
 
-  private OrderAddressUpdate orderAddressUpdate;
 
 }
