@@ -284,4 +284,12 @@ public class OrderService {
 
     return orderResponse;
   }
+
+  public Order findByMerchantUid(String merchantUid) {
+    return orderRepository.findByMerchantUid(merchantUid).orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+  }
+
+  public int getOrderTotalPriceByMerchantUid(String merchantUid) {
+    return orderRepository.findByMerchantUid(merchantUid).orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER)).getOrderTotalPrice();
+  }
 }
