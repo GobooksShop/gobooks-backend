@@ -33,9 +33,13 @@ public class DeliveryService {
     String merchantUid = createDeliveryRequest.getMerchantUid();
     String label = createDeliveryRequest.getOrderAddressUpdate().getLabel();
 
-    // 1. user를 조회하기
+    // 1-1. user를 조회하기
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_USER));
+
+    // 1-2. order를 조회하기
+    Order order = orderRepository.findByMerchantUid(merchantUid)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
     // 2. 빈 주소 생성 -> 후에 address조회 결과가 존재하는가 여부를 판단하는 데 사용이 된다.
     Address noExistAddress = new Address();
@@ -47,25 +51,32 @@ public class DeliveryService {
     // 4-1. 배송추적용 난수 생성
     Random random = new Random();
     long trackingNumber = random.nextLong();
-    Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), trackingNumber);
+
 
     // 5-1. 입력된 user와 label에 해당하는 address가 존재하지 않는다면 -> 새로운 address 엔티티를 생성한다.
     if (address.equals(noExistAddress)) {
+      Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), trackingNumber);
       Address transferedAddress = createDeliveryRequest.toAddressEntity();
       transferedAddress.setUser(user);
       delivery.setAddress(transferedAddress);
-
+      order.setDelivery(delivery);
       // 5-2. 입력된 user와 label에 해당하는 address가 존재한다면 -> 기존의 데이터를 입력된 새 주소데이터로 교체한다.
     } else {
-      address.update(createDeliveryRequest.getOrderAddressUpdate());
-      address.setUser(user);
-      delivery.setAddress(address);
+      // 만약 address를 참조하는 delivery가 존재한다면, 해당 delivery를 order에 세팅한다.
+      if(!deliveryRepository.findListByAddress(address).isEmpty()) {
+        Delivery delivery = deliveryRepository.findListByAddress(address).get(0);
+        address.update(createDeliveryRequest.getOrderAddressUpdate());
+        order.setDelivery(delivery);
+      } else {
+        // 5-3. 만약 address를 참조하는 delivery가 존재하지 않는다면, delivery를 만들고, 그것을 order에 세팅
+        Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), trackingNumber);
+        address.update(createDeliveryRequest.getOrderAddressUpdate());
+        address.setUser(user);
+        delivery.setAddress(address);
+        order.setDelivery(delivery);
+      }
+
     }
-    Order order = orderRepository.findByMerchantUid(merchantUid)
-        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
-
-    order.setDelivery(delivery);
-
 
   }
 }
