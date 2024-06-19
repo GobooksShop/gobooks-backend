@@ -111,18 +111,21 @@ spring:
     password: ${database.password}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
+        format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-    defer-datasource-initialization: true #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
+    show-sql: true
 
 logging:
   discord:
     webhook-uri-prod: ${DISCORD_WEBHOOK_PROD_URL}
   # hibernate에 바인딩된 값을 콘솔에서 보기위한 설정
   level:
-    org.springframework.context: ERROR
+    org.springframework.context: DEBUG
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace
 
 app:
   base-url: "http://www.gobookstore.shop"
