@@ -166,7 +166,7 @@ public class OrderService {
     return OrderResponse.builder()
         .orderId(order.getId())
         .orderStatus(OrderStatus.PAYED)
-        .mechantUid(order.getMerchantUid())
+        .merchantUid(order.getMerchantUid())
         .orderTotalAmount(order.getOrderTotalPrice())
         .orderTotalPrice(order.getOrderTotalPrice())
         .build();
