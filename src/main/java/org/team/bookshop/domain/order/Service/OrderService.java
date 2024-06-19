@@ -231,30 +231,43 @@ public class OrderService {
   }
 
 
+  //// 해당 orderId를 가지고 있는 주문의 총 주문가격이, totalPrice와 동일한 지 비교하는 기능
   public boolean validateTotalPriceByOrderId(Long orderId, int totalPrice) {
+
+    // 1. orderId를 통해 Order를 조회한다.
     Order order = orderRepository.findById(orderId)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
+    // 2. 해당 주문의 총 가격과, 인자로 전달된 가격이 동일한 지 비교한 후, 그 결과를 true or false로 반환한다.
     return order.getOrderTotalPrice() == totalPrice;
   }
 
+
+  //// 해당 merchantUid를 가지고 있는 주문의 총 주문가격이, totalPrice와 동일한 지 비교하는 기능
   public boolean validateTotalPriceByMerchantId(String merchantUid, int totalPrice) {
+
+    // 1. merchantUid를 통해 Order를 조회한다.
     Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
+    // 2. 해당 주문의 총 가격과, 인자로 전달된 가격이 동일한 지 비교한 후, 그 결과를 true or false로 반환한다.
     return order.getOrderTotalPrice() == totalPrice;
   }
 
+  //// 주문을 상세 조회하기 위한 DTO를 반환하는 기능
   public OrderResponse getOrderDetail(String merchantUid) {
-    // 주문 조회하기
+
+    // 1. 주문 조회하기
+
     Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
-    // 결제 조회하기 by Order
 
+    // 2. 결제 조회하기 by Order
 
-    // OrderResponse만들기
     Payment payment = paymentRepository.findPaymentByOrder(order)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
+
+    // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
 
     OrderResponse orderResponse = new OrderResponse(
         order.getId(),
@@ -266,6 +279,8 @@ public class OrderService {
         order.getOrderTotalAmount(),
         payment.toPaymentResponse()
     );
+
+    // 4. 반환
 
     return orderResponse;
   }
