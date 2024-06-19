@@ -61,7 +61,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Status status;
 
-    
+    @Column(nullable = false)
     private boolean discount;
 
 
