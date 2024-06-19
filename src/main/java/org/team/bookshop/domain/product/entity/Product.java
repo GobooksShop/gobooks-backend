@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,14 +70,15 @@ public class Product extends BaseEntity {
   @JsonIgnoreProperties("product")
   private Set<BookCategory> bookCategories = new HashSet<>();
 
-  private String pictureUrl;
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("product")
+    private ProductImgDetail productImgDetail;
 
-//  @Column(nullable = false)
-  private boolean discount;
+    private String pictureUrl;
 
   @Builder
   public Product(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl, boolean discount) {
+      LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl) {
     this.title = title;
     this.author = author;
     this.isbn = isbn;
@@ -86,7 +88,6 @@ public class Product extends BaseEntity {
     this.status = status;
     this.stockQuantity = stockQuantity;
     this.pictureUrl = pictureUrl;
-    this.discount = discount;
   }
 
   public enum Status {
@@ -94,7 +95,7 @@ public class Product extends BaseEntity {
   }
 
   public void update(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status, boolean discount) {
+      LocalDate publicationYear, Status status) {
     this.title = title;
     this.author = author;
     this.isbn = isbn;
@@ -102,7 +103,6 @@ public class Product extends BaseEntity {
     this.fixedPrice = fixedPrice;
     this.publicationYear = publicationYear;
     this.status = status;
-    this.discount = discount;
   }
 
   public void decreaseStock(int quantity) {
@@ -119,13 +119,5 @@ public class Product extends BaseEntity {
   public void addBookCategory(BookCategory bookCategory) {
     bookCategories.add(bookCategory);
     bookCategory.setProduct(this); // 양방향 관계 설정
-  }
-
-  public int getPrice() {
-    if (discount) {
-      return (int) (fixedPrice * 0.9);
-    } else {
-      return fixedPrice;
-    }
   }
 }
