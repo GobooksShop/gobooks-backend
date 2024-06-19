@@ -71,7 +71,7 @@ public class Product extends BaseEntity {
 
   private String pictureUrl;
 
-//  @Column(nullable = false)
+  @Column(nullable = false)
   private boolean discount;
 
   @Builder
