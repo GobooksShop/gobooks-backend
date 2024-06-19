@@ -63,7 +63,7 @@ public class ProductService {
                 request.getFixedPrice(),
                 request.getPublicationYear(),
                 request.getStatus(),
-                    request.isDiscount()
+                request.isDiscount()
             );
         } else {
             product = request.toEntity();
