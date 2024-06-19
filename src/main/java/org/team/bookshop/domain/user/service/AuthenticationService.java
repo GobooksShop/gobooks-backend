@@ -45,7 +45,7 @@ public class AuthenticationService {
     private final Map<String, Long> codeExpiryTimes = new ConcurrentHashMap<>();
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final int CODE_LENGTH = 6;
-    private static final long CODE_EXPIRY_DURATION = TimeUnit.MINUTES.toMillis(10); // 10분 유효기간
+    private static final long CODE_EXPIRY_DURATION = TimeUnit.MINUTES.toMillis(3); // 10분 유효기간
 
     @Async("taskExecutor")
     public void sendVerificationCode(String toEmail) {
@@ -53,7 +53,7 @@ public class AuthenticationService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
         message.setSubject("이메일 인증 코드");
-        message.setText("인증 코드: " + code + "\n이 코드는 10분 동안 유효합니다.");
+        message.setText("인증 코드: " + code + "\n이 코드는 3분 동안 유효합니다.");
         emailSender.send(message);
     }
 
