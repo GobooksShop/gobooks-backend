@@ -17,7 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       "UNION ALL " +
       "SELECT c.id, c.name, c.parent_id " +
       "FROM category c " +
-      "JOIN category_Hierarchy ch ON c.parent_id = ch.id) " +
+      "JOIN Category_Hierarchy ch ON c.parent_id = ch.id) " +
       "SELECT * FROM Category_Hierarchy", nativeQuery = true)
   List<Object[]> findByIdWithChildren(@Param("categoryId") Long categoryId);
 
