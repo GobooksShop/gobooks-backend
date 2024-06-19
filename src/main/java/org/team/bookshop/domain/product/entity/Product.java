@@ -71,9 +71,12 @@ public class Product extends BaseEntity {
 
   private String pictureUrl;
 
+//  @Column(nullable = false)
+  private boolean discount;
+
   @Builder
   public Product(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl) {
+      LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl, boolean discount) {
     this.title = title;
     this.author = author;
     this.isbn = isbn;
@@ -83,6 +86,7 @@ public class Product extends BaseEntity {
     this.status = status;
     this.stockQuantity = stockQuantity;
     this.pictureUrl = pictureUrl;
+    this.discount = discount;
   }
 
   public enum Status {
@@ -90,7 +94,7 @@ public class Product extends BaseEntity {
   }
 
   public void update(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status) {
+      LocalDate publicationYear, Status status, boolean discount) {
     this.title = title;
     this.author = author;
     this.isbn = isbn;
@@ -98,6 +102,7 @@ public class Product extends BaseEntity {
     this.fixedPrice = fixedPrice;
     this.publicationYear = publicationYear;
     this.status = status;
+    this.discount = discount;
   }
 
   public void decreaseStock(int quantity) {
@@ -114,5 +119,13 @@ public class Product extends BaseEntity {
   public void addBookCategory(BookCategory bookCategory) {
     bookCategories.add(bookCategory);
     bookCategory.setProduct(this); // 양방향 관계 설정
+  }
+
+  public int getPrice() {
+    if (discount) {
+      return (int) (fixedPrice * 0.9);
+    } else {
+      return fixedPrice;
+    }
   }
 }

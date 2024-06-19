@@ -62,7 +62,8 @@ public class ProductService {
                 request.getContent(),
                 request.getFixedPrice(),
                 request.getPublicationYear(),
-                request.getStatus()
+                request.getStatus(),
+                    request.isDiscount()
             );
         } else {
             product = request.toEntity();

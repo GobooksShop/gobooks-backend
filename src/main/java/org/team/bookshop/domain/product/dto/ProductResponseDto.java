@@ -22,6 +22,7 @@ public class ProductResponseDto {
   private final Product.Status status;
   private final String pictureUrl;
   private final LocalDateTime createdAt;
+  private final boolean discount;
 
 
   @JsonIgnoreProperties("bookCategories")
@@ -38,6 +39,7 @@ public class ProductResponseDto {
     this.status = product.getStatus();
     this.pictureUrl = product.getPictureUrl();
     this.createdAt = product.getCreatedAt();
+    this.discount = product.isDiscount();
     this.categories = product.getBookCategories().stream()
         .map(bookCategory -> new SimpleCategoryResponseDto(bookCategory.getCategory()))
         .collect(Collectors.toList());

@@ -37,6 +37,9 @@ public class ProductSaveRequestDto {
     @NotNull(message = "Status is required")
     private Product.Status status;
 
+    @NotNull(message = "Discount is required")
+    private boolean discount;
+
     private int stockQuantity;
 
     @NotNull(message = "Category IDs are required")
