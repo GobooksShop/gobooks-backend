@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.order.Service.OrderService;
 import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderCreateResponse;
+import org.team.bookshop.domain.order.dto.OrderListResponse;
 import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
 import org.team.bookshop.domain.product.repository.ProductRepository;
@@ -55,4 +57,14 @@ public class OrderController {
 
     return new ResponseEntity<>(HttpStatus.OK);
   }
+
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<OrderListResponse> getUsersOrdersList(
+      @PathVariable("userId") Long userId
+  ) {
+    OrderListResponse orderListResponse = orderService.findByUserIdForOrderListResponse(userId);
+    return ResponseEntity.status(HttpStatus.OK).body(orderListResponse);
+  }
+
+
 }

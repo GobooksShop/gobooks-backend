@@ -5,14 +5,17 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.team.bookshop.domain.order.dto.OrderAbstractResponse;
 import org.team.bookshop.domain.order.dto.OrderAddressCreate;
 import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
 import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderItemRequest;
+import org.team.bookshop.domain.order.dto.OrderListResponse;
 import org.team.bookshop.domain.order.dto.OrderResponse;
 import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.entity.Delivery;
@@ -210,6 +213,20 @@ public class OrderService {
     order.setDelivery(delivery);
 
   }
+
+  // orderListResponse용 : userID 이용 하여 orderListResponse용 dto를 반환하는 기능
+  public OrderListResponse findByUserIdForOrderListResponse(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_USER));
+    List<Order> orders = orderRepository.findOrdersByUser(user);
+    List<OrderAbstractResponse> orderAbstractResponses = orders.stream().map(
+            Order::toOrderAbstractResponse)
+        .toList();
+
+    return new OrderListResponse(orderAbstractResponses);
+
+  }
+
 
   public boolean validateTotalPriceByOrderId(Long orderId, int totalPrice) {
     Order order = orderRepository.findById(orderId)
