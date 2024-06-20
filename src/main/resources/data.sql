@@ -87,7 +87,7 @@ VALUES ('테스터56', 'test1_canceled@test.com', @password, 'test56', '010-5555
 -- Product 테스트 값 추가
 INSERT INTO products (title, author, isbn, content, fixed_price, publication_year, status,
                       stock_quantity, picture_url, discount)
-VALUES ('해커스 토익 Listening', 'David Cho', '9788965422781', '해커스 토익 Listening 교재는 최신 기출 경향을 반영한 실전 모의고사 문제와 해설, 그리고 Listening 전략을 포함하고 있습니다. 수많은 토익 수험생들이 선택한 이 교재는...', 14800, '2023-01-10', 'AVAILABLE', 100, '1.jpeg', false),
+VALUES ('해커스 토익 Listening', 'David Cho', '9788965422781', '해커스 토익 Listening 교재는 최신 기출 경향을 반영한 실전 모의고사 문제와 해설, 그리고 Listening 전략을 포함하고 있습니다. 수많은 토익 수험생들이 선택한 이 교재는...', 1200, '2023-01-10', 'AVAILABLE', 100, '1.jpeg', false),
        ('해커스 토익 Reading', 'David Cho', '9788965422798', '해커스 토익 Reading 교재는 최신 기출 경향을 반영한 실전 모의고사 문제와 해설, 그리고 Reading 전략을 포함하고 있습니다. 이 교재를 통해 학생들은 기초부터 실전까지 ...', 14800, '2023-01-10', 'AVAILABLE', 100, '2.jpeg', false),
        ('미움받을 용기', '기시미 이치로', '9788960518786', '기시미 이치로의 대표작으로, 아들러 심리학을 기반으로 한 삶의 지혜를 전달하는 책입니다. 이 책은 독자에게 자신을 사랑하고, 타인의 시선을 의식하지 않으며 살아가는 방...', 15800, '2021-11-01', 'AVAILABLE', 50, '3.jpeg', false),
        ('나미야 잡화점의 기적', '히가시노 게이고', '9788972756194', '히가시노 게이고의 미스터리 소설로, 우연히 찾은 잡화점에서 벌어지는 기적 같은 이야기를 담고 있습니다. 이 책은 과거와 현재가 교차하며 펼쳐지는 스토리를 통해 독자에...', 13800, '2021-10-20', 'AVAILABLE', 70, '4.jpeg', true),
