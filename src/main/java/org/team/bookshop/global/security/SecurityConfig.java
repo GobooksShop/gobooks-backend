@@ -35,6 +35,7 @@ public class SecurityConfig {
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
     private final WebConfig webConfig;
+    private final CustomCorsFilter customCorsFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -81,6 +82,10 @@ public class SecurityConfig {
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
+
+            // CustomCorsFilter를 필터 체인에 추가
+            http.addFilterBefore(customCorsFilter, UsernamePasswordAuthenticationFilter.class);
+
             return http.build();
         } catch (Exception e) {
             throw new SecurityConfigurationException("Security configuration failed");
