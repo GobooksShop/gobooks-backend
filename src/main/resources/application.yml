@@ -124,6 +124,9 @@ spring:
     key-store-password: "qwer1234!@"
     key-store-type: PKCS12
     key-alias: gobookstore-backend
+# 명시적으로 서버포트 지정해야지만 https 활성화됨.
+server:
+  port: 8080
 
 logging:
   discord:
