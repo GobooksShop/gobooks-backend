@@ -51,13 +51,13 @@ public class OrderController {
 //  }
 
   // 주문 삭제
-  @DeleteMapping("/delete/{orderId}")
-  public ResponseEntity<Void> deleteOrder(
-      @PathVariable("orderId") Long orderId) {
-    Long deletedOrderId = orderService.delete(orderId);
-
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
+//  @DeleteMapping("/delete/{orderId}")
+//  public ResponseEntity<Void> deleteOrder(
+//      @PathVariable("orderId") Long orderId) {
+//    Long deletedOrderId = orderService.delete(orderId);
+//
+//    return new ResponseEntity<>(HttpStatus.OK);
+//  }
 
   @GetMapping("/user/{userId}")
   public ResponseEntity<OrderListResponse> getUsersOrdersList(
@@ -67,10 +67,10 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.OK).body(orderListResponse);
   }
 
-  @GetMapping("/{merchantUid}")
-  public ResponseEntity<OrderResponse> getOrderDetail(@PathVariable("merchantUid") String merchantUid) {
-    OrderResponse orderDetail = orderService.getOrderDetail(merchantUid);
-    return ResponseEntity.status(HttpStatus.OK).body(orderDetail);
-  }
+//  @GetMapping("/{merchantUid}")
+//  public ResponseEntity<OrderResponse> getOrderDetail(@PathVariable("merchantUid") String merchantUid) {
+//    OrderResponse orderDetail = orderService.getOrderDetail(merchantUid);
+//    return ResponseEntity.status(HttpStatus.OK).body(orderDetail);
+//  }
 
 }

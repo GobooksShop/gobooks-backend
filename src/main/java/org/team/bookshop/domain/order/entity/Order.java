@@ -46,9 +46,8 @@ public class Order extends BaseEntity {
   private int orderTotalPrice;
   private int orderTotalAmount;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "delivery_id")
-  private Delivery delivery;
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  private List<Delivery> delivery = new ArrayList<>();
 
   @OneToMany(mappedBy = "order")
   private List<OrderItem> orderItems = new ArrayList<>();
@@ -72,12 +71,12 @@ public class Order extends BaseEntity {
             orderTotalPrice);
   }
 
-  public OrderUpdateResponse toOrderUpdateResponse() {
-    return new OrderUpdateResponse(id,
-            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
-            orderStatus,
-            delivery.toOrderDeliveryResponse());
-  }
+//  public OrderUpdateResponse toOrderUpdateResponse() {
+//    return new OrderUpdateResponse(id,
+//            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
+//            orderStatus,
+//            delivery.toOrderDeliveryResponse());
+//  }
 
   // User의 Order내역들을 보여줄 때 각 order들을 나타내기 위한 간략한 정보
   public OrderAbstractResponse toOrderAbstractResponse() {

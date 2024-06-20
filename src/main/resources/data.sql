@@ -392,52 +392,52 @@ VALUES ('Tester1', 'tester1@test.com', '$2b$12$ExampleHash', 'tester1', '010-000
         false, true, NOW()),
        ('Tester10', 'tester10@test.com', '$2b$12$ExampleHash', 'tester10', '010-0000-0010', 1, 0,
         true, false, true, NOW());
-
-INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number)
-VALUES (1, 'READY', '2023-06-01', 1234567891),
-       (2, 'STARTED', '2023-06-01', 1234567892),
-       (3, 'COMPLETED', '2023-06-01', 1234567893),
-       (4, 'CANCELED', '2023-06-01', 1234567894),
-       (5, 'READY', '2023-06-01', 1234567895),
-       (6, 'READY', '2023-06-01', 1234567896),
-       (7, 'READY', '2023-06-01', 1234567897),
-       (8, 'READY', '2023-06-01', 1234567898),
-       (9, 'READY', '2023-06-01', 1234567899),
-       (10, 'READY', '2023-06-01', 1234567890);
-
-INSERT INTO address (address_id, user_id, label, is_primary, zipcode, address1,
-                     address2, recipient_name, recipient_phone)
-VALUES (1, 1, 'Home 1', TRUE, '10001', '123 Example St, Apt 1', 'City, State, 1', 'Recipient 1',
-        '010-0000-0001'),
-       (2, 2, 'Home 2', FALSE, '10002', '123 Example St, Apt 2', 'City, State, 2', 'Recipient 2',
-        '010-0000-0002'),
-       (3, 3, 'Home 3', FALSE, '10003', '123 Example St, Apt 3', 'City, State, 3', 'Recipient 3',
-        '010-0000-0003'),
-       (4, 4, 'Home 4', FALSE, '10004', '123 Example St, Apt 4', 'City, State, 4', 'Recipient 4',
-        '010-0000-0004'),
-       (5, 5, 'Home 5', FALSE, '10005', '123 Example St, Apt 5', 'City, State, 5', 'Recipient 5',
-        '010-0000-0005'),
-       (6, 6, 'Home 6', FALSE, '10006', '123 Example St, Apt 6', 'City, State, 6', 'Recipient 6',
-        '010-0000-0006'),
-       (7, 7, 'Home 7', FALSE, '10007', '123 Example St, Apt 7', 'City, State, 7', 'Recipient 7',
-        '010-0000-0007'),
-       (8, 8, 'Home 8', FALSE, '10008', '123 Example St, Apt 8', 'City, State, 8', 'Recipient 8',
-        '010-0000-0008'),
-       (9, 9, 'Home 9', FALSE, '10009', '123 Example St, Apt 9', 'City, State, 9', 'Recipient 9',
-        '010-0000-0009'),
-       (10, 10, 'Home 10', FALSE, '10010', '123 Example St, Apt 10', 'City, State, 10',
-        'Recipient 10', '010-0000-0010');
 --
-INSERT INTO orders (merchant_Uid, ORDER_DATE_TIME, ORDER_STATUS, user_id, delivery_id,
-                    ORDER_TOTAL_PRICE, ORDER_TOTAL_AMOUNT)
-VALUES ('MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 1, 5000, 3),
-       ('MID1002', '2023-06-02T15:00:00', 'DELIVERED', 2, 2, 6000, 2),
-       ('MID1003', '2023-06-03T16:30:00', 'CANCELED', 3, 3, 7000, 5),
-       ('MID1004', '2023-06-04T17:00:00', 'ACCEPTED', 4, 4, 8000, 1),
-       ('MID1005', '2023-06-05T18:30:00', 'PAYED', 5, 5, 3000, 4),
-       ('MID1006', '2023-06-06T19:00:00', 'PAYED', 6, 6, 4000, 3),
-       ('MID1007', '2023-06-07T20:30:00', 'PAYED', 7, 7, 2000, 2),
-       ('MID1008', '2023-06-08T21:00:00', 'PAYED', 8, 8, 5000, 5),
-       ('MID1009', '2023-06-09T22:30:00', 'PAYED', 9, 9, 4500, 6),
-       ('MID1010', '2023-06-10T23:00:00', 'PAYED', 10, 10, 3500, 1);
-
+--INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number)
+--VALUES (1, 'READY', '2023-06-01', 1234567891),
+--       (2, 'STARTED', '2023-06-01', 1234567892),
+--       (3, 'COMPLETED', '2023-06-01', 1234567893),
+--       (4, 'CANCELED', '2023-06-01', 1234567894),
+--       (5, 'READY', '2023-06-01', 1234567895),
+--       (6, 'READY', '2023-06-01', 1234567896),
+--       (7, 'READY', '2023-06-01', 1234567897),
+--       (8, 'READY', '2023-06-01', 1234567898),
+--       (9, 'READY', '2023-06-01', 1234567899),
+--       (10, 'READY', '2023-06-01', 1234567890);
+--
+--INSERT INTO address (address_id, user_id, label, is_primary, zipcode, address1,
+--                     address2, recipient_name, recipient_phone)
+--VALUES (1, 1, 'Home 1', TRUE, '10001', '123 Example St, Apt 1', 'City, State, 1', 'Recipient 1',
+--        '010-0000-0001'),
+--       (2, 2, 'Home 2', FALSE, '10002', '123 Example St, Apt 2', 'City, State, 2', 'Recipient 2',
+--        '010-0000-0002'),
+--       (3, 3, 'Home 3', FALSE, '10003', '123 Example St, Apt 3', 'City, State, 3', 'Recipient 3',
+--        '010-0000-0003'),
+--       (4, 4, 'Home 4', FALSE, '10004', '123 Example St, Apt 4', 'City, State, 4', 'Recipient 4',
+--        '010-0000-0004'),
+--       (5, 5, 'Home 5', FALSE, '10005', '123 Example St, Apt 5', 'City, State, 5', 'Recipient 5',
+--        '010-0000-0005'),
+--       (6, 6, 'Home 6', FALSE, '10006', '123 Example St, Apt 6', 'City, State, 6', 'Recipient 6',
+--        '010-0000-0006'),
+--       (7, 7, 'Home 7', FALSE, '10007', '123 Example St, Apt 7', 'City, State, 7', 'Recipient 7',
+--        '010-0000-0007'),
+--       (8, 8, 'Home 8', FALSE, '10008', '123 Example St, Apt 8', 'City, State, 8', 'Recipient 8',
+--        '010-0000-0008'),
+--       (9, 9, 'Home 9', FALSE, '10009', '123 Example St, Apt 9', 'City, State, 9', 'Recipient 9',
+--        '010-0000-0009'),
+--       (10, 10, 'Home 10', FALSE, '10010', '123 Example St, Apt 10', 'City, State, 10',
+--        'Recipient 10', '010-0000-0010');
+----
+--INSERT INTO orders (merchant_Uid, ORDER_DATE_TIME, ORDER_STATUS, user_id, delivery_id,
+--                    ORDER_TOTAL_PRICE, ORDER_TOTAL_AMOUNT)
+--VALUES ('MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 1, 5000, 3),
+--       ('MID1002', '2023-06-02T15:00:00', 'DELIVERED', 2, 2, 6000, 2),
+--       ('MID1003', '2023-06-03T16:30:00', 'CANCELED', 3, 3, 7000, 5),
+--       ('MID1004', '2023-06-04T17:00:00', 'ACCEPTED', 4, 4, 8000, 1),
+--       ('MID1005', '2023-06-05T18:30:00', 'PAYED', 5, 5, 3000, 4),
+--       ('MID1006', '2023-06-06T19:00:00', 'PAYED', 6, 6, 4000, 3),
+--       ('MID1007', '2023-06-07T20:30:00', 'PAYED', 7, 7, 2000, 2),
+--       ('MID1008', '2023-06-08T21:00:00', 'PAYED', 8, 8, 5000, 5),
+--       ('MID1009', '2023-06-09T22:30:00', 'PAYED', 9, 9, 4500, 6),
+--       ('MID1010', '2023-06-10T23:00:00', 'PAYED', 10, 10, 3500, 1);
+--
