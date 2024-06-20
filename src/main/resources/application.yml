@@ -119,6 +119,12 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
+  ssl:
+    key-store: /etc/ssl/private/keystore.p12
+    key-store-password: "qwer1234!@"
+    key-store-type: PKCS12
+    key-alias: gobookstore-backend
+
 logging:
   discord:
     webhook-uri-prod: ${DISCORD_WEBHOOK_PROD_URL}
