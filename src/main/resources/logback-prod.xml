@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <!--Discord Log-->
-    <springProperty name="DISCORD_WEBHOOK_URI" source="logging.discord.webhook-uri-dev"/>
+    <springProperty name="DISCORD_WEBHOOK_URI" source="logging.discord.webhook-uri-prod"/>
     <appender name="DISCORD" class="com.github.napstr.logback.DiscordAppender">
         <webhookUri>${DISCORD_WEBHOOK_URI}</webhookUri>
         <layout class="ch.qos.logback.classic.PatternLayout">

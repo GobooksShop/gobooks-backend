@@ -13,6 +13,7 @@ import java.util.Base64;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +34,8 @@ public class JwtTokenizer {
     private final JwtConfig jwtConfig;
     private final PrincipalDetailsService principalDetailsService;
     private final TokenRepository tokenRepository;
+    @Value("${app.secure-cookie}")
+    private boolean secureCookies;
 
     public String generateAccessToken(User user) {
 
@@ -169,6 +172,7 @@ public class JwtTokenizer {
     public Cookie setRefreshTokenToCookies(String token) {
         Cookie cookie = new Cookie(JwtConfig.REFRESH_JWT_COOKIE_NAME, token);
         cookie.setHttpOnly(true);
+        cookie.setSecure(secureCookies);
         cookie.setPath("/");
         cookie.setMaxAge(token == null ? 0 : JwtConfig.JWT_COOKIE_MAX_AGE);
         return cookie;

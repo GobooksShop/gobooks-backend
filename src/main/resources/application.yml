@@ -62,6 +62,8 @@ app:
 #  base-image-uri: "file:///Users/chany/Desktop/image/"
 # 윈도우즈의 경우 아래 처럼 설정.
   base-image-uri: "file:///D:/down/TMP/image/image/"
+  secure-cookie: false
+
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: dev
@@ -106,6 +108,8 @@ springdoc:
 app:
   base-url: "http://localhost:3000"
   base-image-uri: "file:///D:/down/TMP/image/image/"
+  secure-cookie: false
+
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: prod
@@ -153,6 +157,7 @@ logging:
 app:
   base-url: "https://www.gobookstore.shop"
   base-image-uri: "file:///srv/upload-files/"
+  secure-cookie: true
 
 
 
