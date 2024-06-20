@@ -70,6 +70,11 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2Login ->
                     oauth2Login
+                        .loginProcessingUrl("/api/login/oauth2/code/*")
+                        .authorizationEndpoint(authorizationEndpoint ->
+                            authorizationEndpoint
+                                .baseUri("/api/oauth2/authorization")
+                        )
                         .successHandler(customAuthSuccessHandler)
                 )
                 .logout(logout -> logout
