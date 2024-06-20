@@ -8,7 +8,6 @@ spring:
   servlet:
     multipart:
       enabled: true
-      location: /Users/chany/Desktop/image
       max-request-size: 50MB
       max-file-size: 50MB
   mail:
@@ -34,6 +33,9 @@ spring:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:core;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
+  servlet:
+    multipart:
+      location: D:\\down\\TMP\\image\\image
   jpa:
     hibernate:
       ddl-auto: create
@@ -56,6 +58,10 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 app:
   base-url: "http://localhost:3000"
+# 리눅스나, 맥에서는 아래처럼 설정.
+#  base-image-uri: "file:///Users/chany/Desktop/image/"
+# 윈도우즈의 경우 아래 처럼 설정.
+  base-image-uri: "file:///D:/down/TMP/image/image/"
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: dev
@@ -70,6 +76,9 @@ spring:
     url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${database.username}
     password: ${database.password}
+  servlet:
+    multipart:
+      location: /Users/chany/Desktop/image
   sql: # mysql에서는 data.sql를 빌드시 실행하려면 추가해야됨.
     init:
       mode: always
@@ -96,6 +105,7 @@ springdoc:
     enabled:true
 app:
   base-url: "http://localhost:3000"
+  base-image-uri: "file:///D:/down/TMP/image/image/"
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: prod
@@ -110,6 +120,9 @@ spring:
     url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${database.username}
     password: ${database.password}
+  servlet:
+    multipart:
+      location: /svr/upload-files
   jpa:
     hibernate:
       ddl-auto: update
@@ -139,6 +152,7 @@ logging:
 
 app:
   base-url: "https://www.gobookstore.shop"
+  base-image-uri: "file:///svr/upload-files/"
 
 
 

@@ -62,7 +62,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
             path.startsWith("/api/users") ||
             path.startsWith("/api/categories") && method.equals("GET") ||
             path.startsWith("/api/products") && method.equals("GET") ||
-            path.startsWith("/image");
+            path.startsWith("/api/images");
     }
 
     private void responseUnauthorized(HttpServletResponse response, String message,

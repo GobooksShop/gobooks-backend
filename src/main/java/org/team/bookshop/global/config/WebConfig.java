@@ -13,10 +13,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${app.base-url}")
     private String baseUrl;
+    @Value("${app.base-image-uri}")
+    private String baseImageUri;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**")
-            .addResourceLocations("file:///Users/chany/Desktop/image/");
+        registry.addResourceHandler("/api/images/**")
+            .addResourceLocations(baseImageUri);
     }
 }
