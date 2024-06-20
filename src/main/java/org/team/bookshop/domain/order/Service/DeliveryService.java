@@ -64,6 +64,8 @@ public class DeliveryService {
       address.updateFromCreateDelivery(createDeliveryRequest.toAddressEntity());
     }
 
+    deliveryRepository.save(delivery);
+
   }
 }
 
