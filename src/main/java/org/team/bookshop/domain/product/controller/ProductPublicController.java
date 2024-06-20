@@ -68,10 +68,10 @@ public class ProductPublicController {
     public ResponseEntity<Map<String, List<ProductResponseMainDto>>> getMainProducts() {
         List<ProductResponseMainDto> products = productService.getMainProducts();
         Map<String, List<ProductResponseMainDto>> response = new HashMap<>();
-        response.put("1", products.subList(0, 6));
-        response.put("2", products.subList(6, 12));
-        response.put("3", products.subList(12, 18));
-        response.put("4", products.subList(18, 24));
+        response.put("1", products.subList(0, 8));
+        response.put("2", products.subList(8, 16));
+        response.put("3", products.subList(16, 24));
+        response.put("4", products.subList(24, 32));
         return ResponseEntity.ok(response);
     }
 
