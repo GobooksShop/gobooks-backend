@@ -29,9 +29,13 @@ public class Delivery extends BaseEntity {
   private LocalDate deliveryComp;
   private Long trackingNumber;
 
-  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "address_id")
-  private Address address;
+  // 배송정보 저장 시 필요한 주소정보
+  private String label;
+  private String zipcode;
+  private String address1;
+  private String address2;
+  private String recipientName;
+  private String recipientPhone;
 
   public static Delivery createDelivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
     return new Delivery(deliveryStatus, deliveryStart, trackingNumber);
@@ -44,6 +48,13 @@ public class Delivery extends BaseEntity {
   }
 
   public OrderDeliveryResponse toOrderDeliveryResponse() {
-    return new OrderDeliveryResponse(address.getZipcode(), address.getAddress1(), address.getAddress2(), address.getRecipientName(), address.getRecipientPhone(), deliveryStatus);
+    return new OrderDeliveryResponse(
+        label,
+        zipcode,
+        address1,
+        address2,
+        recipientName,
+        recipientPhone,
+        deliveryStatus);
   }
 }
