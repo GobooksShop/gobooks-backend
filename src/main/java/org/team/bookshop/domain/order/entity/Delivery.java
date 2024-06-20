@@ -38,10 +38,11 @@ public class Delivery extends BaseEntity {
   private String recipientPhone;
 
   public static Delivery createDelivery(Order order, DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
-    return new Delivery(deliveryStatus, deliveryStart, trackingNumber);
+    return new Delivery(order, deliveryStatus, deliveryStart, trackingNumber);
   }
 
-  public Delivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+  public Delivery(Order order, DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+    order.setDelivery(this);
     this.deliveryStatus = deliveryStatus;
     this.deliveryStart = deliveryStart;
     this.trackingNumber = trackingNumber;

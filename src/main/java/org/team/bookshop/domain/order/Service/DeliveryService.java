@@ -3,6 +3,7 @@ package org.team.bookshop.domain.order.Service;
 import java.time.LocalDate;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.order.dto.CreateDeliveryRequest;
@@ -37,7 +38,7 @@ public class DeliveryService {
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_USER));
 
     // 2. order와 user를 조인해서 order 값 가져오기.
-    Order order = orderRepository.findByMerchantUidWithDelivery(merchantUid)
+    Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
     // 3-1. 만약 해당 주문에 대한 delivery가 존재하지 않는다면 새 delivery를 만든다.
