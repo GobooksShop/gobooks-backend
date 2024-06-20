@@ -255,37 +255,37 @@ public class OrderService {
     return order.getOrderTotalPrice() == totalPrice;
   }
 
-  //// 주문을 상세 조회하기 위한 DTO를 반환하는 기능
-//  public OrderResponse getOrderDetail(String merchantUid) {
-//
-//    // 1. 주문 조회하기
-//
-//    Order order = orderRepository.findByMerchantUid(merchantUid)
-//        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
-//
-//    // 2. 결제 조회하기 by Order
-//
-//    Payments payment = paymentRepository.findPaymentByOrder(order)
-//        .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
-//
-//    // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
-//
-//    OrderResponse orderResponse = new OrderResponse(
-//        order.getId(),
-//        order.getMerchantUid(),
-//        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse)
-//            .collect(Collectors.toList()),
-//        order.getOrderStatus(),
-//        order.getDelivery().toOrderDeliveryResponse(),
-//        order.getOrderTotalPrice(),
-//        order.getOrderTotalAmount(),
-//        payment.toPaymentResponse()
-//    );
-//
-//    // 4. 반환
-//
-//    return orderResponse;
-//  }
+  // 주문을 상세 조회하기 위한 DTO를 반환하는 기능
+  public OrderResponse getOrderDetail(String merchantUid) {
+
+    // 1. 주문 조회하기
+
+    Order order = orderRepository.findByMerchantUid(merchantUid)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+
+    // 2. 결제 조회하기 by Order
+
+    Payments payment = paymentRepository.findPaymentByOrder(order)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
+
+    // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
+
+    OrderResponse orderResponse = new OrderResponse(
+        order.getId(),
+        order.getMerchantUid(),
+        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse)
+            .collect(Collectors.toList()),
+        order.getOrderStatus(),
+        order.getDelivery().toOrderDeliveryResponse(),
+        order.getOrderTotalPrice(),
+        order.getOrderTotalAmount(),
+        payment.toPaymentResponse()
+    );
+
+    // 4. 반환
+
+    return orderResponse;
+  }
 
   public Order findByMerchantUid(String merchantUid) {
     return orderRepository.findByMerchantUid(merchantUid)

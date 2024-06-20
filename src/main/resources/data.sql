@@ -411,17 +411,17 @@ VALUES (1,'MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 5000, 3),
     (10,'MID1010', '2023-06-10T23:00:00', 'PAYED', 10, 3500, 1);
 
 
-INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number, order_id)
-VALUES (1, 'READY', '2023-06-01', 1234567891, 1),
-       (2, 'STARTED', '2023-06-01', 1234567892, 1),
-       (3, 'COMPLETED', '2023-06-01', 1234567893, 1),
-       (4, 'CANCELED', '2023-06-01', 1234567894, 1),
-       (5, 'READY', '2023-06-01', 1234567895, 1),
-       (6, 'READY', '2023-06-01', 1234567896, 1),
-       (7, 'READY', '2023-06-01', 1234567897, 1),
-       (8, 'READY', '2023-06-01', 1234567898, 1),
-       (9, 'READY', '2023-06-01', 1234567899, 1),
-       (10, 'READY', '2023-06-01', 1234567890, 1);
+INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number)
+VALUES (1, 'READY', '2023-06-01', 1234567891),
+       (2, 'STARTED', '2023-06-01', 1234567892),
+       (3, 'COMPLETED', '2023-06-01', 1234567893),
+       (4, 'CANCELED', '2023-06-01', 1234567894),
+       (5, 'READY', '2023-06-01', 1234567895),
+       (6, 'READY', '2023-06-01', 1234567896),
+       (7, 'READY', '2023-06-01', 1234567897),
+       (8, 'READY', '2023-06-01', 1234567898),
+       (9, 'READY', '2023-06-01', 1234567899),
+       (10, 'READY', '2023-06-01', 1234567890);
 
 INSERT INTO address (address_id, user_id, label, is_primary, zipcode, address1,
                      address2, recipient_name, recipient_phone)

@@ -25,10 +25,6 @@ public class Delivery extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DeliveryStatus deliveryStatus;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id")
-  private Order order;
-
   private LocalDate deliveryStart;
   private LocalDate deliveryComp;
   private Long trackingNumber;
