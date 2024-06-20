@@ -87,7 +87,7 @@ VALUES ('테스터56', 'test1_canceled@test.com', @password, 'test56', '010-5555
 -- Product 테스트 값 추가
 INSERT INTO products (title, author, isbn, content, fixed_price, publication_year, status,
                       stock_quantity, picture_url, discount)
-VALUES ('해커스 토익 Listening', 'David Cho', '9788965422781', '해커스 토익 Listening 교재는 최신 기출 경향을 반영한 실전 모의고사 문제와 해설, 그리고 Listening 전략을 포함하고 있습니다. 수많은 토익 수험생들이 선택한 이 교재는...', 14800, '2023-01-10', 'AVAILABLE', 100, '1.jpeg', false),
+VALUES ('해커스 토익 Listening', 'David Cho', '9788965422781', '해커스 토익 Listening 교재는 최신 기출 경향을 반영한 실전 모의고사 문제와 해설, 그리고 Listening 전략을 포함하고 있습니다. 수많은 토익 수험생들이 선택한 이 교재는...', 1200, '2023-01-10', 'AVAILABLE', 100, '1.jpeg', false),
        ('해커스 토익 Reading', 'David Cho', '9788965422798', '해커스 토익 Reading 교재는 최신 기출 경향을 반영한 실전 모의고사 문제와 해설, 그리고 Reading 전략을 포함하고 있습니다. 이 교재를 통해 학생들은 기초부터 실전까지 ...', 14800, '2023-01-10', 'AVAILABLE', 100, '2.jpeg', false),
        ('미움받을 용기', '기시미 이치로', '9788960518786', '기시미 이치로의 대표작으로, 아들러 심리학을 기반으로 한 삶의 지혜를 전달하는 책입니다. 이 책은 독자에게 자신을 사랑하고, 타인의 시선을 의식하지 않으며 살아가는 방...', 15800, '2021-11-01', 'AVAILABLE', 50, '3.jpeg', false),
        ('나미야 잡화점의 기적', '히가시노 게이고', '9788972756194', '히가시노 게이고의 미스터리 소설로, 우연히 찾은 잡화점에서 벌어지는 기적 같은 이야기를 담고 있습니다. 이 책은 과거와 현재가 교차하며 펼쳐지는 스토리를 통해 독자에...', 13800, '2021-10-20', 'AVAILABLE', 70, '4.jpeg', true),
@@ -411,17 +411,17 @@ VALUES (1,'MID1001', '2023-06-01T14:30:00', 'PAYED', 1, 5000, 3),
     (10,'MID1010', '2023-06-10T23:00:00', 'PAYED', 10, 3500, 1);
 
 
-INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number, order_id)
-VALUES (1, 'READY', '2023-06-01', 1234567891, 1),
-       (2, 'STARTED', '2023-06-01', 1234567892, 1),
-       (3, 'COMPLETED', '2023-06-01', 1234567893, 1),
-       (4, 'CANCELED', '2023-06-01', 1234567894, 1),
-       (5, 'READY', '2023-06-01', 1234567895, 1),
-       (6, 'READY', '2023-06-01', 1234567896, 1),
-       (7, 'READY', '2023-06-01', 1234567897, 1),
-       (8, 'READY', '2023-06-01', 1234567898, 1),
-       (9, 'READY', '2023-06-01', 1234567899, 1),
-       (10, 'READY', '2023-06-01', 1234567890, 1);
+INSERT INTO delivery (delivery_id, delivery_status, delivery_start, tracking_number)
+VALUES (1, 'READY', '2023-06-01', 1234567891),
+       (2, 'STARTED', '2023-06-01', 1234567892),
+       (3, 'COMPLETED', '2023-06-01', 1234567893),
+       (4, 'CANCELED', '2023-06-01', 1234567894),
+       (5, 'READY', '2023-06-01', 1234567895),
+       (6, 'READY', '2023-06-01', 1234567896),
+       (7, 'READY', '2023-06-01', 1234567897),
+       (8, 'READY', '2023-06-01', 1234567898),
+       (9, 'READY', '2023-06-01', 1234567899),
+       (10, 'READY', '2023-06-01', 1234567890);
 
 INSERT INTO address (address_id, user_id, label, is_primary, zipcode, address1,
                      address2, recipient_name, recipient_phone)

@@ -1,12 +1,8 @@
 package org.team.bookshop.domain.payment.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import org.team.bookshop.domain.order.entity.Order;
+import lombok.Getter;
 
+@Getter
 public class PaymentResponse {
 
   private String impUid;

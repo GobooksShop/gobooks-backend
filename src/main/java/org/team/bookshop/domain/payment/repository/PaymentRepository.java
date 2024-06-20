@@ -7,5 +7,5 @@ import org.team.bookshop.domain.payment.entity.Payments;
 
 public interface PaymentRepository extends JpaRepository<Payments, Long> {
 
-  Optional<Payments> findPaymentByOrder(Order order);
+  Optional<Payments> findPaymentsByOrder(Order order);
 }

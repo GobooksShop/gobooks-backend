@@ -46,8 +46,9 @@ public class Order extends BaseEntity {
   private int orderTotalPrice;
   private int orderTotalAmount;
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-  private List<Delivery> delivery = new ArrayList<>();
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "delivery_id")
+  private Delivery delivery;
 
   @OneToMany(mappedBy = "order")
   private List<OrderItem> orderItems = new ArrayList<>();
