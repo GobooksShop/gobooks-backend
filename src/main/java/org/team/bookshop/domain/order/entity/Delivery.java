@@ -41,7 +41,7 @@ public class Delivery extends BaseEntity {
   private String recipientName;
   private String recipientPhone;
 
-  public static Delivery createDelivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+  public static Delivery createDelivery(Order order, DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
     return new Delivery(deliveryStatus, deliveryStart, trackingNumber);
   }
 
@@ -60,5 +60,14 @@ public class Delivery extends BaseEntity {
         recipientName,
         recipientPhone,
         deliveryStatus);
+  }
+
+  public void fillAddressInformation(Address transferedAddress) {
+    label = transferedAddress.getLabel();
+    zipcode = transferedAddress.getZipcode();
+    address1 = transferedAddress.getAddress1();
+    address2 = transferedAddress.getAddress2();
+    recipientName = transferedAddress.getRecipientName();
+    recipientPhone = transferedAddress.getRecipientPhone();
   }
 }
