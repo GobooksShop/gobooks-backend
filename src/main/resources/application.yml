@@ -138,7 +138,7 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 
 app:
-  base-url: "http://www.gobookstore.shop"
+  base-url: "https://www.gobookstore.shop"
 
 
 
