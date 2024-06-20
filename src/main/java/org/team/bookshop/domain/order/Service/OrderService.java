@@ -1,6 +1,5 @@
 package org.team.bookshop.domain.order.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -11,17 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.team.bookshop.domain.order.dto.OrderAbstractResponse;
-import org.team.bookshop.domain.order.dto.OrderAddressCreate;
-import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
 import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderItemRequest;
 import org.team.bookshop.domain.order.dto.OrderListResponse;
 import org.team.bookshop.domain.order.dto.OrderResponse;
-import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
-import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.entity.OrderItem;
-import org.team.bookshop.domain.order.enums.DeliveryStatus;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderItemRepository;
@@ -30,7 +24,6 @@ import org.team.bookshop.domain.payment.entity.Payments;
 import org.team.bookshop.domain.payment.repository.PaymentRepository;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.repository.ProductRepository;
-import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.error.ErrorCode;
@@ -132,7 +125,7 @@ public class OrderService {
       orderItemRepository.save(orderItem);
       order.getOrderItems().add(orderItem);
     }
-
+    totalPrice = (int) (totalPrice * 0.9);
     order.setOrderTotalAmount(totalCount);
     order.setOrderTotalPrice(totalPrice);
 
@@ -265,7 +258,7 @@ public class OrderService {
 
     // 2. 결제 조회하기 by Order
 
-    Payments payment = paymentRepository.findPaymentByOrder(order)
+    Payments payment = paymentRepository.findPaymentsByOrder(order)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
 
     // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
