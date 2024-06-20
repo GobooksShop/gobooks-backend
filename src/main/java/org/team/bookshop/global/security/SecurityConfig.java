@@ -73,7 +73,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/api/login/oauth2/code/*")
                         .authorizationEndpoint(authorizationEndpoint ->
                             authorizationEndpoint
-                                .baseUri("/api/oauth2/authorization")
+                                .baseUri("/api/login/oauth2/authorization")
                         )
                         .successHandler(customAuthSuccessHandler)
                 )
