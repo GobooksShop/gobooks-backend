@@ -74,6 +74,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
         response.setHeader("Access-Control-Allow-Origin", webConfig.getBaseUrl());
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
 
