@@ -7,9 +7,4 @@ import org.team.bookshop.domain.user.entity.Address;
 
 public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 
-    Delivery findByAddressId(Long addressId);
-
-    List<Delivery> findListByAddress(Address address);
-
-    void deleteByAddressId(Long id);
 }

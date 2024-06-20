@@ -40,15 +40,15 @@ public class OrderController {
   }
 
   // 주문 수정
-  @PatchMapping("/update")
-  public ResponseEntity<OrderUpdateResponse> updateOrder(
-      @RequestBody OrderUpdateRequest orderUpdateRequest) {
-    Long updatedOrderId = orderService.update(orderUpdateRequest).getOrderId();
-    OrderUpdateResponse orderUpdateResponse = orderService.findByIdForCreateResponse(updatedOrderId)
-        .toOrderUpdateResponse();
-
-    return ResponseEntity.status(HttpStatus.OK).body(orderUpdateResponse);
-  }
+//  @PatchMapping("/update")
+//  public ResponseEntity<OrderUpdateResponse> updateOrder(
+//      @RequestBody OrderUpdateRequest orderUpdateRequest) {
+//    Long updatedOrderId = orderService.update(orderUpdateRequest).getOrderId();
+//    OrderUpdateResponse orderUpdateResponse = orderService.findByIdForCreateResponse(updatedOrderId)
+//        .toOrderUpdateResponse();
+//
+//    return ResponseEntity.status(HttpStatus.OK).body(orderUpdateResponse);
+//  }
 
   // 주문 삭제
   @DeleteMapping("/delete/{orderId}")

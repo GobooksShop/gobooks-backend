@@ -149,31 +149,32 @@ public class OrderService {
     return order.getId();
   }
 
-  @Transactional
-  public OrderResponse update(OrderUpdateRequest orderUpdateRequest) {
-    String merchantUid = orderUpdateRequest.getMerchantUid();
-
-    OrderAddressUpdate orderAddressUpdate = orderUpdateRequest.getOrderAddressUpdate();
-
-    Order order = orderRepository.findByMerchantUid(merchantUid)
-        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
-    Delivery delivery = order.getDelivery();
-    Address address = delivery.getAddress();
-
-    // 주문 수정 요청을 바탕으로 기존의 주소를 수정
-    address.setZipcode(orderAddressUpdate.getZipcode());
-    address.setAddress1(orderAddressUpdate.getAddress1());
-    address.setAddress2(orderAddressUpdate.getAddress2());
-    address.setRecipientName(orderAddressUpdate.getRecipientName());
-    address.setRecipientPhone(orderAddressUpdate.getRecipientPhone());
-    return OrderResponse.builder()
-        .orderId(order.getId())
-        .orderStatus(OrderStatus.PAYED)
-        .merchantUid(order.getMerchantUid())
-        .orderTotalAmount(order.getOrderTotalPrice())
-        .orderTotalPrice(order.getOrderTotalPrice())
-        .build();
-  }
+  // 주문 수정기능
+//  @Transactional
+//  public OrderResponse update(OrderUpdateRequest orderUpdateRequest) {
+//    String merchantUid = orderUpdateRequest.getMerchantUid();
+//
+//    OrderAddressUpdate orderAddressUpdate = orderUpdateRequest.getOrderAddressUpdate();
+//
+//    Order order = orderRepository.findByMerchantUid(merchantUid)
+//        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+//    Delivery delivery = order.getDelivery();
+//    Address address = delivery.getAddress();
+//
+//    // 주문 수정 요청을 바탕으로 기존의 주소를 수정
+//    address.setZipcode(orderAddressUpdate.getZipcode());
+//    address.setAddress1(orderAddressUpdate.getAddress1());
+//    address.setAddress2(orderAddressUpdate.getAddress2());
+//    address.setRecipientName(orderAddressUpdate.getRecipientName());
+//    address.setRecipientPhone(orderAddressUpdate.getRecipientPhone());
+//    return OrderResponse.builder()
+//        .orderId(order.getId())
+//        .orderStatus(OrderStatus.PAYED)
+//        .merchantUid(order.getMerchantUid())
+//        .orderTotalAmount(order.getOrderTotalPrice())
+//        .orderTotalPrice(order.getOrderTotalPrice())
+//        .build();
+//  }
 
   @Transactional
   public Long delete(Long orderId) {
@@ -202,20 +203,20 @@ public class OrderService {
     return orderRepository.findWithOrderItems(orderId);
   }
 
-  @Transactional
-  public void setOrderAddress(Long orderId, OrderAddressCreate orderAddressCreate) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
-
-    Address address = orderAddressCreate.toEntity();
-    Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1L);
-    delivery.setAddress(address);
-
-    deliveryRepository.save(delivery);
-
-    order.setDelivery(delivery);
-
-  }
+//  @Transactional
+//  public void setOrderAddress(Long orderId, OrderAddressCreate orderAddressCreate) {
+//    Order order = orderRepository.findById(orderId)
+//        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+//
+//    Address address = orderAddressCreate.toEntity();
+//    Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1L);
+//    delivery.setAddress(address);
+//
+//    deliveryRepository.save(delivery);
+//
+//    order.setDelivery(delivery);
+//
+//  }
 
   // orderListResponse용 : userID 이용 하여 orderListResponse용 dto를 반환하는 기능
   public OrderListResponse findByUserIdForOrderListResponse(Long userId) {

@@ -83,13 +83,6 @@ public class UserService {
 
         List<Address> addresses = addressRepository.findByUserId(id);
 
-        for (Address address : addresses) {
-            Delivery delivery = deliveryRepository.findByAddressId(address.getId());
-
-            orderRepository.deleteByDeliveryId(delivery.getId());
-            deliveryRepository.deleteByAddressId(address.getId());
-        }
-
         addressRepository.deleteByUserId(id);
         userRepository.delete(user);
     }
