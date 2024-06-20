@@ -176,28 +176,28 @@ public class OrderService {
 //        .build();
 //  }
 
-  @Transactional
-  public Long delete(Long orderId) {
-    Order order = orderRepository.findWithAllRelatedEntityById(orderId);
-
-    // 해당 주문 내에 포함된 상품의 재고를 다시 원상복구 한다.
-    List<OrderItem> orderItems = order.getOrderItems();
-    for (OrderItem orderItem : orderItems) {
-      // 재고수량 회복
-      orderItem.getProduct().increaseStock(orderItem.getOrderCount());
-
-      // orderItem 삭제
-      orderItemRepository.delete(orderItem);
-    }
-
-    // 관련된 엔티티인 delivery, address, orderItem모두 삭제
-    Delivery delivery = order.getDelivery();
-    deliveryRepository.delete(delivery);
-    orderRepository.deleteById(orderId);
-
-    // 삭제된 orderId반환
-    return orderId;
-  }
+//  @Transactional
+//  public Long delete(Long orderId) {
+//    Order order = orderRepository.findWithAllRelatedEntityById(orderId);
+//
+//    // 해당 주문 내에 포함된 상품의 재고를 다시 원상복구 한다.
+//    List<OrderItem> orderItems = order.getOrderItems();
+//    for (OrderItem orderItem : orderItems) {
+//      // 재고수량 회복
+//      orderItem.getProduct().increaseStock(orderItem.getOrderCount());
+//
+//      // orderItem 삭제
+//      orderItemRepository.delete(orderItem);
+//    }
+//
+//    // 관련된 엔티티인 delivery, address, orderItem모두 삭제
+//    Delivery delivery = order.getDelivery();
+//    deliveryRepository.delete(delivery);
+//    orderRepository.deleteById(orderId);
+//
+//    // 삭제된 orderId반환
+//    return orderId;
+//  }
 
   public Order findByIdForCreateResponse(long orderId) {
     return orderRepository.findWithOrderItems(orderId);
@@ -256,36 +256,36 @@ public class OrderService {
   }
 
   //// 주문을 상세 조회하기 위한 DTO를 반환하는 기능
-  public OrderResponse getOrderDetail(String merchantUid) {
-
-    // 1. 주문 조회하기
-
-    Order order = orderRepository.findByMerchantUid(merchantUid)
-        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
-
-    // 2. 결제 조회하기 by Order
-
-    Payments payment = paymentRepository.findPaymentByOrder(order)
-        .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
-
-    // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
-
-    OrderResponse orderResponse = new OrderResponse(
-        order.getId(),
-        order.getMerchantUid(),
-        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse)
-            .collect(Collectors.toList()),
-        order.getOrderStatus(),
-        order.getDelivery().toOrderDeliveryResponse(),
-        order.getOrderTotalPrice(),
-        order.getOrderTotalAmount(),
-        payment.toPaymentResponse()
-    );
-
-    // 4. 반환
-
-    return orderResponse;
-  }
+//  public OrderResponse getOrderDetail(String merchantUid) {
+//
+//    // 1. 주문 조회하기
+//
+//    Order order = orderRepository.findByMerchantUid(merchantUid)
+//        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+//
+//    // 2. 결제 조회하기 by Order
+//
+//    Payments payment = paymentRepository.findPaymentByOrder(order)
+//        .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
+//
+//    // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
+//
+//    OrderResponse orderResponse = new OrderResponse(
+//        order.getId(),
+//        order.getMerchantUid(),
+//        order.getOrderItems().stream().map(OrderItem::toOrderItemResponse)
+//            .collect(Collectors.toList()),
+//        order.getOrderStatus(),
+//        order.getDelivery().toOrderDeliveryResponse(),
+//        order.getOrderTotalPrice(),
+//        order.getOrderTotalAmount(),
+//        payment.toPaymentResponse()
+//    );
+//
+//    // 4. 반환
+//
+//    return orderResponse;
+//  }
 
   public Order findByMerchantUid(String merchantUid) {
     return orderRepository.findByMerchantUid(merchantUid)
