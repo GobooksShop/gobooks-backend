@@ -70,6 +70,9 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2Login ->
                     oauth2Login
+                        .redirectionEndpoint(redirectionEndpoint ->
+                            redirectionEndpoint
+                                .baseUri("/api/login/oauth2/code/**"))
                         .loginProcessingUrl("/api/login/oauth2/code/*")
                         .authorizationEndpoint(authorizationEndpoint ->
                             authorizationEndpoint
