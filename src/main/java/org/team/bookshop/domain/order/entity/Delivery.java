@@ -25,10 +25,6 @@ public class Delivery extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DeliveryStatus deliveryStatus;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id")
-  private Order order;
-
   private LocalDate deliveryStart;
   private LocalDate deliveryComp;
   private Long trackingNumber;
@@ -41,11 +37,12 @@ public class Delivery extends BaseEntity {
   private String recipientName;
   private String recipientPhone;
 
-  public static Delivery createDelivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
-    return new Delivery(deliveryStatus, deliveryStart, trackingNumber);
+  public static Delivery createDelivery(Order order, DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+    return new Delivery(order, deliveryStatus, deliveryStart, trackingNumber);
   }
 
-  public Delivery(DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+  public Delivery(Order order, DeliveryStatus deliveryStatus, LocalDate deliveryStart, Long trackingNumber) {
+    order.setDelivery(this);
     this.deliveryStatus = deliveryStatus;
     this.deliveryStart = deliveryStart;
     this.trackingNumber = trackingNumber;
@@ -60,5 +57,14 @@ public class Delivery extends BaseEntity {
         recipientName,
         recipientPhone,
         deliveryStatus);
+  }
+
+  public void fillAddressInformation(Address transferedAddress) {
+    label = transferedAddress.getLabel();
+    zipcode = transferedAddress.getZipcode();
+    address1 = transferedAddress.getAddress1();
+    address2 = transferedAddress.getAddress2();
+    recipientName = transferedAddress.getRecipientName();
+    recipientPhone = transferedAddress.getRecipientPhone();
   }
 }
