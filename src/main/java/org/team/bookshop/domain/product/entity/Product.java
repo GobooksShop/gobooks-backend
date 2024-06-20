@@ -100,7 +100,7 @@ public class Product extends BaseEntity {
     }
 
     public void update(String title, String author, String isbn, String content, int fixedPrice,
-        LocalDate publicationYear, Status status, boolean discount) {
+        LocalDate publicationYear, Status status, int stockQuantity, boolean discount) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -108,6 +108,7 @@ public class Product extends BaseEntity {
         this.fixedPrice = fixedPrice;
         this.publicationYear = publicationYear;
         this.status = status;
+        this.stockQuantity = stockQuantity;
         this.discount = discount;
     }
 
