@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.order.dto.OrderItemResponse;
 import org.team.bookshop.domain.order.entity.Order;
+import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.payment.entity.Payments;
 import org.team.bookshop.domain.payment.repository.PaymentRepository;
@@ -34,6 +35,7 @@ public class PaymentService {
         .buyerPostcode(payment.getBuyerPostcode())
         .amount(payment.getAmount().longValue())
         .build();
+    order.changeOrderStatus(OrderStatus.PAYED);
     paymentRepository.save(paymentEntity);
     return null;
   }

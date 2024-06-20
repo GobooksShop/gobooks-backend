@@ -88,4 +88,8 @@ public class Order extends BaseEntity {
         orderItems.get(0).getProduct().getTitle(),
         orderItems.get(0).getProduct().getPictureUrl());
   }
+
+  public void changeOrderStatus(OrderStatus orderStatus) {
+    this.orderStatus = orderStatus;
+  }
 }
