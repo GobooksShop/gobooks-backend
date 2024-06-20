@@ -197,7 +197,7 @@ public class ProductService {
 
     @Transactional
     public List<ProductResponseMainDto> getMainProducts() {
-        return productRepository.findRandomProducts(24).stream()
+        return productRepository.findRandomProducts(32).stream()
             .map(product -> new ProductResponseMainDto(
                 product.getId(),
                 product.getTitle(),
