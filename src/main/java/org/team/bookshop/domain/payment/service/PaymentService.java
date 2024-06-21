@@ -10,6 +10,8 @@ import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.payment.entity.Payments;
 import org.team.bookshop.domain.payment.repository.PaymentRepository;
+import org.team.bookshop.global.error.ErrorCode;
+import org.team.bookshop.global.error.exception.ApiException;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class PaymentService {
   private final PaymentRepository paymentRepository;
 
   @Transactional
-  public OrderItemResponse complatePayment(Payment payment, Order order) {
+  public OrderItemResponse complatePayment(Payment payment, Order order, String merchantUid) {
     Payments paymentEntity = Payments.builder()
         .impUid(payment.getImpUid())
         .paymentStatus(payment.getStatus())
@@ -35,8 +37,14 @@ public class PaymentService {
         .buyerPostcode(payment.getBuyerPostcode())
         .amount(payment.getAmount().longValue())
         .build();
-    order.changeOrderStatus(OrderStatus.PAYED);
+
+    // 해당 주문의 status를 payed로 변경하는 부분
+    Order orderFoundByMerchantUid = orderRepository.findByMerchantUid(merchantUid)
+        .orElseThrow(() -> new ApiException(
+            ErrorCode.NO_EXISTING_ORDER));
+    orderFoundByMerchantUid.changeOrderStatus(OrderStatus.PAYED);
     paymentRepository.save(paymentEntity);
+
     return null;
   }
 

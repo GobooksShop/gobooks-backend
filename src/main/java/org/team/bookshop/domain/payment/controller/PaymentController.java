@@ -106,7 +106,7 @@ public class PaymentController {
     if (payment_totalPrice == order.getOrderTotalPrice()) {
       //payment db에 저장.
       log.info("===================================진입==================================");
-      paymentService.complatePayment(payment, order);
+      paymentService.complatePayment(payment, order, requestCompletePayment.getMerchantUid());
       System.out.println("페이먼트Repository에 저장 됐습니다.");
     } else {
       try {
