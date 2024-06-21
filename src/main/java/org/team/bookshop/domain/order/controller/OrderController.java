@@ -40,24 +40,22 @@ public class OrderController {
   }
 
   // 주문 수정
-//  @PatchMapping("/update")
-//  public ResponseEntity<OrderUpdateResponse> updateOrder(
-//      @RequestBody OrderUpdateRequest orderUpdateRequest) {
-//    Long updatedOrderId = orderService.update(orderUpdateRequest).getOrderId();
-//    OrderUpdateResponse orderUpdateResponse = orderService.findByIdForCreateResponse(updatedOrderId)
-//        .toOrderUpdateResponse();
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(orderUpdateResponse);
-//  }
+  @PatchMapping("/update")
+  public ResponseEntity<OrderResponse> updateOrder(
+      @RequestBody OrderUpdateRequest orderUpdateRequest) {
+    String merchantUid = orderService.update(orderUpdateRequest);
+
+    return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderDetail(merchantUid));
+  }
 
   // 주문 삭제
-//  @DeleteMapping("/delete/{orderId}")
-//  public ResponseEntity<Void> deleteOrder(
-//      @PathVariable("orderId") Long orderId) {
-//    Long deletedOrderId = orderService.delete(orderId);
-//
-//    return new ResponseEntity<>(HttpStatus.OK);
-//  }
+  @DeleteMapping("/delete/{orderId}")
+  public ResponseEntity<Void> deleteOrder(
+      @PathVariable("orderId") Long orderId) {
+    Long deletedOrderId = orderService.delete(orderId);
+
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 
   @GetMapping("/user/{userId}")
   public ResponseEntity<OrderListResponse> getUsersOrdersList(

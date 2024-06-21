@@ -29,6 +29,7 @@ public enum ErrorCode {
   NO_EXISTING_BOOK(404, "O002", "Book with entered id doesn't exist", LogLevel.ERROR),
   INVALID_PRODUCT_PRICE_INFO(400, "O003", "Entered Price doesn't match", LogLevel.ERROR),
   NO_EXISTING_ORDER(404, "O004", "Order with entered id doesn't exist", LogLevel.ERROR),
+  CANNOT_CANCEL_ORDER(404, "O005", "Delivery has been started, can't cancel order", LogLevel.ERROR),
 
   //PAYMENT
   PORTONE_BAD_REQUEST(400, "C011", "Bad Request", LogLevel.ERROR),

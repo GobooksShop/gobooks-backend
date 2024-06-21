@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 import lombok.*;
+import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
 import org.team.bookshop.domain.order.dto.OrderDeliveryResponse;
+import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.enums.DeliveryStatus;
 import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.global.util.BaseEntity;
@@ -66,5 +68,14 @@ public class Delivery extends BaseEntity {
     address2 = transferedAddress.getAddress2();
     recipientName = transferedAddress.getRecipientName();
     recipientPhone = transferedAddress.getRecipientPhone();
+  }
+
+  public void updateAddressByOrderUpdateRequest(OrderAddressUpdate orderAddressUpdate) {
+    label = orderAddressUpdate.getLabel();
+    zipcode = orderAddressUpdate.getZipcode();
+    address1 = orderAddressUpdate.getAddress1();
+    address2 = orderAddressUpdate.getAddress2();
+    recipientName = orderAddressUpdate.getRecipientName();
+    recipientPhone = orderAddressUpdate.getRecipientPhone();
   }
 }

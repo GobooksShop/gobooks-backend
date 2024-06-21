@@ -14,8 +14,11 @@ import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderItemRequest;
 import org.team.bookshop.domain.order.dto.OrderListResponse;
 import org.team.bookshop.domain.order.dto.OrderResponse;
+import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
+import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.entity.OrderItem;
+import org.team.bookshop.domain.order.enums.DeliveryStatus;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderItemRepository;
@@ -169,28 +172,57 @@ public class OrderService {
 //        .build();
 //  }
 
-//  @Transactional
-//  public Long delete(Long orderId) {
-//    Order order = orderRepository.findWithAllRelatedEntityById(orderId);
-//
-//    // 해당 주문 내에 포함된 상품의 재고를 다시 원상복구 한다.
-//    List<OrderItem> orderItems = order.getOrderItems();
-//    for (OrderItem orderItem : orderItems) {
-//      // 재고수량 회복
-//      orderItem.getProduct().increaseStock(orderItem.getOrderCount());
-//
-//      // orderItem 삭제
-//      orderItemRepository.delete(orderItem);
-//    }
-//
-//    // 관련된 엔티티인 delivery, address, orderItem모두 삭제
-//    Delivery delivery = order.getDelivery();
-//    deliveryRepository.delete(delivery);
-//    orderRepository.deleteById(orderId);
-//
-//    // 삭제된 orderId반환
-//    return orderId;
-//  }
+  // 주문의 주소정보를 업데이트
+  @Transactional
+  public String update(OrderUpdateRequest orderUpdateRequest) {
+    String merchantUid = orderUpdateRequest.getMerchantUid();
+
+    System.out.println("merchantUid = " + merchantUid);
+    // 전달된 merchantUid에 해당하는 order를 조회
+    Order order = orderRepository.findByMerchantUid(merchantUid)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+
+    // 해당 order의 배송정보 조회
+    Delivery delivery = order.getDelivery();
+
+    // 해당 배송정보를 업데이트
+    delivery.updateAddressByOrderUpdateRequest(orderUpdateRequest.getOrderAddressUpdate());
+
+    return merchantUid;
+  }
+
+
+  @Transactional
+  public Long delete(Long orderId) {
+    Order order = orderRepository.findWithAllRelatedEntityById(orderId);
+    Delivery delivery = order.getDelivery();
+
+    // 만약 order의 delivery상태가 "출발"이거나 그 이상의 단계라면 주문 취소는 불가능하다.
+    if(delivery.getDeliveryStatus() !=  DeliveryStatus.READY)
+      throw new ApiException(ErrorCode.CANNOT_CANCEL_ORDER);
+
+    // 주문 품목 취소과정
+    List<OrderItem> orderItems = order.getOrderItems();
+    for (OrderItem orderItem : orderItems) {
+      // 주문한 물품들의 수량을 하나씩 올려준다.
+      orderItem.getProduct().increaseStock(orderItem.getOrderCount());
+
+      // 해당 orderItem데이터를 삭제한다
+      orderItemRepository.delete(orderItem);
+    }
+
+    // 관련 payment 삭제
+    Payments payments = paymentRepository.findPaymentsByOrder(order)
+        .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
+    paymentRepository.delete(payments);
+
+    // order정보 삭제
+    orderRepository.delete(order);
+
+    // delivery정보 삭제
+    deliveryRepository.delete(delivery);
+    return orderId;
+  }
 
   public Order findByIdForCreateResponse(long orderId) {
     return orderRepository.findWithOrderItems(orderId);
