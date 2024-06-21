@@ -1,5 +1,6 @@
 package org.team.bookshop.domain.order.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,8 @@ public class OrderResponse {
 
   private OrderStatus orderStatus;
 
+  private String orderDateTime;
+
   private OrderDeliveryResponse orderDeliveryResponse;
 
   private int orderTotalPrice;
@@ -30,12 +33,13 @@ public class OrderResponse {
   }
 
   public OrderResponse(Long orderId, String merchantUid, List<OrderItemResponse> orderItemResponses,
-      OrderStatus orderStatus, OrderDeliveryResponse orderDeliveryResponse, int orderTotalPrice,
+      OrderStatus orderStatus, String orderDateTime, OrderDeliveryResponse orderDeliveryResponse, int orderTotalPrice,
       int orderTotalAmount, PaymentResponse paymentResponse) {
     this.orderId = orderId;
     this.merchantUid = merchantUid;
     this.orderItemResponses = orderItemResponses;
     this.orderStatus = orderStatus;
+    this.orderDateTime = orderDateTime;
     this.orderDeliveryResponse = orderDeliveryResponse;
     this.orderTotalPrice = orderTotalPrice;
     this.orderTotalAmount = orderTotalAmount;

@@ -1,6 +1,7 @@
 package org.team.bookshop.domain.order.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -299,6 +300,9 @@ public class OrderService {
         .orElseThrow(() -> new ApiException(ErrorCode.NO_PAYMENT_INFO_WITH_ORDER));
 
     // 3. 조회한 주문과 결제정보를 바탕으로, 주문 상세조회용 OrderResponse만들기
+    // 반환될 주문 생성일 정보를 문자열로 반환하기 위한 포매터 정의
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH : mm : ss");
+
 
     OrderResponse orderResponse = new OrderResponse(
         order.getId(),
@@ -306,6 +310,7 @@ public class OrderService {
         order.getOrderItems().stream().map(OrderItem::toOrderItemResponse)
             .collect(Collectors.toList()),
         order.getOrderStatus(),
+        order.getOrderDateTime().format(formatter),
         order.getDelivery().toOrderDeliveryResponse(),
         order.getOrderTotalPrice(),
         order.getOrderTotalAmount(),
