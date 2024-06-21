@@ -175,12 +175,17 @@ public class OrderService {
   // 주문의 주소정보를 업데이트
   @Transactional
   public String update(OrderUpdateRequest orderUpdateRequest) {
+
     String merchantUid = orderUpdateRequest.getMerchantUid();
 
-    System.out.println("merchantUid = " + merchantUid);
     // 전달된 merchantUid에 해당하는 order를 조회
     Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
+
+    // 결제를 하여야만 배송정보를 업데이트 가능
+    if (order.getOrderStatus() == OrderStatus.ACCEPTED) {
+      throw new ApiException(ErrorCode.CANNOT_UPDATE_ORDER);
+    }
 
     // 해당 order의 배송정보 조회
     Delivery delivery = order.getDelivery();
