@@ -6,18 +6,21 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.order.entity.Order;
+import org.team.bookshop.domain.payment.dto.PaymentResponse;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
+@Table(name = "payment")
 @NoArgsConstructor
-public class Payment {
+public class Payments {
 
   @Id
   @Column(name = "imp_uid")
@@ -61,10 +64,14 @@ public class Payment {
   /**
    * 결제 상태.
    */
-  private String status;
+  private String paymentStatus;
   /**
    * 총 가격 금액
    */
   private Long amount;
+
+  public PaymentResponse toPaymentResponse() {
+    return new PaymentResponse(impUid, payMethod, buyerName, buyerEmail, paymentStatus, amount);
+  }
 
 }

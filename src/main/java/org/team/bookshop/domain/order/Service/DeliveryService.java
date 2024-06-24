@@ -1,7 +1,9 @@
 package org.team.bookshop.domain.order.Service;
 
 import java.time.LocalDate;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.team.bookshop.domain.order.dto.CreateDeliveryRequest;
@@ -30,30 +32,27 @@ public class DeliveryService {
   public void createDelivery(CreateDeliveryRequest createDeliveryRequest) {
     Long userId = createDeliveryRequest.getUserId();
     String merchantUid = createDeliveryRequest.getMerchantUid();
-    String label = createDeliveryRequest.getOrderAddressUpdate().getLabel();
 
+    // 1. user 조회
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_USER));
 
-    Address noExistAddress = new Address();
-
-    Address address = addressRepository.findByUserAndLabel(user, label).orElse(noExistAddress);
-    Delivery delivery = Delivery.createDelivery(DeliveryStatus.READY, LocalDate.now(), 1234L);
-    // 해당 user의 특정 label에 해당하는 address가 존재하지 않는다면
-    if (address.equals(noExistAddress)) {
-      Address transferedAddress = createDeliveryRequest.toAddressEntity();
-      transferedAddress.setUser(user);
-      delivery.setAddress(transferedAddress);
-    } else {
-      address.update(createDeliveryRequest.getOrderAddressUpdate());
-      address.setUser(user);
-      delivery.setAddress(address);
-    }
+    // 2. order와 user를 조인해서 order 값 가져오기.
     Order order = orderRepository.findByMerchantUid(merchantUid)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_ORDER));
 
-    order.setDelivery(delivery);
+    // 3-1. 만약 해당 주문에 대한 delivery가 존재하지 않는다면 새 delivery를 만든다.
+    if (order.getDelivery() == null) {
+      Random random = new Random();
+      Delivery delivery = Delivery.createDelivery(order, DeliveryStatus.READY, LocalDate.now(), Math.abs(random.nextLong()));
+      delivery.fillAddressInformation(createDeliveryRequest.getOrderAddressUpdate().toEntity());
+      deliveryRepository.save(delivery);
+    } // 3-2. 만약 해당 주문에 대한 delivery가 존재한다면 주소정보만을 변경한다.
+    else {
+      order.getDelivery().fillAddressInformation(createDeliveryRequest.getOrderAddressUpdate().toEntity());
+    }
 
 
   }
 }
+

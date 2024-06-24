@@ -9,26 +9,33 @@ import org.team.bookshop.domain.product.entity.Product;
 @NoArgsConstructor
 public class ProductDto {
 
-    private Long id;
-    private String title;
-    private String author;
-    private int fixedPrice;
-    private String pictureUrl;
+  private Long id;
+  private String title;
+  private String author;
+  private int fixedPrice;
+  private String pictureUrl;
+  private int stockQuantity;
+  private boolean discount;
 
-    @QueryProjection
-    public ProductDto(Product product) {
-        this.id = product.getId();
-        this.title = product.getTitle();
-        this.author = product.getAuthor();
-        this.fixedPrice = product.getFixedPrice();
-        this.pictureUrl = product.getPictureUrl();
-    }
 
-    public ProductDto(ProductDto productDto) {
-        this.id = productDto.getId();
-        this.title = productDto.getTitle();
-        this.author = productDto.getAuthor();
-        this.fixedPrice = productDto.getFixedPrice();
-        this.pictureUrl = productDto.getPictureUrl();
-    }
+  @QueryProjection
+  public ProductDto(Product product) {
+    this.id = product.getId();
+    this.title = product.getTitle();
+    this.author = product.getAuthor();
+    this.fixedPrice = product.getFixedPrice();
+    this.pictureUrl = product.getPictureUrl();
+    this.stockQuantity = product.getStockQuantity();
+    this.discount = product.isDiscount();
+  }
+
+  public ProductDto(ProductDto productDto) {
+    this.id = productDto.getId();
+    this.title = productDto.getTitle();
+    this.author = productDto.getAuthor();
+    this.fixedPrice = productDto.getFixedPrice();
+    this.pictureUrl = productDto.getPictureUrl();
+    this.stockQuantity = productDto.getStockQuantity();
+    this.discount = productDto.isDiscount();
+  }
 }

@@ -8,25 +8,13 @@ spring:
   servlet:
     multipart:
       enabled: true
-      location: /Users/chany/Desktop/image
-      max-request-size: 30MB
-      max-file-size: 10MB
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: chany9119@gmail.com
-    password: bgbdcvyrvvygwyub
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+      max-request-size: 50MB
+      max-file-size: 50MB
 
 logging:
   config: classpath:logback-${spring.profiles.active}.xml
 
-spring.config.import: classpath:application-jwt.yml,classpath:application-discord.yml,classpath:application-oauth2.yml
+spring.config.import: classpath:application-api-key.yml
 ---
 spring.config.activate.on-profile: local
 spring:
@@ -34,6 +22,9 @@ spring:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:core;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
+  servlet:
+    multipart:
+      location: D:\\down\\TMP\\image\\image
   jpa:
     hibernate:
       ddl-auto: create
@@ -42,12 +33,9 @@ spring:
         format_sql: true
     show-sql: true
     defer-datasource-initialization: true  #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
-
   h2:
     console:
       enabled: true # /h2-console 설정
-#    datasource:
-#      url: jdbc:h2:mem:testdb
 
 logging:
   discord:
@@ -57,6 +45,13 @@ logging:
     org.springframework.context: DEBUG
     org.hibernate.sql: debug
     org.hibernate.orm.jdbc.bind: trace
+app:
+  base-url: "http://localhost:3000"
+  # 리눅스나, 맥에서는 아래처럼 설정.
+  #  base-image-uri: "file:///Users/chany/Desktop/image/"
+  # 윈도우즈의 경우 아래 처럼 설정.
+  base-image-uri: "file:///D:/down/TMP/image/image/"
+  secure-cookie: false
 
 ---
 spring.config.import: classpath:application-db.yml
@@ -72,6 +67,9 @@ spring:
     url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${database.username}
     password: ${database.password}
+  servlet:
+    multipart:
+      location: /Users/chany/Desktop/image
   sql: # mysql에서는 data.sql를 빌드시 실행하려면 추가해야됨.
     init:
       mode: always
@@ -81,6 +79,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
     defer-datasource-initialization: true #data.sql 파일의 실행이 DB가 연결되고 난 이후에 실행되도록 설정
 
@@ -94,9 +93,60 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 springdoc:
   swagger-ui:
-    enabled:
+    enabled:true
+app:
+  base-url: "http://localhost:3000"
+  base-image-uri: "file:///D:/down/TMP/image/image/"
+  secure-cookie: false
 
+---
+spring.config.import: classpath:application-db.yml
+spring.config.activate.on-profile: prod
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 5000
+      maximum-pool-size: 5
+      keepalive-time: 30000
+      validation-timeout: 1000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${database.username}
+    password: ${database.password}
+  servlet:
+    multipart:
+      location: /srv/upload-files
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+# 명시적으로 서버포트 지정해야지만 https 활성화됨.
+server:
+  port: 8080
+  ssl:
+    enabled: true
+    key-store: /etc/ssl/private/keystore.p12
+    key-store-password: "qwer1234!@"
+    key-store-type: PKCS12
+    key-alias: gobookstore-backend
 
+logging:
+  discord:
+    webhook-uri-prod: ${DISCORD_WEBHOOK_PROD_URL}
+  # hibernate에 바인딩된 값을 콘솔에서 보기위한 설정
+  level:
+    org.springframework.context: DEBUG
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace
+
+app:
+  base-url: "https://www.gobookstore.shop"
+  base-image-uri: "file:///srv/upload-files/"
+  secure-cookie: true
 
 
 

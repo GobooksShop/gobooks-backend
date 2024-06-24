@@ -29,9 +29,15 @@ public enum ErrorCode {
   NO_EXISTING_BOOK(404, "O002", "Book with entered id doesn't exist", LogLevel.ERROR),
   INVALID_PRODUCT_PRICE_INFO(400, "O003", "Entered Price doesn't match", LogLevel.ERROR),
   NO_EXISTING_ORDER(404, "O004", "Order with entered id doesn't exist", LogLevel.ERROR),
+  CANNOT_CANCEL_ORDER(400, "O005", "Delivery has been started, can't cancel order", LogLevel.ERROR),
+  CANNOT_UPDATE_ORDER(400, "O006", "Order has not been purchased yet, can't update order", LogLevel.ERROR),
+
 
   //PAYMENT
   PORTONE_BAD_REQUEST(400, "C011", "Bad Request", LogLevel.ERROR),
+
+  NO_PAYMENT_INFO_WITH_ORDER(404, "C012", "There is no payment information with entered Order", LogLevel.ERROR),
+
   //Secure
   SECURITY_CONFIGURATION_ERROR(500, "S001", "Security Configuration Error", LogLevel.ERROR),
   AUTHENTICATION_FAILURE(401, "S002", "Authentication Failure", LogLevel.ERROR),

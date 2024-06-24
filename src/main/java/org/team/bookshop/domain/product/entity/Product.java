@@ -10,8 +10,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,85 +34,106 @@ import org.team.bookshop.global.util.BaseEntity;
 @AllArgsConstructor
 public class Product extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String title;
+    @Column(nullable = false)
+    private String title;
 
-  @Column(nullable = false)
-  private String author;
+    @Column(nullable = false)
+    private String author;
 
-  @Column(nullable = false)
-  private String isbn;
+    @Column(nullable = false)
+    private String isbn;
 
-  @Column(nullable = false)
-  @Lob
-  private String content;
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
+//  @Lob
+    private String content;
 
-  @Column(nullable = false)
-  private int fixedPrice;
+    @Column(nullable = false)
+    private int fixedPrice;
 
-  @Column(nullable = false)
-  private LocalDate publicationYear;
+    @Column(nullable = false)
+    private LocalDate publicationYear;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private Status status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
-  private final LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private boolean discount;
 
-  private int stockQuantity;
 
-  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JsonIgnoreProperties("product")
-  private Set<BookCategory> bookCategories = new HashSet<>();
+    private final LocalDateTime createdAt = LocalDateTime.now();
 
-  private String pictureUrl;
+    private int stockQuantity;
 
-  @Builder
-  public Product(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl) {
-    this.title = title;
-    this.author = author;
-    this.isbn = isbn;
-    this.content = content;
-    this.fixedPrice = fixedPrice;
-    this.publicationYear = publicationYear;
-    this.status = status;
-    this.stockQuantity = stockQuantity;
-    this.pictureUrl = pictureUrl;
-  }
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("product")
+    private Set<BookCategory> bookCategories = new HashSet<>();
 
-  public enum Status {
-    AVAILABLE, UNAVAILABLE
-  }
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("product")
+    private ProductImgDetail productImgDetail;
 
-  public void update(String title, String author, String isbn, String content, int fixedPrice,
-      LocalDate publicationYear, Status status) {
-    this.title = title;
-    this.author = author;
-    this.isbn = isbn;
-    this.content = content;
-    this.fixedPrice = fixedPrice;
-    this.publicationYear = publicationYear;
-    this.status = status;
-  }
+    private String pictureUrl;
 
-  public void decreaseStock(int quantity) {
-    if (stockQuantity - quantity < 0) {
-      throw new IllegalStateException("현재 상품 재고가 부족합니다.");
+    @Builder
+    public Product(String title, String author, String isbn, String content, int fixedPrice,
+        LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl,
+        boolean discount) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.content = content;
+        this.fixedPrice = fixedPrice;
+        this.publicationYear = publicationYear;
+        this.status = status;
+        this.stockQuantity = stockQuantity;
+        this.pictureUrl = pictureUrl;
+        this.discount = discount;
     }
-    stockQuantity -= quantity;
-  }
 
-  public void increaseStock(int quantity) {
-    stockQuantity += quantity;
-  }
+    public enum Status {
+        AVAILABLE, UNAVAILABLE
+    }
 
-  public void addBookCategory(BookCategory bookCategory) {
-    bookCategories.add(bookCategory);
-    bookCategory.setProduct(this); // 양방향 관계 설정
-  }
+    public void update(String title, String author, String isbn, String content, int fixedPrice,
+        LocalDate publicationYear, Status status, int stockQuantity, boolean discount) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.content = content;
+        this.fixedPrice = fixedPrice;
+        this.publicationYear = publicationYear;
+        this.status = status;
+        this.stockQuantity = stockQuantity;
+        this.discount = discount;
+    }
+
+    public void decreaseStock(int quantity) {
+        if (stockQuantity - quantity < 0) {
+            throw new IllegalStateException("현재 상품 재고가 부족합니다.");
+        }
+        stockQuantity -= quantity;
+    }
+
+    public void increaseStock(int quantity) {
+        stockQuantity += quantity;
+    }
+
+    public void addBookCategory(BookCategory bookCategory) {
+        bookCategories.add(bookCategory);
+        bookCategory.setProduct(this); // 양방향 관계 설정
+    }
+
+    public int getPrice() {
+        if (discount) {
+            return (int) (fixedPrice * 0.9);
+        } else {
+            return fixedPrice;
+        }
+    }
+
 }

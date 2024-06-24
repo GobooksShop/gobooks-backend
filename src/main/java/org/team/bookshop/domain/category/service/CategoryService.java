@@ -188,8 +188,15 @@ public class CategoryService {
       category.setParent(null);
     }
 
+    List<Category> childCategories = category.getChildren();
+    for (Category childCategory : childCategories) {
+      childCategory.setParent(category);
+    }
+
     // 5. 변경 사항 저장
-    return CategoryResponseDto.fromEntity(categoryRepository.save(category));
+    Category savedCategory = categoryRepository.save(category);
+
+    return CategoryResponseDto.fromEntity(savedCategory);
   }
 
   // object->entity 변경

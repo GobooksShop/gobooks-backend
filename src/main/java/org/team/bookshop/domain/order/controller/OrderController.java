@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.order.Service.OrderService;
 import org.team.bookshop.domain.order.dto.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.OrderCreateResponse;
+import org.team.bookshop.domain.order.dto.OrderListResponse;
+import org.team.bookshop.domain.order.dto.OrderResponse;
 import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
 import org.team.bookshop.domain.product.repository.ProductRepository;
@@ -38,13 +41,11 @@ public class OrderController {
 
   // 주문 수정
   @PatchMapping("/update")
-  public ResponseEntity<OrderUpdateResponse> updateOrder(
+  public ResponseEntity<OrderResponse> updateOrder(
       @RequestBody OrderUpdateRequest orderUpdateRequest) {
-    Long updatedOrderId = orderService.update(orderUpdateRequest).getOrderId();
-    OrderUpdateResponse orderUpdateResponse = orderService.findByIdForCreateResponse(updatedOrderId)
-        .toOrderUpdateResponse();
+    String merchantUid = orderService.update(orderUpdateRequest);
 
-    return ResponseEntity.status(HttpStatus.OK).body(orderUpdateResponse);
+    return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderDetail(merchantUid));
   }
 
   // 주문 삭제
@@ -55,4 +56,19 @@ public class OrderController {
 
     return new ResponseEntity<>(HttpStatus.OK);
   }
+
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<OrderListResponse> getUsersOrdersList(
+      @PathVariable("userId") Long userId
+  ) {
+    OrderListResponse orderListResponse = orderService.findByUserIdForOrderListResponse(userId);
+    return ResponseEntity.status(HttpStatus.OK).body(orderListResponse);
+  }
+
+  @GetMapping("/{merchantUid}")
+  public ResponseEntity<OrderResponse> getOrderDetail(@PathVariable("merchantUid") String merchantUid) {
+    OrderResponse orderDetail = orderService.getOrderDetail(merchantUid);
+    return ResponseEntity.status(HttpStatus.OK).body(orderDetail);
+  }
+
 }

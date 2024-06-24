@@ -40,7 +40,8 @@ public class ProductAdminController {
     public ResponseEntity<SimpleProductResponseDto> updateProduct(
         @PathVariable long id,
         @RequestPart("product") @Valid ProductSaveRequestDto request,
-        @RequestPart("pictureFile") MultipartFile pictureFile) throws IOException {
+        @RequestPart(value = "pictureFile", required = false) MultipartFile pictureFile)
+        throws IOException {
 
         request.setId(id);
         SimpleProductResponseDto updatedProduct = productService.saveOrUpdateProduct(request,

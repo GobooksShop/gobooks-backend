@@ -12,4 +12,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     @Query("select p from Product p where p.id in :productIds order by p.id")
     List<Product> findByProductIds(@Param("productIds") List<Long> productIds);
+
+    @Query(value = "select * from products order by rand() limit :count", nativeQuery = true)
+    List<Product> findRandomProducts(@Param("count") int count);
 }

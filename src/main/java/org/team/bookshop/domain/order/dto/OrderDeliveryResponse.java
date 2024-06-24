@@ -8,6 +8,7 @@ import org.team.bookshop.domain.order.enums.DeliveryStatus;
 @Data
 public class OrderDeliveryResponse {
 
+    private String label;
     private String zipcode;
     private String address1;
     private String address2;
@@ -18,7 +19,8 @@ public class OrderDeliveryResponse {
     public OrderDeliveryResponse() {
     }
 
-    public OrderDeliveryResponse(String zipcode, String address1, String address2, String recipientName, String recipientPhone, DeliveryStatus deliveryStatus) {
+    public OrderDeliveryResponse(String label, String zipcode, String address1, String address2, String recipientName, String recipientPhone, DeliveryStatus deliveryStatus) {
+        this.label = label;
         this.zipcode = zipcode;
         this.address1 = address1;
         this.address2 = address2;

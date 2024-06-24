@@ -22,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.team.bookshop.domain.user.repository.UserRepository;
 import org.team.bookshop.global.config.JwtConfig;
+import org.team.bookshop.global.config.WebConfig;
 import org.team.bookshop.global.error.exception.SecurityConfigurationException;
 
 @Configuration
@@ -33,6 +34,8 @@ public class SecurityConfig {
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
+    private final WebConfig webConfig;
+    private final CustomCorsFilter customCorsFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -56,17 +59,25 @@ public class SecurityConfig {
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
                             .requestMatchers("/api/admin/**").permitAll()
-                            .requestMatchers("/login/oauth2/**").permitAll()
+                            .requestMatchers("/api/login/oauth2/**").permitAll()
                             .requestMatchers("/api/cart/**").permitAll()
                             .requestMatchers("/api/orders/**").permitAll()
                             .requestMatchers("/api/delivery/**").permitAll()
                             .requestMatchers("/api/payment/**").permitAll()
-                            .requestMatchers("/image/**").permitAll()
+                            .requestMatchers("/api/images/**").permitAll()
                             .anyRequest().authenticated()
 
                 )
                 .oauth2Login(oauth2Login ->
                     oauth2Login
+                        .redirectionEndpoint(redirectionEndpoint ->
+                            redirectionEndpoint
+                                .baseUri("/api/login/oauth2/code/*"))
+                        .loginProcessingUrl("/api/login/oauth2/code/*")
+                        .authorizationEndpoint(authorizationEndpoint ->
+                            authorizationEndpoint
+                                .baseUri("/api/login/oauth2/authorization")
+                        )
                         .successHandler(customAuthSuccessHandler)
                 )
                 .logout(logout -> logout
@@ -75,10 +86,14 @@ public class SecurityConfig {
                     .invalidateHttpSession(true)
                     .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )
-                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer),
+                .addFilterBefore(new JwtCustomFilter(userRepository, jwtTokenizer, webConfig),
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
+
+            // CustomCorsFilter를 필터 체인에 추가
+            http.addFilterBefore(customCorsFilter, UsernamePasswordAuthenticationFilter.class);
+
             return http.build();
         } catch (Exception e) {
             throw new SecurityConfigurationException("Security configuration failed");
@@ -90,7 +105,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
 
-        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin(webConfig.getBaseUrl());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");
