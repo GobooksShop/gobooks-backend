@@ -26,9 +26,8 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-src/main/resources/application-discord.properties
-src/main/resources/application-discord.yml
-src/main/resources/application-db.properties
+src/main/resources/application-api-key.yml
+src/main/resources/application-db.yml
 
 ### NetBeans ###
 /nbproject/private/

@@ -35,6 +35,7 @@ public class SecurityConfig {
     private final JwtTokenizer jwtTokenizer;
     private final UserRepository userRepository;
     private final WebConfig webConfig;
+    private final CustomCorsFilter customCorsFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -58,17 +59,25 @@ public class SecurityConfig {
                             .requestMatchers("/api/categories/**").permitAll()
                             .requestMatchers("/api/products/**").permitAll()
                             .requestMatchers("/api/admin/**").permitAll()
-                            .requestMatchers("/login/oauth2/**").permitAll()
+                            .requestMatchers("/api/login/oauth2/**").permitAll()
                             .requestMatchers("/api/cart/**").permitAll()
                             .requestMatchers("/api/orders/**").permitAll()
                             .requestMatchers("/api/delivery/**").permitAll()
                             .requestMatchers("/api/payment/**").permitAll()
-                            .requestMatchers("/image/**").permitAll()
+                            .requestMatchers("/api/images/**").permitAll()
                             .anyRequest().authenticated()
 
                 )
                 .oauth2Login(oauth2Login ->
                     oauth2Login
+                        .redirectionEndpoint(redirectionEndpoint ->
+                            redirectionEndpoint
+                                .baseUri("/api/login/oauth2/code/*"))
+                        .loginProcessingUrl("/api/login/oauth2/code/*")
+                        .authorizationEndpoint(authorizationEndpoint ->
+                            authorizationEndpoint
+                                .baseUri("/api/login/oauth2/authorization")
+                        )
                         .successHandler(customAuthSuccessHandler)
                 )
                 .logout(logout -> logout
@@ -81,6 +90,10 @@ public class SecurityConfig {
                     UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
+
+            // CustomCorsFilter를 필터 체인에 추가
+            http.addFilterBefore(customCorsFilter, UsernamePasswordAuthenticationFilter.class);
+
             return http.build();
         } catch (Exception e) {
             throw new SecurityConfigurationException("Security configuration failed");

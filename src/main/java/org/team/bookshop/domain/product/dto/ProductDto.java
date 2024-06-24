@@ -15,6 +15,8 @@ public class ProductDto {
   private int fixedPrice;
   private String pictureUrl;
   private int stockQuantity;
+  private boolean discount;
+
 
   @QueryProjection
   public ProductDto(Product product) {
@@ -24,6 +26,7 @@ public class ProductDto {
     this.fixedPrice = product.getFixedPrice();
     this.pictureUrl = product.getPictureUrl();
     this.stockQuantity = product.getStockQuantity();
+    this.discount = product.isDiscount();
   }
 
   public ProductDto(ProductDto productDto) {
@@ -33,5 +36,6 @@ public class ProductDto {
     this.fixedPrice = productDto.getFixedPrice();
     this.pictureUrl = productDto.getPictureUrl();
     this.stockQuantity = productDto.getStockQuantity();
+    this.discount = productDto.isDiscount();
   }
 }

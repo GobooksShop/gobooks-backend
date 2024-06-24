@@ -11,6 +11,7 @@ import lombok.*;
 import org.team.bookshop.domain.order.dto.OrderAbstractResponse;
 import org.team.bookshop.domain.order.dto.OrderCreateResponse;
 import org.team.bookshop.domain.order.dto.OrderItemResponses;
+import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
 import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.user.entity.User;
@@ -46,7 +47,7 @@ public class Order extends BaseEntity {
   private int orderTotalPrice;
   private int orderTotalAmount;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "delivery_id")
   private Delivery delivery;
 
@@ -72,12 +73,12 @@ public class Order extends BaseEntity {
             orderTotalPrice);
   }
 
-  public OrderUpdateResponse toOrderUpdateResponse() {
-    return new OrderUpdateResponse(id,
-            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
-            orderStatus,
-            delivery.toOrderDeliveryResponse());
-  }
+//  public OrderUpdateResponse toOrderUpdateResponse() {
+//    return new OrderUpdateResponse(id,
+//            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
+//            orderStatus,
+//            delivery.toOrderDeliveryResponse());
+//  }
 
   // User의 Order내역들을 보여줄 때 각 order들을 나타내기 위한 간략한 정보
   public OrderAbstractResponse toOrderAbstractResponse() {
@@ -87,5 +88,9 @@ public class Order extends BaseEntity {
         orderTotalAmount,
         orderItems.get(0).getProduct().getTitle(),
         orderItems.get(0).getProduct().getPictureUrl());
+  }
+
+  public void changeOrderStatus(OrderStatus orderStatus) {
+    this.orderStatus = orderStatus;
   }
 }

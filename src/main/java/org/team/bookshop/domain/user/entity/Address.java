@@ -53,4 +53,12 @@ public class Address extends BaseEntity {
         recipientName = orderAddressUpdate.getRecipientName();
         recipientPhone = orderAddressUpdate.getRecipientPhone();
     }
+
+  public void updateFromCreateDelivery(Address addressEntity) {
+      zipcode = addressEntity.getZipcode();
+      address1 = addressEntity.getAddress1();
+      address2 = addressEntity.getAddress2();
+      recipientName = addressEntity.getRecipientName();
+      recipientPhone = addressEntity.getRecipientPhone();
+  }
 }

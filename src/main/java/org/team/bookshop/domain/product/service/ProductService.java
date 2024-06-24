@@ -25,6 +25,7 @@ import org.team.bookshop.domain.category.repository.BookCategoryRepository;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.domain.product.dto.ProductDto;
 import org.team.bookshop.domain.product.dto.ProductResponseDto;
+import org.team.bookshop.domain.product.dto.ProductResponseMainDto;
 import org.team.bookshop.domain.product.dto.ProductSaveRequestDto;
 import org.team.bookshop.domain.product.dto.SimpleProductResponseDto;
 import org.team.bookshop.domain.product.entity.Product;
@@ -63,6 +64,7 @@ public class ProductService {
                 request.getFixedPrice(),
                 request.getPublicationYear(),
                 request.getStatus(),
+                request.getStockQuantity(),
                 request.isDiscount()
             );
         } else {
@@ -87,11 +89,15 @@ public class ProductService {
         List<Category> categories = categoryRepository.findAllById(childCategoryIds);
         clearBookCategories(product); // 기존 BookCategory 엔티티 삭제
         for (Category category : categories) {
-            BookCategory bookCategory = new BookCategory(
-                new BookCategoryId(product.getId(), category.getId()), product, category
-            );
-            bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
-            product.addBookCategory(bookCategory); // Product 엔티티에 추가
+            // 중복 확인 후 삽입
+            BookCategoryId bookCategoryId = new BookCategoryId(product.getId(), category.getId());
+            if (!bookCategoryRepository.existsById(bookCategoryId)) {
+                BookCategory bookCategory = new BookCategory(
+                    bookCategoryId, product, category
+                );
+                bookCategoryRepository.save(bookCategory); // BookCategory 엔티티 저장
+                product.addBookCategory(bookCategory); // Product 엔티티에 추가
+            }
         }
         productRepository.save(product);
 
@@ -192,5 +198,17 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("not found: " + id));
         productRepository.delete(product);
+    }
+
+    @Transactional
+    public List<ProductResponseMainDto> getMainProducts() {
+        return productRepository.findRandomProducts(32).stream()
+            .map(product -> new ProductResponseMainDto(
+                product.getId(),
+                product.getTitle(),
+                product.getAuthor(),
+                product.getPictureUrl()
+            ))
+            .collect(Collectors.toList());
     }
 }

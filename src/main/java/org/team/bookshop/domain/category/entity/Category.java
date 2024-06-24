@@ -42,7 +42,7 @@ public class Category extends BaseEntity {
   @JoinColumn(name = "parent_id")
   private Category parent;
 
-  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.EAGER)
   @JsonManagedReference
   private List<Category> children = new ArrayList<>();
 

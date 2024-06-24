@@ -62,7 +62,7 @@ public class JwtCustomFilter extends OncePerRequestFilter {
             path.startsWith("/api/users") ||
             path.startsWith("/api/categories") && method.equals("GET") ||
             path.startsWith("/api/products") && method.equals("GET") ||
-            path.startsWith("/image");
+            path.startsWith("/api/images");
     }
 
     private void responseUnauthorized(HttpServletResponse response, String message,
@@ -70,18 +70,11 @@ public class JwtCustomFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        /** accessToken 위변조 또는 만료시
-         *  401에러를 프론트에 보낼때
-         *  반드시 4가지 값을 보내야
-         *  Access-Control-Allow-Origin,
-         *  Access-Control-Allow-Credentials,
-         *  Access-Control-Allow-Methods,
-         *  Access-Control-Expose-Headers
-         *  reactJS axios Interceptors 안에서 error 핸들링 할 수 있음.
-         */
+
         response.setHeader("Access-Control-Allow-Origin", webConfig.getBaseUrl());
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
 

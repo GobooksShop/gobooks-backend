@@ -8,25 +8,13 @@ spring:
   servlet:
     multipart:
       enabled: true
-      location: /Users/chany/Desktop/image
-      max-request-size: 30MB
-      max-file-size: 10MB
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: chany9119@gmail.com
-    password: bgbdcvyrvvygwyub
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+      max-request-size: 50MB
+      max-file-size: 50MB
 
 logging:
   config: classpath:logback-${spring.profiles.active}.xml
 
-spring.config.import: classpath:application-jwt.yml,classpath:application-discord.yml,classpath:application-oauth2.yml
+spring.config.import: classpath:application-api-key.yml
 ---
 spring.config.activate.on-profile: local
 spring:
@@ -34,6 +22,9 @@ spring:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:core;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
+  servlet:
+    multipart:
+      location: D:\\down\\TMP\\image\\image
   jpa:
     hibernate:
       ddl-auto: create
@@ -56,6 +47,12 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 app:
   base-url: "http://localhost:3000"
+  # 리눅스나, 맥에서는 아래처럼 설정.
+  #  base-image-uri: "file:///Users/chany/Desktop/image/"
+  # 윈도우즈의 경우 아래 처럼 설정.
+  base-image-uri: "file:///D:/down/TMP/image/image/"
+  secure-cookie: false
+
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: dev
@@ -70,6 +67,9 @@ spring:
     url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${database.username}
     password: ${database.password}
+  servlet:
+    multipart:
+      location: /Users/chany/Desktop/image
   sql: # mysql에서는 data.sql를 빌드시 실행하려면 추가해야됨.
     init:
       mode: always
@@ -96,6 +96,9 @@ springdoc:
     enabled:true
 app:
   base-url: "http://localhost:3000"
+  base-image-uri: "file:///D:/down/TMP/image/image/"
+  secure-cookie: false
+
 ---
 spring.config.import: classpath:application-db.yml
 spring.config.activate.on-profile: prod
@@ -110,6 +113,9 @@ spring:
     url: jdbc:mysql://localhost:3306/${database.name}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${database.username}
     password: ${database.password}
+  servlet:
+    multipart:
+      location: /srv/upload-files
   jpa:
     hibernate:
       ddl-auto: update
@@ -118,6 +124,15 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+# 명시적으로 서버포트 지정해야지만 https 활성화됨.
+server:
+  port: 8080
+  ssl:
+    enabled: true
+    key-store: /etc/ssl/private/keystore.p12
+    key-store-password: "qwer1234!@"
+    key-store-type: PKCS12
+    key-alias: gobookstore-backend
 
 logging:
   discord:
@@ -129,7 +144,9 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 
 app:
-  base-url: "http://www.gobookstore.shop"
+  base-url: "https://www.gobookstore.shop"
+  base-image-uri: "file:///srv/upload-files/"
+  secure-cookie: true
 
 
 

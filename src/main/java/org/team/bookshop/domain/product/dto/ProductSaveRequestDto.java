@@ -54,6 +54,8 @@ public class ProductSaveRequestDto {
             .fixedPrice(fixedPrice)
             .publicationYear(publicationYear)
             .status(Product.Status.AVAILABLE)
+            .stockQuantity(stockQuantity)
+            .discount(discount)
             .build();
     }
 }

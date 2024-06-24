@@ -3,8 +3,9 @@ package org.team.bookshop.domain.payment.dto;
 import com.siot.IamportRestClient.response.PaymentCancelDetail;
 import java.math.BigDecimal;
 
+//todo 사용하지 않는 클래스 훗날에 삭제가능하면 삭제합니다.
 public class RequestCreatePayment {
-  
+
   String imp_uid;
   String merchant_uid;
   String pay_method;

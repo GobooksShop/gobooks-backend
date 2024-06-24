@@ -14,7 +14,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Query("select o from Order o " +
       "join fetch o.orderItems oi " +
       "join fetch o.delivery d " +
-      "join fetch d.address " +
       "join fetch oi.product " +
       "where o.id = :orderId")
   Order findWithAllRelatedEntityById(@Param("orderId") Long orderId);
@@ -35,4 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
       + "join fetch oi.product p "
       + "where user = :user")
   List<Order> findOrdersByUser(User user);
+
+  @Query("select o from Order o join fetch o.delivery d where o.merchantUid = :merchantUid")
+  Optional<Order> findByMerchantUidWithDelivery(@Param("merchantUid") String merchantUid);
 }
