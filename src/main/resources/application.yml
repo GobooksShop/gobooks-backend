@@ -10,22 +10,11 @@ spring:
       enabled: true
       max-request-size: 50MB
       max-file-size: 50MB
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: chany9119@gmail.com
-    password: bgbdcvyrvvygwyub
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 logging:
   config: classpath:logback-${spring.profiles.active}.xml
 
-spring.config.import: classpath:application-jwt.yml,classpath:application-discord.yml,classpath:application-oauth2.yml
+spring.config.import: classpath:application-api-key.yml
 ---
 spring.config.activate.on-profile: local
 spring:
@@ -58,9 +47,9 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 app:
   base-url: "http://localhost:3000"
-# 리눅스나, 맥에서는 아래처럼 설정.
-#  base-image-uri: "file:///Users/chany/Desktop/image/"
-# 윈도우즈의 경우 아래 처럼 설정.
+  # 리눅스나, 맥에서는 아래처럼 설정.
+  #  base-image-uri: "file:///Users/chany/Desktop/image/"
+  # 윈도우즈의 경우 아래 처럼 설정.
   base-image-uri: "file:///D:/down/TMP/image/image/"
   secure-cookie: false
 
