@@ -35,14 +35,14 @@ public class Category extends BaseEntity {
   @Column(name = "name", nullable = false)
   private String name;
 
-  @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "category")
   private Set<BookCategory> bookCategories = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id")
   private Category parent;
 
-  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "parent")
   @JsonManagedReference
   private List<Category> children = new ArrayList<>();
 
