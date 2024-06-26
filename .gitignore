@@ -29,6 +29,8 @@ out/
 src/main/resources/application-api-key.yml
 src/main/resources/application-db.yml
 
+src/test/resources/application.yml
+src/test/resources/application-api-key.yml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
