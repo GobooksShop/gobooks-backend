@@ -22,7 +22,7 @@ public class CustomCorsFilter extends HttpFilter {
   public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws IOException, ServletException {
     String origin = request.getHeader("Origin");
-    if (origin != null && origin.equals(webConfig.getBaseUrl())) {
+    if (origin != null) {
       response.setHeader("Access-Control-Allow-Origin", origin);
     }
     response.setHeader("Access-Control-Allow-Credentials", "true");
