@@ -14,12 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.domain.category.entity.QBookCategory;
 import org.team.bookshop.domain.category.entity.QCategory;
 import org.team.bookshop.domain.category.repository.CategoryRepository;
 import org.team.bookshop.domain.product.dto.ProductDto;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.domain.product.entity.QProduct;
+import org.team.bookshop.domain.product.entity.QProductImgDetail;
 
 @Repository
 @RequiredArgsConstructor
@@ -76,7 +78,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             .join(bookCategory.category, category).fetchJoin()
             .where(isChildCategory)
             .distinct()
-            .orderBy(orderSpecifier)
+//            .orderBy(orderSpecifier)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
 
@@ -92,6 +94,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Override
     public List<Product> findByCategoryIds(Long categoryId) {
         QProduct product = QProduct.product;
+        QProductImgDetail productImgDetail = QProductImgDetail.productImgDetail;
         QBookCategory bookCategory = QBookCategory.bookCategory;
         QCategory category = QCategory.category;
 
@@ -100,13 +103,13 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         // 카테고리 계층 쿼리 (기존 쿼리와 동일)
         BooleanExpression isChildCategory = category.id.eq(categoryId);
         isChildCategory = isChildCategory.or(category.parent.id.eq(categoryId));
-
-        return queryFactory
+        JPAQuery<Product> productJPAQuery = queryFactory
             .selectFrom(product)
-            .join(product.bookCategories, bookCategory)
-            .join(bookCategory.category, category)
+            .leftJoin(product.bookCategories, bookCategory)
+            .leftJoin(bookCategory.category, category)
+            .leftJoin(product.productImgDetail, productImgDetail).fetchJoin()
             .where(isChildCategory)
-            .distinct()
-            .fetch();
+            .distinct();
+        return productJPAQuery.fetch();
     }
 }
