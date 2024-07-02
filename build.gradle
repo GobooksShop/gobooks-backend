@@ -11,12 +11,6 @@ java {
     sourceCompatibility = project.javaVersion
 }
 
-jar{
-    archiveBaseName.set('gobooks-backend')
-    archiveVersion.set('1.0.0')
-    archiveClassifier.set('')
-}
-
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
