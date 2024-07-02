@@ -1,4 +1,4 @@
-package org.team.bookshop.domain.order.dto;
+package org.team.bookshop.domain.order.dto.response;
 
 import lombok.Data;
 

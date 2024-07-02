@@ -1,5 +1,6 @@
 package org.team.bookshop.domain.order.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.order.Service.OrderService;
-import org.team.bookshop.domain.order.dto.OrderCreateRequest;
-import org.team.bookshop.domain.order.dto.OrderCreateResponse;
-import org.team.bookshop.domain.order.dto.OrderListResponse;
-import org.team.bookshop.domain.order.dto.OrderResponse;
-import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
-import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
+import org.team.bookshop.domain.order.dto.response.OrderAbstractResponse;
+import org.team.bookshop.domain.order.dto.request.OrderCreateRequest;
+import org.team.bookshop.domain.order.dto.response.OrderCreateResponse;
+import org.team.bookshop.domain.order.dto.response.OrderResponse;
+import org.team.bookshop.domain.order.dto.request.OrderUpdateRequest;
 import org.team.bookshop.domain.product.repository.ProductRepository;
 
 @RestController
@@ -58,10 +58,10 @@ public class OrderController {
   }
 
   @GetMapping("/user/{userId}")
-  public ResponseEntity<OrderListResponse> getUsersOrdersList(
+  public ResponseEntity<List<OrderAbstractResponse>> getUsersOrdersList(
       @PathVariable("userId") Long userId
   ) {
-    OrderListResponse orderListResponse = orderService.findByUserIdForOrderListResponse(userId);
+    List<OrderAbstractResponse> orderListResponse = orderService.findByUserIdForOrderListResponse(userId);
     return ResponseEntity.status(HttpStatus.OK).body(orderListResponse);
   }
 

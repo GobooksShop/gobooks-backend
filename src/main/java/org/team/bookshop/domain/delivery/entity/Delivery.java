@@ -1,13 +1,13 @@
-package org.team.bookshop.domain.order.entity;
+package org.team.bookshop.domain.delivery.entity;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
 import lombok.*;
-import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
-import org.team.bookshop.domain.order.dto.OrderDeliveryResponse;
-import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
+import org.team.bookshop.domain.order.dto.request.OrderAddressUpdate;
+import org.team.bookshop.domain.order.dto.response.OrderDeliveryResponse;
+import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.enums.DeliveryStatus;
 import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.global.util.BaseEntity;

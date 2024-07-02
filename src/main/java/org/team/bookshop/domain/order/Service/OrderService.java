@@ -10,18 +10,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.team.bookshop.domain.order.dto.OrderAbstractResponse;
-import org.team.bookshop.domain.order.dto.OrderCreateRequest;
-import org.team.bookshop.domain.order.dto.OrderItemRequest;
-import org.team.bookshop.domain.order.dto.OrderListResponse;
-import org.team.bookshop.domain.order.dto.OrderResponse;
-import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
-import org.team.bookshop.domain.order.entity.Delivery;
+import org.team.bookshop.domain.order.dto.response.OrderAbstractResponse;
+import org.team.bookshop.domain.order.dto.request.OrderCreateRequest;
+import org.team.bookshop.domain.order.dto.request.OrderItemRequest;
+import org.team.bookshop.domain.order.dto.response.OrderResponse;
+import org.team.bookshop.domain.order.dto.request.OrderUpdateRequest;
+import org.team.bookshop.domain.delivery.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.entity.OrderItem;
 import org.team.bookshop.domain.order.enums.DeliveryStatus;
 import org.team.bookshop.domain.order.enums.OrderStatus;
-import org.team.bookshop.domain.order.repository.DeliveryRepository;
+import org.team.bookshop.domain.delivery.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderItemRepository;
 import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.payment.entity.Payments;
@@ -250,15 +249,14 @@ public class OrderService {
 //  }
 
   // orderListResponse용 : userID 이용 하여 orderListResponse용 dto를 반환하는 기능
-  public OrderListResponse findByUserIdForOrderListResponse(Long userId) {
+  public List<OrderAbstractResponse> findByUserIdForOrderListResponse(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.NO_EXISTING_USER));
     List<Order> orders = orderRepository.findOrdersByUser(user);
-    List<OrderAbstractResponse> orderAbstractResponses = orders.stream().map(
-            Order::toOrderAbstractResponse)
-        .toList();
 
-    return new OrderListResponse(orderAbstractResponses);
+    return orders.stream()
+        .map(Order::toOrderAbstractResponse)
+        .toList();
 
   }
 

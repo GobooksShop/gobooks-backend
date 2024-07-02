@@ -4,7 +4,7 @@ import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team.bookshop.domain.order.dto.OrderItemResponse;
+import org.team.bookshop.domain.order.dto.response.OrderItemResponse;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.OrderRepository;

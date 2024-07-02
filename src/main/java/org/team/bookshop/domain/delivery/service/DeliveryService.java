@@ -1,18 +1,16 @@
-package org.team.bookshop.domain.order.Service;
+package org.team.bookshop.domain.delivery.service;
 
 import java.time.LocalDate;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team.bookshop.domain.order.dto.CreateDeliveryRequest;
-import org.team.bookshop.domain.order.entity.Delivery;
+import org.team.bookshop.domain.delivery.dto.CreateDeliveryRequest;
+import org.team.bookshop.domain.delivery.entity.Delivery;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.enums.DeliveryStatus;
-import org.team.bookshop.domain.order.repository.DeliveryRepository;
+import org.team.bookshop.domain.delivery.repository.DeliveryRepository;
 import org.team.bookshop.domain.order.repository.OrderRepository;
-import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.AddressRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
