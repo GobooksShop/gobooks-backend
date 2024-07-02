@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.team.bookshop.domain.order.dto.OrderAbstractResponse;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.user.entity.User;
 

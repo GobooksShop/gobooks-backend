@@ -1,8 +1,9 @@
-package org.team.bookshop.domain.order.dto;
+package org.team.bookshop.domain.delivery.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
+import org.team.bookshop.domain.order.dto.request.OrderAddressUpdate;
 import org.team.bookshop.domain.user.entity.Address;
 
 @Data

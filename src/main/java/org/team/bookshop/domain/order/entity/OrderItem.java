@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
-import org.team.bookshop.domain.order.dto.OrderItemResponse;
+import org.team.bookshop.domain.order.dto.response.OrderItemResponse;
 import org.team.bookshop.domain.product.entity.Product;
 import org.team.bookshop.global.util.BaseEntity;
 

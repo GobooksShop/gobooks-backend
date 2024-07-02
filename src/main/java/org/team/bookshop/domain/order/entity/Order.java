@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.*;
-import org.team.bookshop.domain.order.dto.OrderAbstractResponse;
-import org.team.bookshop.domain.order.dto.OrderCreateResponse;
-import org.team.bookshop.domain.order.dto.OrderItemResponses;
-import org.team.bookshop.domain.order.dto.OrderUpdateRequest;
-import org.team.bookshop.domain.order.dto.OrderUpdateResponse;
+import org.team.bookshop.domain.delivery.entity.Delivery;
+import org.team.bookshop.domain.order.dto.response.OrderAbstractResponse;
+import org.team.bookshop.domain.order.dto.response.OrderCreateResponse;
+import org.team.bookshop.domain.order.dto.response.OrderItemResponses;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -72,13 +72,6 @@ public class Order extends BaseEntity {
             orderStatus,
             orderTotalPrice);
   }
-
-//  public OrderUpdateResponse toOrderUpdateResponse() {
-//    return new OrderUpdateResponse(id,
-//            new OrderItemResponses(orderItems.stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList())),
-//            orderStatus,
-//            delivery.toOrderDeliveryResponse());
-//  }
 
   // User의 Order내역들을 보여줄 때 각 order들을 나타내기 위한 간략한 정보
   public OrderAbstractResponse toOrderAbstractResponse() {

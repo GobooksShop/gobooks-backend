@@ -1,13 +1,8 @@
-package org.team.bookshop.domain.order.dto;
+package org.team.bookshop.domain.order.dto.request;
 
 import lombok.Data;
-import org.team.bookshop.domain.order.entity.Delivery;
 import org.team.bookshop.domain.order.entity.OrderItem;
-import org.team.bookshop.domain.order.enums.DeliveryStatus;
-import org.team.bookshop.domain.order.enums.OrderStatus;
-import org.team.bookshop.domain.user.entity.Address;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 

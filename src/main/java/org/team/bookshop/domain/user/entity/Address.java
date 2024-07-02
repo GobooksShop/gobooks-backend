@@ -8,13 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.team.bookshop.domain.order.dto.OrderAddressUpdate;
-import org.team.bookshop.domain.order.entity.Delivery;
+import org.team.bookshop.domain.order.dto.request.OrderAddressUpdate;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Getter

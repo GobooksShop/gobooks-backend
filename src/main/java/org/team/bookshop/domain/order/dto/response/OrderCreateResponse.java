@@ -1,10 +1,7 @@
-package org.team.bookshop.domain.order.dto;
+package org.team.bookshop.domain.order.dto.response;
 
 import lombok.Data;
 import org.team.bookshop.domain.order.enums.OrderStatus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class OrderCreateResponse {

@@ -1,6 +1,5 @@
-package org.team.bookshop.domain.order.dto;
+package org.team.bookshop.domain.order.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
