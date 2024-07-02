@@ -21,10 +21,12 @@ import org.team.bookshop.domain.order.dto.response.OrderItemResponse;
 import org.team.bookshop.domain.order.entity.Order;
 import org.team.bookshop.domain.order.enums.OrderStatus;
 import org.team.bookshop.domain.order.repository.OrderRepository;
+import org.team.bookshop.domain.payment.dto.PaymentResponse;
 import org.team.bookshop.domain.payment.dto.RequestCompletePayment;
 import org.team.bookshop.domain.payment.dto.RequestPrevPayment;
 import org.team.bookshop.domain.payment.dto.ResponsePrevPayment;
 import org.team.bookshop.domain.payment.entity.Payments;
+import org.team.bookshop.domain.payment.enums.PaymentStatus;
 import org.team.bookshop.domain.payment.repository.PaymentRepository;
 import org.team.bookshop.global.error.ErrorCode;
 import org.team.bookshop.global.error.exception.ApiException;
@@ -86,7 +88,7 @@ public class PaymentService {
 
 
   @Transactional
-  public OrderItemResponse complatePayment(RequestCompletePayment requestCompletePayment) {
+  public PaymentResponse complatePayment(RequestCompletePayment requestCompletePayment) {
     Order order = orderService.findByMerchantUid(requestCompletePayment.getMerchantUid());
 
     IamportResponse<Payment> paymentIamportResponse = paymentByImpUid(
@@ -132,7 +134,12 @@ public class PaymentService {
       }
     }
 
-    return null;
+    return PaymentResponse.builder()
+        .orderId(order.getId())
+        .paymentStatus(PaymentStatus.COMPlETE.name())
+        .amount(payment.getAmount().longValue())
+        .buyerEmail(payment.getBuyerEmail())
+        .build();
   }
 
   private IamportResponse<Prepare> postPreparePayment(PrepareData prepareData) {

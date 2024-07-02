@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team.bookshop.domain.order.Service.OrderService;
 import org.team.bookshop.domain.order.entity.Order;
+import org.team.bookshop.domain.payment.dto.PaymentResponse;
 import org.team.bookshop.domain.payment.dto.RequestCompletePayment;
 import org.team.bookshop.domain.payment.dto.RequestPrevPayment;
 import org.team.bookshop.domain.payment.dto.ResponsePrevPayment;
@@ -43,18 +44,14 @@ public class PaymentController {
 
     ResponsePrevPayment responsePrevPayment = paymentService.preparePayment(requestPrevPayment);
 
-    return ResponseEntity.ok(ApiResponse.success(
-        ResponsePrevPayment.builder()
-            .merchantUid(responsePrevPayment.getMerchantUid())
-            .amount(responsePrevPayment.getAmount())
-            .build()));
+    return ResponseEntity.ok(ApiResponse.success(responsePrevPayment));
   }
 
   @PostMapping("/completePayment")
   public ResponseEntity<? extends ApiResponse<?>> processPayment(
       @RequestBody @Valid RequestCompletePayment requestCompletePayment) {
 
-    paymentService.complatePayment(requestCompletePayment);
-    return ResponseEntity.ok(ApiResponse.success());
+    PaymentResponse paymentResponse = paymentService.complatePayment(requestCompletePayment);
+    return ResponseEntity.ok(ApiResponse.success(paymentResponse));
   }
 }
