@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.team.bookshop.domain.order.dto.response.OrderAbstractResponse;
 import org.team.bookshop.domain.order.dto.request.OrderCreateRequest;
 import org.team.bookshop.domain.order.dto.request.OrderItemRequest;
+import org.team.bookshop.domain.order.dto.response.OrderCreateResponse;
 import org.team.bookshop.domain.order.dto.response.OrderResponse;
 import org.team.bookshop.domain.order.dto.request.OrderUpdateRequest;
 import org.team.bookshop.domain.delivery.entity.Delivery;
@@ -229,8 +230,8 @@ public class OrderService {
     return orderId;
   }
 
-  public Order findByIdForCreateResponse(long orderId) {
-    return orderRepository.findWithOrderItems(orderId);
+  public OrderCreateResponse findByIdForCreateResponse(long orderId) {
+    return orderRepository.findWithOrderItems(orderId).toOrderCreateResponse();
   }
 
 //  @Transactional

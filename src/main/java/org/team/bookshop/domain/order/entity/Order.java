@@ -17,6 +17,7 @@ import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

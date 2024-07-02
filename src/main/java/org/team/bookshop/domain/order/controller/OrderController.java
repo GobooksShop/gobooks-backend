@@ -26,15 +26,13 @@ import org.team.bookshop.domain.product.repository.ProductRepository;
 public class OrderController {
 
   private final OrderService orderService;
-  private final ProductRepository productRepository;
 
   // 주문 생성
   @PostMapping("/create")
   public ResponseEntity<OrderCreateResponse> createOrder(
       @RequestBody OrderCreateRequest orderCreateRequest) {
     Long savedOrderId = orderService.save(orderCreateRequest);
-    OrderCreateResponse orderCreateResponse = orderService.findByIdForCreateResponse(savedOrderId)
-        .toOrderCreateResponse();
+    OrderCreateResponse orderCreateResponse = orderService.findByIdForCreateResponse(savedOrderId);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(orderCreateResponse);
   }
