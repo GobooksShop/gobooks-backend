@@ -36,4 +36,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   @Query("select o from Order o join fetch o.delivery d where o.merchantUid = :merchantUid")
   Optional<Order> findByMerchantUidWithDelivery(@Param("merchantUid") String merchantUid);
+
+  @Query("select count(o) > 0 from Order o " +
+          "join o.orderItems oi " +
+          "where o.user.id = :userId and oi.product.id = :productId")
+  boolean existsOrderByByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 }

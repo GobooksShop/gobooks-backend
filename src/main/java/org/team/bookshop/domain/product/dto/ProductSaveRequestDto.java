@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.team.bookshop.domain.product.entity.Product;
+import lombok.Builder;
 
 @Getter
 @NoArgsConstructor
@@ -45,17 +46,34 @@ public class ProductSaveRequestDto {
     @NotNull(message = "Category IDs are required")
     private List<Long> categoryIds;
 
+    @Builder
+    public ProductSaveRequestDto(Long id, String title, String author, String isbn, String content, int fixedPrice,
+                                 LocalDate publicationYear, Product.Status status, boolean discount, int stockQuantity,
+                                 List<Long> categoryIds) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.content = content;
+        this.fixedPrice = fixedPrice;
+        this.publicationYear = publicationYear;
+        this.status = status;
+        this.discount = discount;
+        this.stockQuantity = stockQuantity;
+        this.categoryIds = categoryIds;
+    }
+
     public Product toEntity() {
         return Product.builder()
-            .title(title)
-            .author(author)
-            .isbn(isbn)
-            .content(content)
-            .fixedPrice(fixedPrice)
-            .publicationYear(publicationYear)
-            .status(Product.Status.AVAILABLE)
-            .stockQuantity(stockQuantity)
-            .discount(discount)
-            .build();
+                .title(title)
+                .author(author)
+                .isbn(isbn)
+                .content(content)
+                .fixedPrice(fixedPrice)
+                .publicationYear(publicationYear)
+                .status(Product.Status.AVAILABLE)
+                .stockQuantity(stockQuantity)
+                .discount(discount)
+                .build();
     }
 }

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.BatchSize;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.global.util.BaseEntity;
@@ -33,6 +34,8 @@ import org.team.bookshop.global.util.BaseEntity;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
+@Accessors(chain = true)
 public class Product extends BaseEntity {
 
     @Id
@@ -49,7 +52,6 @@ public class Product extends BaseEntity {
     private String isbn;
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
-//  @Lob
     private String content;
 
     @Column(nullable = false)
@@ -64,7 +66,6 @@ public class Product extends BaseEntity {
 
     @Column(nullable = false)
     private boolean discount;
-
 
     private final LocalDateTime createdAt = LocalDateTime.now();
 
@@ -83,9 +84,10 @@ public class Product extends BaseEntity {
     private String pictureUrl;
 
     @Builder
-    public Product(String title, String author, String isbn, String content, int fixedPrice,
+    public Product(Long id, String title, String author, String isbn, String content, int fixedPrice,
         LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl,
         boolean discount) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;

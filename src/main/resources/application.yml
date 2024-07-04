@@ -48,9 +48,9 @@ logging:
 app:
   base-url: "http://localhost:3000"
   # 리눅스나, 맥에서는 아래처럼 설정.
-  #  base-image-uri: "file:///Users/chany/Desktop/image/"
+  base-image-uri: "file:///Users/lcm/Desktop/image/"
   # 윈도우즈의 경우 아래 처럼 설정.
-  base-image-uri: "file:///D:/down/TMP/image/image/"
+#  base-image-uri: "file:///D:/down/TMP/image/image/"
   secure-cookie: false
 
 ---
