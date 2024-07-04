@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.team.bookshop.domain.product.entity.Product;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class SimpleProductResponseDto {
 
   private Long id;

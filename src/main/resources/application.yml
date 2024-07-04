@@ -48,9 +48,9 @@ logging:
 app:
   base-url: "http://localhost:3000"
   # 리눅스나, 맥에서는 아래처럼 설정.
-  #  base-image-uri: "file:///Users/chany/Desktop/image/"
+  base-image-uri: "file:///Users/lcm/Desktop/image/"
   # 윈도우즈의 경우 아래 처럼 설정.
-  base-image-uri: "file:///D:/down/TMP/image/image/"
+#  base-image-uri: "file:///D:/down/TMP/image/image/"
   secure-cookie: false
 
 ---
@@ -124,15 +124,6 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
-# 명시적으로 서버포트 지정해야지만 https 활성화됨.
-server:
-  port: 8080
-  ssl:
-    enabled: true
-    key-store: /etc/ssl/private/keystore.p12
-    key-store-password: "qwer1234!@"
-    key-store-type: PKCS12
-    key-alias: gobookstore-backend
 
 logging:
   discord:
@@ -144,7 +135,7 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 
 app:
-  base-url: "https://www.gobookstore.shop"
+  base-url: "https://gobookstore.shop"
   base-image-uri: "file:///srv/upload-files/"
   secure-cookie: true
 

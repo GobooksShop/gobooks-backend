@@ -1,12 +1,10 @@
 package org.team.bookshop.domain.product.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,6 +21,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.BatchSize;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.global.util.BaseEntity;
 
@@ -30,8 +31,11 @@ import org.team.bookshop.global.util.BaseEntity;
 @Table(name = "products")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
+@Accessors(chain = true)
 public class Product extends BaseEntity {
 
     @Id
@@ -48,7 +52,6 @@ public class Product extends BaseEntity {
     private String isbn;
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
-//  @Lob
     private String content;
 
     @Column(nullable = false)
@@ -64,25 +67,27 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private boolean discount;
 
-
     private final LocalDateTime createdAt = LocalDateTime.now();
 
     private int stockQuantity;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("product")
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @BatchSize(size = 100)
     private Set<BookCategory> bookCategories = new HashSet<>();
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product")
     @JsonIgnoreProperties("product")
+    @ToString.Exclude
     private ProductImgDetail productImgDetail;
 
     private String pictureUrl;
 
     @Builder
-    public Product(String title, String author, String isbn, String content, int fixedPrice,
+    public Product(Long id, String title, String author, String isbn, String content, int fixedPrice,
         LocalDate publicationYear, Status status, int stockQuantity, String pictureUrl,
         boolean discount) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team.bookshop.domain.category.dto.CategoryChildrenResponseDto;
 import org.team.bookshop.domain.category.dto.CategoryCreateRequestDto;
 import org.team.bookshop.domain.category.dto.CategoryDto;
 import org.team.bookshop.domain.category.dto.CategoryResponseDto;
@@ -29,68 +28,7 @@ public class CategoryService {
   }
 
   // READ
-  // 하위 계층을 모두 조회
-  public CategoryResponseDto getCategoryWithChildren(Long parentId) {
-    List<Object[]> categoryHierarchy = categoryRepository.findByIdWithChildren(parentId);
-
-    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
-
-    for (Object[] categoryData : categoryHierarchy) {
-      Long id = ((Number) categoryData[0]).longValue();
-      String name = (String) categoryData[1];
-      Long parentCategoryId =
-          categoryData[2] != null ? ((Number) categoryData[2]).longValue() : null;
-
-      CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
-      categoryMap.put(id, categoryDto);
-
-      if (parentCategoryId != null) {
-        CategoryResponseDto parentDto = categoryMap.get(parentCategoryId);
-        parentDto.getChildren().add(categoryDto);
-      }
-    }
-
-    return categoryMap.get(parentId);
-  }
-
-  // 바로 아래 depth만 조회
-  public List<CategoryChildrenResponseDto> getCategoryWithDirectChildren(Long parentId) {
-    Category parent = categoryRepository.findById(parentId)
-        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
-
-    return parent.getChildren().stream()
-        .map(CategoryChildrenResponseDto::fromEntity)
-        .collect(Collectors.toList());
-  }
-
-  // root 카테고리부터 조회
-  public List<CategoryResponseDto> getRootCategories() {
-    List<Object[]> categories = categoryRepository.findRootCategory();
-    Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
-    List<CategoryResponseDto> rootCategories = new ArrayList<>();
-
-    for (Object[] category : categories) {
-      Long id = ((Number) category[0]).longValue();
-      String name = (String) category[1];
-      Long parentId = category[2] != null ? ((Number) category[2]).longValue() : null;
-
-      CategoryResponseDto categoryDto = new CategoryResponseDto(id, name);
-      categoryMap.put(id, categoryDto);
-
-      if (parentId == null) {
-        rootCategories.add(categoryDto);
-      } else {
-        CategoryResponseDto parentCategory = categoryMap.get(parentId);
-        if (parentCategory != null) {
-          parentCategory.getChildren().add(categoryDto);
-        }
-      }
-    }
-
-    return rootCategories;
-  }
-
-  // QueryDSL을 사용하여 카테고리 계층을 조회하는 새로운 메서드
+  // QueryDSL을 사용하여 카테고리 계층을 조회
   public List<CategoryResponseDto> getCategoryHierarchy() {
     List<CategoryDto> categories = categoryRepository.findCategoryHierarchy();
     Map<Long, CategoryResponseDto> categoryMap = new HashMap<>();
@@ -116,6 +54,16 @@ public class CategoryService {
 
     return rootCategories;
   }
+
+//  // 바로 아래 depth만 조회
+//  public List<CategoryChildrenResponseDto> getCategoryWithDirectChildren(Long parentId) {
+//    Category parent = categoryRepository.findById(parentId)
+//        .orElseThrow(() -> new ApiException(ErrorCode.ENTITY_NOT_FOUND));
+//
+//    return parent.getChildren().stream()
+//        .map(CategoryChildrenResponseDto::fromEntity)
+//        .collect(Collectors.toList());
+//  }
 
   // BreadCrumb 조회
   public List<CategoryDto> getBreadcrumbs(Long categoryId) {

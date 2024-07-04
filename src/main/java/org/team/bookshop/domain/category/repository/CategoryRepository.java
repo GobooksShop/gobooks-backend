@@ -21,17 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>,
       "SELECT * FROM Category_Hierarchy", nativeQuery = true)
   List<Object[]> findByIdWithChildren(@Param("categoryId") Long categoryId);
 
-  @Query(value = "WITH RECURSIVE Category_Hierarchy(id, name, parent_id, level) AS (" +
-      "SELECT id, name, parent_id, 1 AS level " +
-      "FROM category " +
-      "WHERE parent_id IS NULL " +
-      "UNION ALL " +
-      "SELECT c.id, c.name, c.parent_id, ch.level + 1 " +
-      "FROM category c " +
-      "JOIN Category_Hierarchy ch ON c.parent_id = ch.id) " +
-      "SELECT * FROM Category_Hierarchy", nativeQuery = true)
-  List<Object[]> findRootCategory();
-
   @Query(value = """
       WITH RECURSIVE category_path (id, name, parent_id) AS (
         SELECT id, name, parent_id
