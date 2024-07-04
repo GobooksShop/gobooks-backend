@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.utils.PropertyResolverUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,10 +31,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final EntityManager entityManager;
     private final CategoryRepository categoryRepository;
+    private final PropertyResolverUtils propertyResolverUtils;
 
     @Override
     public Page<ProductDto> findByCategoryIds(Long categoryId, Pageable pageable) {
         QProduct product = QProduct.product;
+        QProductImgDetail productImgDetail = QProductImgDetail.productImgDetail;
         QBookCategory bookCategory = QBookCategory.bookCategory;
         QCategory category = QCategory.category;
 
@@ -68,14 +71,16 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         // 4. 페이징 쿼리 및 전체 개수 조회 쿼리 (개선된 조건 적용)
         JPAQuery<Product> countQuery = queryFactory
             .selectFrom(product)
-            .join(product.bookCategories, bookCategory).fetchJoin()
-            .join(bookCategory.category, category).fetchJoin()
+            .leftJoin(product.bookCategories, bookCategory)
+            .leftJoin(bookCategory.category, category)
+            .leftJoin(product.productImgDetail, productImgDetail).fetchJoin()
             .where(isChildCategory);
 
         JPAQuery<Product> contentQuery = queryFactory
             .selectFrom(product)
-            .join(product.bookCategories, bookCategory).fetchJoin()
-            .join(bookCategory.category, category).fetchJoin()
+            .leftJoin(product.bookCategories, bookCategory)
+            .leftJoin(bookCategory.category, category)
+            .leftJoin(product.productImgDetail, productImgDetail).fetchJoin()
             .where(isChildCategory)
             .distinct()
 //            .orderBy(orderSpecifier)
