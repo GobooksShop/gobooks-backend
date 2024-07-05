@@ -3,6 +3,7 @@ package org.team.bookshop.product;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -102,6 +103,7 @@ public class ProductAdminControllerTest {
         mockMvc.perform(multipart("/api/products")
                         .file(file)
                         .param("product", objectMapper.writeValueAsString(requestDto)))
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(responseDto.getId()));
     }
@@ -148,6 +150,7 @@ public class ProductAdminControllerTest {
         mockMvc.perform(multipart("/api/products/1")
                         .file(file)
                         .param("product", objectMapper.writeValueAsString(requestDto)))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(responseDto.getId()));
     }
@@ -156,6 +159,7 @@ public class ProductAdminControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void deleteProductTest() throws Exception {
         mockMvc.perform(delete("/api/products/1"))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 }

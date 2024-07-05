@@ -80,7 +80,8 @@ public class ProductPublicControllerTest {
         List<ProductDto> products = List.of(new ProductDto(productEntity));
         when(productService.getProductsByCategoryId(1L)).thenReturn(products);
 
-        mockMvc.perform(get("/api/products/category/1")).andDo(print()) // 다른 메소드에도 추가하기 body 값 나오게
+        mockMvc.perform(get("/api/products/category/1"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -111,6 +112,7 @@ public class ProductPublicControllerTest {
                         .param("page", "0")
                         .param("size", "12")
                         .param("sort", "createdAt,desc"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray());
     }
@@ -136,6 +138,7 @@ public class ProductPublicControllerTest {
         when(productService.getProduct(1L)).thenReturn(product);
 
         mockMvc.perform(get("/api/products/1"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(product.getId()));
     }
@@ -161,6 +164,7 @@ public class ProductPublicControllerTest {
         when(productService.getAllProducts()).thenReturn(products);
 
         mockMvc.perform(get("/api/products"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -172,6 +176,7 @@ public class ProductPublicControllerTest {
         when(productService.getMainProducts()).thenReturn(products);
 
         mockMvc.perform(get("/api/products/main"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.1").isArray());
     }
