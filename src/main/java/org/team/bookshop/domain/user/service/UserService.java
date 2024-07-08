@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team.bookshop.domain.delivery.repository.DeliveryRepository;
-import org.team.bookshop.domain.order.repository.OrderRepository;
 import org.team.bookshop.domain.user.dto.UserJoinDto;
 import org.team.bookshop.domain.user.dto.UserPostDto;
 import org.team.bookshop.domain.user.dto.UserResponseDto;
@@ -33,8 +31,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AddressRepository addressRepository;
-    private final DeliveryRepository deliveryRepository;
-    private final OrderRepository orderRepository;
 
 
     @Transactional(readOnly = false)
@@ -42,10 +38,8 @@ public class UserService {
         if (userRepository.findByEmail(userJoinDto.getEmail()).isPresent()) {
             throw new ApiException(ErrorCode.EMAIL_ALREADY_REGISTERED);
         }
-
-        User user = userJoinDto.toEntity();
-        user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
-
+        String encodedPassword = passwordEncoder.encode(userJoinDto.getPassword());
+        User user = userJoinDto.setPassword(encodedPassword).toEntity();
         userRepository.save(user);
     }
 
@@ -66,8 +60,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserPostDto> userPostDtos = new ArrayList<>();
         for (User user : users) {
-            UserPostDto userPostDto = new UserPostDto();
-            userPostDto.toDto(user);
+            UserPostDto userPostDto = UserPostDto.toDto(user);
             userPostDtos.add(userPostDto);
         }
         return userPostDtos;
@@ -91,17 +84,7 @@ public class UserService {
     public UserResponseDto updateUser(Long id, UserPostDto UserPostDto) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        user.setEmail(UserPostDto.getEmail());
-        user.setPassword(passwordEncoder.encode(UserPostDto.getPassword()));
-        user.setNickname(UserPostDto.getNickname());
-        user.setName(UserPostDto.getName());
-        user.setPhone(UserPostDto.getPhone());
-        user.setMarketingAgreed(UserPostDto.getMarketingAgreed());
-        user.setEmailVerified(true);
-        user.setTermsAgreed(true);
-
-        userRepository.save(user);
+        userRepository.save(UserPostDto.toEntity(user));
         return UserResponseDto.fromEntity(user);
     }
 

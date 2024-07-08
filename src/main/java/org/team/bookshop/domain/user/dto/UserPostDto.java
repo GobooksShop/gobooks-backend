@@ -4,14 +4,16 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.entity.UserRole;
 import org.team.bookshop.domain.user.entity.UserStatus;
 
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
 public class UserPostDto {
 
     @Email(message = "올바른 이메일 형식이 아닙니다.")
@@ -45,27 +47,45 @@ public class UserPostDto {
     }
 
     public User toEntity() {
-        User user = new User();
-        user.setEmail(this.email);
-        user.setPassword(this.password);
-        user.setNickname(this.nickname);
-        user.setName(this.name);
-        user.setPhone(this.phone);
-        user.setTermsAgreed(this.termsAgreed);
-        user.setMarketingAgreed(this.marketingAgreed);
-        user.setRole(UserRole.USER);
-        user.setStatus(UserStatus.ACTIVE);
-        user.setEmailVerified(true);
+        User user = User.builder()
+            .email(this.email)
+            .password(this.password)
+            .nickname(this.nickname)
+            .name(this.name)
+            .phone(this.phone)
+            .termsAgreed(this.termsAgreed)
+            .marketingAgreed(this.marketingAgreed)
+            .role(UserRole.USER)
+            .status(UserStatus.ACTIVE)
+            .emailVerified(true)
+            .build();
         return user;
     }
 
-    public UserPostDto toDto(User user) {
-        setEmail(user.getEmail());
-        setPassword(user.getPassword());
-        setNickname(user.getNickname());
-        setName(user.getName());
-        setPhone(user.getPhone());
-        setMarketingAgreed(user.isMarketingAgreed());
-        return this;
+    public User toEntity(User user) {
+        User updatedUser = User.builder()
+            .email(this.email != null ? this.email : user.getEmail())
+            .password(this.password != null ? this.password : user.getPassword())
+            .nickname(this.nickname != null ? this.nickname : user.getNickname())
+            .name(this.name != null ? this.name : user.getName())
+            .phone(this.phone != null ? this.phone : user.getPhone())
+            .termsAgreed(this.termsAgreed != null ? this.termsAgreed : user.isTermsAgreed())
+            .marketingAgreed(this.marketingAgreed != null ? this.marketingAgreed : user.isMarketingAgreed())
+            .role(user.getRole())
+            .status(user.getStatus())
+            .emailVerified(user.isEmailVerified())
+            .build();
+        return updatedUser;
+    }
+
+    public static UserPostDto toDto(User user) {
+        return UserPostDto.builder()
+            .email(user.getEmail())
+            .password(user.getPassword())
+            .nickname(user.getNickname())
+            .name(user.getName())
+            .phone(user.getPhone())
+            .marketingAgreed(user.isMarketingAgreed())
+            .build();
     }
 }

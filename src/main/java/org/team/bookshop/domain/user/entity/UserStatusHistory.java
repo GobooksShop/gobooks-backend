@@ -10,14 +10,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserStatusHistory {
 
   @Id
@@ -36,4 +38,5 @@ public class UserStatusHistory {
   private LocalDateTime createDate;
 
   private String reason; //유저 상태 변경 사유
+
 }

@@ -1,12 +1,16 @@
 package org.team.bookshop.domain.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.team.bookshop.domain.user.entity.UserStatus;
+import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.user.entity.User;
+import org.team.bookshop.domain.user.entity.UserStatus;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponseDto {
   private Long id;
   private String email;

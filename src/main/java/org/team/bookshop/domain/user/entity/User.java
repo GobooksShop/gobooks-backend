@@ -12,16 +12,20 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import org.team.bookshop.global.util.BaseEntity;
 
-@Getter
-@Setter
-@Table(name = "users")
 @Entity
+@Getter
+@Builder
+@Table(name = "users")
 @DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends BaseEntity {
 
     @Id
@@ -61,4 +65,5 @@ public class User extends BaseEntity {
     private boolean marketingAgreed;
     private boolean emailVerified;
     private LocalDateTime lastLogin;
+
 }

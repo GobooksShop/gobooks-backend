@@ -78,11 +78,11 @@ public class SecurityConfig {
                             authorizationEndpoint
                                 .baseUri("/api/login/oauth2/authorization")
                         )
-                        .successHandler(customAuthSuccessHandler)
+                        .successHandler(customAuthSuccessHandler.setPasswordEncoder(passwordEncoder()))
                 )
                 .logout(logout -> logout
                     .logoutUrl("/logout")
-                    .logoutSuccessHandler(customAuthSuccessHandler)
+                    .logoutSuccessHandler(customAuthSuccessHandler.setPasswordEncoder(passwordEncoder()))
                     .invalidateHttpSession(true)
                     .deleteCookies(JwtConfig.REFRESH_JWT_COOKIE_NAME)
                 )

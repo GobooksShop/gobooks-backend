@@ -46,17 +46,22 @@ public class UserJoinDto {
     }
 
     public User toEntity() {
-        User user = new User();
-        user.setName(this.name);
-        user.setEmail(this.email);
-        user.setPassword(this.password);
-        user.setNickname(this.nickname);
-        user.setPhone(this.phone);
-        user.setTermsAgreed(this.termsAgreed);
-        user.setMarketingAgreed(this.marketingAgreed);
-        user.setRole(UserRole.USER);
-        user.setStatus(UserStatus.ACTIVE);
-        user.setEmailVerified(true);
-        return user;
+        return User.builder()
+            .name(this.name)
+            .email(this.email)
+            .password(this.password)
+            .nickname(this.nickname)
+            .phone(this.phone)
+            .termsAgreed(this.termsAgreed)
+            .marketingAgreed(this.marketingAgreed)
+            .role(UserRole.USER)
+            .status(UserStatus.ACTIVE)
+            .emailVerified(true)
+            .build();
+    }
+
+    public UserJoinDto setPassword(String ecryptedPassword){
+        this.password = ecryptedPassword;
+        return this;
     }
 }

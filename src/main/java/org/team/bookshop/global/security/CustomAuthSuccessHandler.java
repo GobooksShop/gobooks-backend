@@ -6,11 +6,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -31,6 +30,14 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final WebConfig webConfig;
+
+    public CustomAuthSuccessHandler setPasswordEncoder(
+        PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+        return this;
+    }
+
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -100,8 +107,8 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
                 providerId = String.valueOf(attributes.get("id"));
                 email = (String) kakaoAccount.get("email");
                 Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-                name = (String) profile.get("nickname");
-                nickname = name; // Kakao는 nickname을 profile 내에서 제공
+                nickname = (String) profile.get("nickname");
+                name = (String) kakaoAccount.get("name"); // Kakao는 nickname을 profile 내에서 제공
                 break;
 
             case "naver":
@@ -120,14 +127,14 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler,
         }
 
         return userRepository.findByProviderId(providerId).orElseGet(() -> {
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setName(name);
-            newUser.setProviderId(providerId);
-            newUser.setNickname(nickname);
-            newUser.setPassword("!gobooks123");
-            newUser.setRole(UserRole.USER);
-            return userRepository.save(newUser);
+            return userRepository.save(User.builder()
+                .email(email)
+                .password(passwordEncoder.encode("qwer1234!@"))
+                .name(name)
+                .providerId(providerId)
+                .nickname(nickname)
+                .role(UserRole.USER)
+                .build());
         });
     }
 }
