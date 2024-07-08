@@ -3,15 +3,11 @@ package org.team.bookshop.global.error;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

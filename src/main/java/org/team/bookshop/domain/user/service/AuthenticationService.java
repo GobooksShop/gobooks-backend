@@ -32,12 +32,7 @@ public class AuthenticationService {
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             throw new ApiException("Invalid credentials", ErrorCode.AUTHENTICATION_FAILURE);
         }
-
         return user;
-    }
-
-    public record TokenResponse(String accessToken, String refreshToken) {
-
     }
 
     private final JavaMailSender emailSender;
