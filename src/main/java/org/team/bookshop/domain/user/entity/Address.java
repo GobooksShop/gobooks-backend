@@ -9,16 +9,17 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.team.bookshop.domain.order.dto.request.OrderAddressUpdate;
 import org.team.bookshop.global.util.BaseEntity;
 
 @Getter
-@Setter
+@Builder
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name="address", indexes = {
     @Index(name = "idx__user__label", columnList = "user_id, label")
 })
@@ -41,22 +42,4 @@ public class Address extends BaseEntity {
     private String recipientName;
     private String recipientPhone;
 
-
-    public void update(OrderAddressUpdate orderAddressUpdate) {
-        label = orderAddressUpdate.getLabel();
-        isPrimary = false;
-        zipcode = orderAddressUpdate.getZipcode();
-        address1 = orderAddressUpdate.getAddress1();
-        address2 = orderAddressUpdate.getAddress2();
-        recipientName = orderAddressUpdate.getRecipientName();
-        recipientPhone = orderAddressUpdate.getRecipientPhone();
-    }
-
-  public void updateFromCreateDelivery(Address addressEntity) {
-      zipcode = addressEntity.getZipcode();
-      address1 = addressEntity.getAddress1();
-      address2 = addressEntity.getAddress2();
-      recipientName = addressEntity.getRecipientName();
-      recipientPhone = addressEntity.getRecipientPhone();
-  }
 }

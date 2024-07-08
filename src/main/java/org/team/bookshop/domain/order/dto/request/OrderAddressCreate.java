@@ -34,12 +34,12 @@ public class OrderAddressCreate {
     }
 
     public Address toEntity(){
-        Address address = new Address();
-        address.setZipcode(zipcode);
-        address.setAddress1(address1);
-        address.setAddress2(address2);
-        address.setRecipientName(recipientName);
-        address.setRecipientPhone(recipientPhone);
-        return address;
+        return Address.builder()
+            .zipcode(this.zipcode)
+            .address1(this.address1)
+            .address2(this.address2)
+            .recipientName(this.recipientName)
+            .recipientPhone(this.recipientPhone)
+            .build();
     }
 }

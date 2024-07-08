@@ -9,6 +9,7 @@ import org.team.bookshop.domain.user.entity.Address;
 import org.team.bookshop.domain.user.entity.User;
 import org.team.bookshop.domain.user.repository.AddressRepository;
 import org.team.bookshop.domain.user.repository.UserRepository;
+import org.team.bookshop.global.error.exception.EntityNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,25 +25,28 @@ public class AddressService {
         return AddressPostDto.toDtoList(addresses);
     }
 
-    public void saveUserAddress(Long userId, AddressPostDto addressPostDto) {
-        Address address = addressPostDto.toEntity();
+    public AddressPostDto getUserAddress(Long userId, Long addressId) {
+        Address address = addressRepository.findAddressByUserId(userId, addressId);
+        return AddressPostDto.toDto(address);
+    }
+
+    public AddressPostDto saveUserAddress(Long userId, AddressPostDto addressPostDto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        address.setUser(user);
-        addressRepository.save(address);
+            .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+        Address address = addressPostDto.toEntity(user);
+        address = addressRepository.save(address);
+        return AddressPostDto.toDto(address);
     }
 
     public AddressPostDto updateUserAddress(Long userId, AddressPostDto addressPostDto) {
-        Address address = addressPostDto.toEntity();
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-        address.setUser(user);
-        Address updatedAddress = addressRepository.save(address);
-        return AddressPostDto.toDto(updatedAddress);
+            .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+        Address address = addressPostDto.toEntity(user);
+        return AddressPostDto.toDto(addressRepository.save(address));
     }
 
-    public void deleteUserAddress(Long userId) {
-        addressRepository.deleteByUserId(userId);
+    public void deleteUserAddress(Long userId, Long addressId) {
+        addressRepository.deleteById(addressId);
     }
 
 }

@@ -26,28 +26,34 @@ public class AddressController {
 
     private final AddressService addressService;
 
-    @GetMapping("/address/{id}")
-    public ResponseEntity<List<AddressPostDto>> getUserAddress(@PathVariable Long id) {
-        List<AddressPostDto> addressPostDtoList = addressService.getUserAddress(id);
+    @GetMapping("/{userId}/address")
+    public ResponseEntity<List<AddressPostDto>> getUserAddresses(@PathVariable Long userId) {
+        List<AddressPostDto> addressPostDtoList = addressService.getUserAddress(userId);
         return ResponseEntity.ok(addressPostDtoList);
     }
 
-    @PostMapping("/address/{id}")
-    public ResponseEntity<Void> saveUserAddress(@PathVariable Long id,
+    @GetMapping("/{userId}/address/{addressId}")
+    public ResponseEntity<AddressPostDto> getUserAddress(@PathVariable Long userId, @PathVariable Long addressId) {
+        AddressPostDto addressPostDto = addressService.getUserAddress(userId, addressId);
+        return ResponseEntity.ok(addressPostDto);
+    }
+
+    @PostMapping("/{userId}/address")
+    public ResponseEntity<Void> saveUserAddress(@PathVariable Long userId,
         @RequestBody @Valid AddressPostDto addressPostDto) {
-        addressService.saveUserAddress(id, addressPostDto);
+        addressService.saveUserAddress(userId, addressPostDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/address/{id}")
-    public ResponseEntity<AddressPostDto> updateUserAddress(@PathVariable Long id,
+    @PutMapping("/{userId}/address")
+    public ResponseEntity<AddressPostDto> updateUserAddress(@PathVariable Long userId,
         @RequestBody @Valid AddressPostDto addressPostDto) {
-        return ResponseEntity.ok(addressService.updateUserAddress(id, addressPostDto));
+        return ResponseEntity.ok(addressService.updateUserAddress(userId, addressPostDto));
     }
 
-    @DeleteMapping("/address/{id}")
-    public ResponseEntity<Void> deleteUserAddress(@PathVariable Long id) {
-        addressService.deleteUserAddress(id);
+    @DeleteMapping("/{userId}/address/{addressId}")
+    public ResponseEntity<Void> deleteUserAddress(@PathVariable Long userId, @PathVariable Long addressId) {
+        addressService.deleteUserAddress(userId, addressId);
         return ResponseEntity.noContent().build();
     }
 

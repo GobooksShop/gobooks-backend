@@ -4,14 +4,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.team.bookshop.domain.user.entity.Address;
+import org.team.bookshop.domain.user.entity.User;
 
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressPostDto {
 
+    private Long id;
     @NotBlank(message = "주소별칭은 빈 값일 수 없습니다.")
     private String label;
     private Boolean isPrimary;
@@ -28,28 +34,31 @@ public class AddressPostDto {
     @Pattern(regexp = "^\\d{10,11}$", message = "받는사람 연락처는 10자리 또는 11자리 숫자여야 합니다.")
     private String recipientPhone;
 
-    public Address toEntity() {
-        Address address = new Address();
-        address.setLabel(label);
-        address.setIsPrimary(isPrimary);
-        address.setZipcode(zipcode);
-        address.setAddress1(address1);
-        address.setAddress2(address2);
-        address.setRecipientName(recipientName);
-        address.setRecipientPhone(recipientPhone);
-        return address;
+    public Address toEntity(User user) {
+        return Address.builder()
+            .id(id)
+            .label(label)
+            .user(user)
+            .isPrimary(isPrimary)
+            .zipcode(zipcode)
+            .address1(address1)
+            .address2(address2)
+            .recipientName(recipientName)
+            .recipientPhone(recipientPhone)
+            .build();
     }
 
     public static AddressPostDto toDto(Address address) {
-        AddressPostDto dto = new AddressPostDto();
-        dto.setLabel(address.getLabel());
-        dto.setIsPrimary(address.getIsPrimary());
-        dto.setZipcode(address.getZipcode());
-        dto.setAddress1(address.getAddress1());
-        dto.setAddress2(address.getAddress2());
-        dto.setRecipientName(address.getRecipientName());
-        dto.setRecipientPhone(address.getRecipientPhone());
-        return dto;
+        return AddressPostDto.builder()
+            .id(address.getId())
+            .label(address.getLabel())
+            .isPrimary(address.getIsPrimary())
+            .zipcode(address.getZipcode())
+            .address1(address.getAddress1())
+            .address2(address.getAddress2())
+            .recipientName(address.getRecipientName())
+            .recipientPhone(address.getRecipientPhone())
+            .build();
     }
 
     public static List<AddressPostDto> toDtoList(List<Address> addresses) {
