@@ -57,6 +57,8 @@
 * Google Cloud Platform(GCP)
 * PORTONE API
 * Kakao API
+* Docker
+* Jenkins CI / CD
 
 ## Frontend Technology
 * React
