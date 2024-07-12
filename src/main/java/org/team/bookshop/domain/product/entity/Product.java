@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.BatchSize;
 import org.team.bookshop.domain.category.entity.BookCategory;
 import org.team.bookshop.global.util.BaseEntity;
@@ -34,8 +33,6 @@ import org.team.bookshop.global.util.BaseEntity;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
-@Accessors(chain = true)
 public class Product extends BaseEntity {
 
     @Id
